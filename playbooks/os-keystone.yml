@@ -1,0 +1,5 @@
+---
+- hosts: keystone*
+  tasks:
+    - name: test connection
+      ping:

@@ -1,16 +1,20 @@
 # vim:ft=ansible:
 ---
-- hosts: controller*
+- hosts: all
   gather_facts: none
   sudo: yes
   vars:
     lxc_containers:
-      - "tst01_rabbitmq-01"
-      - "tst01_keystone-01"
+      - "rabbitmq-01"
+      - "keystone-01"
     lxc_container_user_name: "sdeviatkin"
     lxc_container_template_options: >
       --user {{ lxc_container_user_name }}
   tasks:
+  - name: Custom ssh config
+    copy: src="files/dot_ssh/config" dest="~/.ssh/config" mode=600 owner="{{ lxc_container_user_name }}"
+    sudo_user: "{{ lxc_container_user_name }}"
+
   - name: EPEL repository
     yum: name="{{ item }}" state=present
     with_items:
@@ -29,6 +33,9 @@
       - "http://stackforce.cloudlinux.com/repos/lxc-python2-0.1-1.x86_64.rpm"
     tags:
       - yum
+
+  - name: Restart libvirtd
+    service: name=libvirtd state=restarted
 
   - name: Create a started container
     lxc_container:
@@ -51,6 +58,23 @@
     tags:
       - user
 
+  - name: Check key
+    stat: path="/home/{{ lxc_container_user_name }}/.ssh/id_rsa.pub"
+    register: pub_key
+    tags:
+      - ssh_key
+
+  - name: Generate ssh key
+    shell: "ssh-keygen -q -f /home/{{ lxc_container_user_name }}/.ssh/id_rsa -N ''"
+    when: not pub_key.stat.exists
+    sudo_user: "{{ lxc_container_user_name }}"
+    tags:
+      - ssh_key
+
+  - name: Double check key
+    stat: path="/home/{{ lxc_container_user_name }}/.ssh/id_rsa.pub"
+    register: pub_key
+
   - name: Force container user authorized_keys
     lxc_container:
       name: "{{ item }}"
@@ -58,10 +82,11 @@
         getent passwd "{{ lxc_container_user_name }}" &&
         mkdir "/home/{{ lxc_container_user_name }}/.ssh" &&
         chmod 700 "/home/{{ lxc_container_user_name }}/.ssh" &&
-        echo "{{ lookup('file', '~/.ssh/id_rsa.pub') }}" > "/home/{{ lxc_container_user_name }}/.ssh/authorized_keys" &&
+        echo "{{ lookup('file', '/home/'+lxc_container_user_name+'/.ssh/id_rsa.pub') }}" > "/home/{{ lxc_container_user_name }}/.ssh/authorized_keys" &&
         chmod 600 "/home/{{ lxc_container_user_name }}/.ssh/authorized_keys" &&
         chown -R "{{ lxc_container_user_name }}":"{{ lxc_container_user_name }}" "/home/{{ lxc_container_user_name }}/.ssh"
     no_log: True
+    when: pub_key.stat.exists
     with_items: lxc_containers
     tags:
       - ssh_key
