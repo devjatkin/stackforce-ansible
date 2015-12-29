@@ -1,0 +1,91 @@
+# vim:ft=ansible:
+---
+- hosts: controller*
+  gather_facts: none
+  sudo: yes
+  vars:
+    lxc_containers:
+      - "tst01_rabbitmq-01"
+      - "tst01_keystone-01"
+    lxc_container_user_name: "sdeviatkin"
+    lxc_container_template_options: >
+      --user {{ lxc_container_user_name }}
+  tasks:
+  - name: EPEL repository
+    yum: name="{{ item }}" state=present
+    with_items:
+      - "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+    tags:
+      - yum
+
+  - name: LXC packages
+    yum: name="{{ item }}" state=present
+    with_items:
+      - lxc
+      - lxc-libs
+      - lxc-templates
+      - libvirt-daemon-lxc.x86_64
+      - libvirt-daemon-config-network.x86_64
+      - "http://stackforce.cloudlinux.com/repos/lxc-python2-0.1-1.x86_64.rpm"
+    tags:
+      - yum
+
+  - name: Create a started container
+    lxc_container:
+      name: "{{ item }}"
+      container_log: true
+      template: centos
+      state: started
+      container_config:
+        - lxc.kmsg=0
+    with_items: lxc_containers
+    tags:
+      - create
+
+  - name: Create user
+    lxc_container:
+      name: "{{ item }}"
+      container_command: |
+        useradd --create-home -G wheel -s /bin/bash {{ lxc_container_user_name }}
+    with_items: lxc_containers
+    tags:
+      - user
+
+  - name: Force container user authorized_keys
+    lxc_container:
+      name: "{{ item }}"
+      container_command: |
+        getent passwd "{{ lxc_container_user_name }}" &&
+        mkdir "/home/{{ lxc_container_user_name }}/.ssh" &&
+        chmod 700 "/home/{{ lxc_container_user_name }}/.ssh" &&
+        echo "{{ lookup('file', '~/.ssh/id_rsa.pub') }}" > "/home/{{ lxc_container_user_name }}/.ssh/authorized_keys" &&
+        chmod 600 "/home/{{ lxc_container_user_name }}/.ssh/authorized_keys" &&
+        chown -R "{{ lxc_container_user_name }}":"{{ lxc_container_user_name }}" "/home/{{ lxc_container_user_name }}/.ssh"
+    no_log: True
+    with_items: lxc_containers
+    tags:
+      - ssh_key
+
+  - name: Waiting for ping
+    lxc_container:
+      name: "{{ item }}"
+      container_command: |
+        ping -c 1 8.8.8.8
+    register: lvm_container_info
+    until: lvm_container_info.lxc_container.ips.0 is defined
+    retries: 10
+    delay: 30
+    with_items: lxc_containers
+    tags: 
+      - ping
+
+  - name: Install packages
+    lxc_container:
+      name: "{{ item }}"
+      container_command: |
+        yum update &&
+        yum install -y sudo openssh-clients rsync &&
+        sed --in-place 's/^#\s*\(%wheel\s\+ALL=(ALL)\s\+NOPASSWD:\s\+ALL\)/\1/' /etc/sudoers
+    with_items: lxc_containers
+    tags:
+      - yum
