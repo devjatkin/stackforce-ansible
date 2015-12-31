@@ -70,6 +70,6 @@ Vagrant.configure(2) do |config|
     echo localhost > inventory
     ansible-playbook -i inventory -c local /vagrant/playbooks/ping.yml
     ansible-playbook -i inventory -c local --extra-vars 'lxc_container_user_name=vagrant' /vagrant/playbooks/create_lxc_containers.yml
-    sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py /vagrant/playbooks/os-keystone.yml
+    sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
   SHELL
 end

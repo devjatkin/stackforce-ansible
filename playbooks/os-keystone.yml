@@ -1,5 +1,4 @@
 ---
 - hosts: keystone*
-  tasks:
-    - name: test connection
-      ping:
+  roles:
+    - role: memcached

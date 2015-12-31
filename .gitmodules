@@ -1,3 +1,6 @@
 [submodule "playbooks/roles/memcached"]
 	path = playbooks/roles/memcached
 	url = https://github.com/geerlingguy/ansible-role-memcached.git
+[submodule "playbooks/roles/rabbitmq"]
+	path = playbooks/roles/rabbitmq
+	url = https://github.com/devjatkin/ansible-playbook-rabbitmq.git
