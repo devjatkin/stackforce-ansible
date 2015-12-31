@@ -1,2 +1,11 @@
-Stackforce Cloudlinux
-#####################
+# Stackforce Cloudlinux #
+## Quickstart ##
+Install vagrant using https://docs.vagrantup.com/v2/installation/
+
+```
+#!shell
+
+# git clone --recursive git@bitbucket.org:stackforce/stackforce-ansible.git
+# cd stackforce-ansible
+# vagrant up
+```
