@@ -1,0 +1,3 @@
+---
+- include: rabbitmq.yml
+- include: os-keystone.yml

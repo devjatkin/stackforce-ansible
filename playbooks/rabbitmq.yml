@@ -1,0 +1,7 @@
+---
+- hosts: rabbitmq*
+  roles:
+    - role: rabbitmq
+      rabbitmq_ssl: false
+      rabbitmq_os_package: false
+      rabbitmq_plugins: [ 'rabbitmq_management' ]
