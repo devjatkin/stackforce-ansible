@@ -101,7 +101,7 @@
     retries: 10
     delay: 30
     with_items: lxc_containers
-    tags: 
+    tags:
       - ping
 
   - name: Install packages
