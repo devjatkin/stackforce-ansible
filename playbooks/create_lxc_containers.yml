@@ -5,8 +5,8 @@
   sudo: yes
   vars:
     lxc_containers:
-      - "rabbitmq-01"
-      - "keystone-01"
+      - "rabbitmq_container-0cac5cd9"
+      - "keystone_container-2dc354cb"
     lxc_container_user_name: "sdeviatkin"
     lxc_container_template_options: >
       --user {{ lxc_container_user_name }}
