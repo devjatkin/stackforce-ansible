@@ -11,6 +11,10 @@
     lxc_container_template_options: >
       --user {{ lxc_container_user_name }}
   tasks:
+  - lvg: vg=lxc pvs=/dev/sdb
+    tags:
+      - lvm
+
   - name: Custom ssh config
     copy: src="files/dot_ssh/config" dest="~/.ssh/config" mode=600 owner="{{ lxc_container_user_name }}"
     sudo_user: "{{ lxc_container_user_name }}"
@@ -43,6 +47,8 @@
       container_log: true
       template: centos
       state: started
+      backing_store: lvm
+      vg_name: "lxc"
       container_config:
         - lxc.kmsg=0
     with_items: lxc_containers
