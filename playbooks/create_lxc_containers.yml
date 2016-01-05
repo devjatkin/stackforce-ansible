@@ -4,8 +4,11 @@
   gather_facts: none
   sudo: yes
   vars:
+    lxc_base_container: "stackforce_base_container"
     lxc_containers:
       - "rabbitmq_container-0cac5cd9"
+      - "mariadb_container-f4e260fa"
+      - "syslog_container-c2a56e86"
       - "keystone_container-2dc354cb"
     lxc_container_user_name: "sdeviatkin"
     lxc_container_template_options: >
@@ -41,6 +44,27 @@
   - name: Restart libvirtd
     service: name=libvirtd state=restarted
 
+  - name: Create a base container
+    lxc_container:
+      name: "{{ lxc_base_container }}"
+      container_log: true
+      template: centos
+      state: stopped
+      backing_store: lvm
+      vg_name: "lxc"
+      container_config:
+        - lxc.kmsg=0
+    tags:
+      - lxc
+      - lxc-base-container
+
+  - name: Clone containers
+    shell: "echo lxc-clone -o {{ lxc_base_container }} -n {{ item }}"
+    with_items: lxc_containers
+    tags:
+      - lxc
+      - lxc-clone-containers
+
   - name: Create a started container
     lxc_container:
       name: "{{ item }}"
@@ -53,7 +77,8 @@
         - lxc.kmsg=0
     with_items: lxc_containers
     tags:
-      - create
+      - lxc
+      - lxc-start-containers
 
   - name: Create user
     lxc_container:
