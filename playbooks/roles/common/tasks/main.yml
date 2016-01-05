@@ -1,0 +1,3 @@
+---
+- name: Install RDO Project release
+  yum: name="{{ rdoproject_release_rpm  }}" state=installed
