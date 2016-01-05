@@ -45,7 +45,7 @@ Vagrant.configure(2) do |config|
   #
   VAGRANT_ROOT = File.dirname(File.expand_path(__FILE__))
   config.vm.provider "virtualbox" do |vb|
-    file_to_disk = File.join(VAGRANT_ROOT, 'lvm_containersi.vdi')
+    file_to_disk = File.join(VAGRANT_ROOT, '.vagrant/lvm_containersi.vdi')
     unless File.exist?(file_to_disk)
       vb.customize ['createhd', '--filename', file_to_disk, '--size', 100 * 1024]
     end
