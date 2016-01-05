@@ -1,4 +1,6 @@
 ---
 - hosts: keystone*
   roles:
+    - role: common
     - role: memcached
+    - role: os-keystone
