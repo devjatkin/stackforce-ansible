@@ -1,0 +1,30 @@
+---
+#login_host: hostvars[groups.mariadb.0]['ansible_eth0']['ipv4']['address']
+- name: Create DB
+  mysql_db:
+    login_user: "root"
+    login_password: "{{ mysql_root_password }}"
+    login_host: "localhost"
+    name: "keystone"
+    state: "present"
+  delegate_to: "{{ groups.mariadb.0 }}"
+  tags:
+    - create-db
+
+- name: Create DB user
+  mysql_user:
+    login_user: "root"
+    login_password: "{{ mysql_root_password }}"
+    login_host: "localhost"
+    name: "keystone"
+    password: "{{ keystone_db_password }}"
+    host: "{{ item }}"
+    state: "present"
+    priv: "keystone.*:ALL"
+  with_items:
+    - "localhost"
+    - "%"
+  delegate_to: "{{ groups.mariadb.0 }}"
+
+- name: Keystone DB sync
+  command: "keystone-manage db_sync"
