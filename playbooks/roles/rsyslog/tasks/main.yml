@@ -1,0 +1,10 @@
+---
+#
+# https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux_OpenStack_Platform/3/html/Installation_and_Configuration_Guide/Configuring_the_rsyslog_Server.html
+#
+#- name: Configure SELinux to allow rsyslog traffic
+#  command: semanage -a -t syslogd_port_t -p udp 514
+
+- name: Update config
+  template: src=rsyslog.conf.j2 dest=/etc/rsyslog.conf
+  notify: Restart rsyslog

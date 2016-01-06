@@ -8,3 +8,4 @@
 - include: os-keystone.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
+- include: rsyslog.yml

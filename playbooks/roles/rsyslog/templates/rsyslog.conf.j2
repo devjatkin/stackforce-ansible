@@ -1,0 +1,23 @@
+#
+# {{ ansible_managed }}
+#
+
+#### MODULES ####
+$ModLoad imuxsock # provides support for local system logging (e.g. via logger command)
+$ModLoad imjournal # provides access to the systemd journal
+
+# Provides UDP syslog reception
+$ModLoad imudp
+$UDPServerRun 514
+
+#### GLOBAL DIRECTIVES ####
+$WorkDirectory /var/lib/rsyslog
+$ActionFileDefaultTemplate RSYSLOG_TraditionalFileFormat
+$IncludeConfig /etc/rsyslog.d/*.conf
+$OmitLocalLogging on
+$IMJournalStateFile imjournal.state
+
+#### RULES ####
+$template HostProgramName, "/var/log/%HOSTNAME%/%PROGRAMNAME%.log" 
+
+*.*                ?HostProgramName
