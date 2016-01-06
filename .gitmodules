@@ -4,3 +4,9 @@
 [submodule "playbooks/roles/rabbitmq"]
 	path = playbooks/roles/rabbitmq
 	url = https://github.com/devjatkin/ansible-playbook-rabbitmq.git
+[submodule "playbooks/roles/mariadb"]
+	path = playbooks/roles/mariadb
+	url = https://github.com/geerlingguy/ansible-role-mysql.git
+[submodule "playbooks/roles/mysql"]
+	path = playbooks/roles/mysql
+	url = https://github.com/geerlingguy/ansible-role-mysql.git

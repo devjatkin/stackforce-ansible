@@ -1,0 +1,23 @@
+---
+- debug: var="{{ hostvars[groups.mariadb.0]['ansible_eth0']['ipv4']['address'] }}"
+  tags:
+    - create-db
+
+- name: Install Keystone
+  yum: name=openstack-keystone state=present
+
+- name: Create config file
+  template:
+    src: keystone.conf.j2
+    dest: /etc/keystone/keystone.conf
+
+- include: db_sync.yml
+
+#- include: rabbitmq.yml
+
+- command: chown -R keystone:keystone /var/log/keystone
+  register: perm_change
+  changed_when: perm_change.stdout
+
+- name: Start Keystone
+  service: name=openstack-keystone state=started

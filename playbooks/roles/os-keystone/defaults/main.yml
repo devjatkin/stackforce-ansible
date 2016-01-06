@@ -1,0 +1,5 @@
+---
+keystone_db_password: "Que5vohgahwebohh"
+keystone_rabbitmq_password: "Iengaiv1sahxughu"
+keystone_auth_admin_token: "Gee4soopohsusaki"
+keystone_database_connection: "sqlite:///keystone.db"

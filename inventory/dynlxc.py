@@ -4,6 +4,7 @@ import os
 import sys
 import json
 import lxc
+import re
 
 if os.geteuid() != 0:
     os.execvp("sudo", ["sudo"] + sys.argv)
@@ -14,6 +15,14 @@ hostvars = {}
 
 containers = lxc.list_containers(active=True, defined=False)
 for container_name in containers:
+    srv = re.split('_', container_name)
+    group = srv[0]
+    if not group in result:
+        result[group] = {}
+        result[group]['hosts'] = []
+    if isinstance(result[group], dict):
+        result[group]['hosts'].append(container_name)
+    # get ip from container object
     container = lxc.Container(name=container_name)
     result['all']['hosts'] = containers
     if container.get_interfaces():

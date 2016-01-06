@@ -1,0 +1,23 @@
+---
+- name: Ensure Rabbitmq vhost
+  rabbitmq_vhost:
+    name: "keystone"
+    state: "present"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  tags:
+    - keystone-rabbitmq
+    - keystone-rabbitmq-vhost
+
+- name: Ensure rabbitmq user
+  rabbitmq_user:
+    user: "keystone"
+    password: "{{ keystone_rabbitmq_password }}"
+    vhost: "keystone"
+    configure_priv: ".*"
+    read_priv: ".*"
+    write_priv: ".*"
+    state: "present"
+  delegate_to: "{{ groups['rabbitmq'][0] }}"
+  tags:
+    - keystone-rabbitmq
+    - keystone-rabbitmq-user
