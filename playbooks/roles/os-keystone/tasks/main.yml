@@ -21,3 +21,5 @@
 
 - name: Start Keystone
   service: name=openstack-keystone state=started
+
+- include: admin_openrc.yml
