@@ -1,0 +1,6 @@
+---
+# Create  admin-openrc.sh file
+- name: Create RC file
+  template:
+      src: admin-openrc.sh.j2
+      dest: /root/admin-openrc.sh
