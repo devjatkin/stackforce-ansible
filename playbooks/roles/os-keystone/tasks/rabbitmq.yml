@@ -1,8 +1,10 @@
 ---
 - name: Ensure Rabbitmq vhost
   rabbitmq_vhost:
-    name: "keystone"
+    name: "{{ keystone_rabbitmq_vhost_name }}"
     state: "present"
+    node: "rabbit@{{ groups['rabbitmq'][0] }}"
+    tracing: "no"
   delegate_to: "{{ groups['rabbitmq'][0] }}"
   tags:
     - keystone-rabbitmq
@@ -10,9 +12,10 @@
 
 - name: Ensure rabbitmq user
   rabbitmq_user:
-    user: "keystone"
+    user: "{{ keystone_rabbitmq_userid }}"
     password: "{{ keystone_rabbitmq_password }}"
-    vhost: "keystone"
+    vhost: "{{ keystone_rabbitmq_vhost_name }}"
+    node: "rabbit@{{ groups['rabbitmq'][0] }}"
     configure_priv: ".*"
     read_priv: ".*"
     write_priv: ".*"

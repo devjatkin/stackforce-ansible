@@ -15,13 +15,13 @@
 
 - include: rabbitmq.yml
 
-#- include: service.yml
-
 - command: chown -R keystone:keystone /var/log/keystone
   register: perm_change
   changed_when: perm_change.stdout
 
 - name: Start Keystone
   service: name=openstack-keystone state=started
+
+- include: service.yml
 
 - include: admin_openrc.yml
