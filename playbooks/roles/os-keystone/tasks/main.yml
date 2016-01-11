@@ -13,7 +13,9 @@
 
 - include: db_sync.yml
 
-#- include: rabbitmq.yml
+- include: rabbitmq.yml
+
+#- include: service.yml
 
 - command: chown -R keystone:keystone /var/log/keystone
   register: perm_change
