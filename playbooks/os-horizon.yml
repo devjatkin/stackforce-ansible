@@ -1,0 +1,6 @@
+---
+- hosts: horizon*
+  roles:
+    - role: common
+    - role: os-horizon
+    - role: memcached
