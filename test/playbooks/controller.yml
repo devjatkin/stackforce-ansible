@@ -1,0 +1,12 @@
+---
+- hosts: controller*
+  vars:
+    username: "buildbot"
+  tasks:
+    - name: add user
+      user: name="{{ username }}" shell=/bin/bash groups=wheel
+    - name: sudoers
+      command: sed --in-place 's/^#\s*\(%wheel\s\+ALL=(ALL)\s\+NOPASSWD:\s\+ALL\)/\1/' /etc/sudoers
+    - authorized_key:
+        user: "{{ username }}"
+        key:  "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
