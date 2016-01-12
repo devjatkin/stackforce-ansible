@@ -1,0 +1,18 @@
+---
+
+- debug: var="{{ hostvars[groups.mariadb.0]['ansible_eth0']['ipv4']['address'] }}"
+  tags:
+    - create-db
+
+- name: Install Openstack-dashboard
+  yum: name=openstack-dashboard state=present
+
+
+- name: Create Openstack-dashboard config file
+  template:
+    src: local_settings.j2
+    dest: /etc/openstack-dashboard/local_settings
+
+- name: Start HTTPD
+  service: name=httpd state=started
+
