@@ -15,9 +15,8 @@
 
 - include: rabbitmq.yml
 
-- command: chown -R keystone:keystone /var/log/keystone
-  register: perm_change
-  changed_when: perm_change.stdout
+- name: Ensure owner for log files
+  file: path=/var/log/keystone recurse=yes owner=keystone group=keystone
 
 - name: Start Keystone
   service: name=openstack-keystone state=started
