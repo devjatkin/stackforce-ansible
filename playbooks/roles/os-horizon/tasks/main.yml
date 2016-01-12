@@ -1,9 +1,5 @@
 ---
 
-- debug: var="{{ hostvars[groups.mariadb.0]['ansible_eth0']['ipv4']['address'] }}"
-  tags:
-    - create-db
-
 - name: Install Openstack-dashboard
   yum: name=openstack-dashboard state=present
 
