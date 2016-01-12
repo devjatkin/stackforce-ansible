@@ -870,7 +870,7 @@ connection = {{ keystone_database_connection }}
 # setting of domain_configurations_from_database). Only values specific to the
 # domain need to be specified in this manner. This feature is disabled by
 # default; set to true to enable. (boolean value)
-#domain_specific_drivers_enabled = false
+#domain_specific_drivers_enabled = true
 
 # Extract the domain specific configuration options from the resource backend
 # where they have been stored with the domain data. This feature is disabled by
@@ -1365,7 +1365,7 @@ driver = sql
 #
 
 # Memcache servers in the format of "host:port". (list value)
-#servers = localhost:11211
+servers = localhost:11211
 
 # Number of seconds memcached server is considered dead before it is tried
 # again. This is used by the key value store system (e.g. token pooled
@@ -1547,7 +1547,7 @@ driver = sql
 
 # The RabbitMQ broker address where a single node is used. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_host
-#rabbit_host = localhost
+rabbit_host = {{ groups['rabbitmq'][0] }}
 
 # The RabbitMQ broker port where a single node is used. (port value)
 # Minimum value: 1
@@ -1561,15 +1561,15 @@ driver = sql
 
 # Connect over SSL for RabbitMQ. (boolean value)
 # Deprecated group/name - [DEFAULT]/rabbit_use_ssl
-#rabbit_use_ssl = false
+rabbit_use_ssl = false
 
 # The RabbitMQ userid. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_userid
-#rabbit_userid = guest
+rabbit_userid = {{ keystone_rabbitmq_userid }}
 
 # The RabbitMQ password. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_password
-#rabbit_password = guest
+rabbit_password = {{ keystone_rabbitmq_password }}
 
 # The RabbitMQ login method. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_login_method
@@ -1577,7 +1577,7 @@ driver = sql
 
 # The RabbitMQ virtual host. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_virtual_host
-#rabbit_virtual_host = /
+rabbit_virtual_host = {{ keystone_rabbitmq_vhost_name }}
 
 # How frequently to retry connecting with RabbitMQ. (integer value)
 #rabbit_retry_interval = 1
@@ -1741,7 +1741,7 @@ driver = sql
 # Entrypoint for an implementation of the backend for persisting revocation
 # events in the keystone.revoke namespace. Supplied drivers are kvs and sql.
 # (string value)
-#driver = sql
+driver = sql
 
 # This value (calculated in seconds) is added to token expiration before a
 # revocation event may be removed from the backend. (integer value)
@@ -1934,12 +1934,12 @@ driver = sql
 # Controls the token construction, validation, and revocation operations.
 # Entrypoint in the keystone.token.provider namespace. Core providers are
 # [fernet|pkiz|pki|uuid]. (string value)
-#provider = uuid
+provider = uuid
 
 # Entrypoint for the token persistence backend driver in the
 # keystone.token.persistence namespace. Supplied drivers are kvs, memcache,
 # memcache_pool, and sql. (string value)
-#driver = sql
+driver = memcache
 
 # Toggle for token system caching. This has no effect unless global caching is
 # enabled. (boolean value)

@@ -3,5 +3,5 @@
   roles:
     - role: rabbitmq
       rabbitmq_ssl: false
-      rabbitmq_os_package: false
+      rabbitmq_os_package: true
       rabbitmq_plugins: [ 'rabbitmq_management' ]

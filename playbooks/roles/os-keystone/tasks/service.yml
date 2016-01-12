@@ -1,0 +1,121 @@
+---
+- name: Ensure service tenant
+  keystone:
+    command: "ensure_tenant"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    tenant_name: "{{ keystone_service_tenant_name }}"
+    description: "{{ keystone_service_description }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - keystone-setup
+
+- name: Ensure admin tenant
+  keystone:
+    command: "ensure_tenant"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    tenant_name: "{{ keystone_admin_tenant_name }}"
+    description: "{{ keystone_admin_description }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - keystone-setup
+
+- name: Ensure Admin user
+  keystone:
+    command: "ensure_user"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    user_name: "{{ keystone_os_username }}"
+    tenant_name: "{{ keystone_admin_tenant_name }}"
+    password: "{{ keystone_os_admin_password }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - keystone-setup
+
+- name: Ensure Admin role
+  keystone:
+    command: "ensure_role"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    role_name: "admin"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - keystone-setup
+
+- name: Ensure Admin user to Admin role
+  keystone:
+    command: "ensure_user_role"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    user_name: "{{ keystone_os_username }}"
+    tenant_name: "{{ keystone_admin_tenant_name }}"
+    role_name: "admin"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - keystone-setup
+
+- name: Ensure default keystone user role
+  keystone:
+    command: "ensure_role"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    role_name: "{{ keystone_default_role_name }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - keystone-setup
+
+- name: Ensure Keystone Service
+  keystone:
+    command: "ensure_service"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    service_name: "keystone"
+    service_type: "identity"
+    description: "keystone service"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - keystone-setup
+
+- name: Ensure Keystone user
+  keystone:
+    command: "ensure_user"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    user_name: "keystone"
+    tenant_name: "{{ keystone_service_tenant_name }}"
+    password: "{{ keystone_service_password }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - keystone-setup
+
+- name: Ensure Keystone user to Admin role
+  keystone:
+    command: "ensure_user_role"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    user_name: "keystone"
+    tenant_name: "{{ keystone_service_tenant_name }}"
+    role_name: "admin"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - keystone-setup
+
+- name: Ensure Keystone Endpoint
+  keystone:
+    command: "ensure_endpoint"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    region_name: "{{ keystone_service_region }}"
+    service_name: "keystone"
+    service_type: "identity"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+    endpoint_list:
+      - url: "{{ keystone_service_publicurl }}"
+        interface: "public"
+      - url: "{{ keystone_service_adminurl }}"
+        interface: "admin"
+      - url: "{{ keystone_service_internalurl }}"
+        interface: "internal"
+  tags:
+    - keystone-setup
