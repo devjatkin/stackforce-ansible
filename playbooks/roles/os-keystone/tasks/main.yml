@@ -25,3 +25,6 @@
 - include: service.yml
 
 - include: admin_openrc.yml
+
+- name: Install opanstack-client
+  yum: name=python-openstackclient state=present
