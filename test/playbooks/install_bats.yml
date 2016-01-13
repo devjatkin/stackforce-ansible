@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  gather_facts: none
+  sudo: yes
+  tasks:
+  - name: EPEL repository
+    yum: name="{{ item }}" state=present
+    with_items:
+      - "https://www.rdoproject.org/repos/rdo-release.rpm" 
+
+  - name: Install bats and openstack-client
+    yum: name="{{ item }}" state=present
+    with_items:
+      - bats
+      - python-openstackclient   
+
+
+
+

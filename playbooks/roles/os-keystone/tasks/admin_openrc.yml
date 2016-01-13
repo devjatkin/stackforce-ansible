@@ -4,3 +4,4 @@
   template:
       src: admin-openrc.sh.j2
       dest: /root/admin-openrc.sh
+  delegate_to: localhost
