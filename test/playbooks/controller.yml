@@ -10,3 +10,25 @@
     - authorized_key:
         user: "{{ username }}"
         key:  "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    - copy:
+        src: "~/.ssh/id_rsa"
+        dest: "/home/{{ username }}/.ssh/id_rsa"
+        owner: "{{ username }}"
+        group: "{{ username }}"
+        mode: "600"
+    - yum:
+        name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+    - yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - git
+        - ansible
+
+    - git:
+        repo: "git@bitbucket.org:stackforce/stackforce-ansible.git"
+        dest: "/home/{{ username }}/stackforce-ansible"
+        recursive: yes
+        accept_hostkey: yes
+        key_file: "/home/{{ username }}/.ssh/id_rsa"
+      sudo_user: "{{ username }}"
