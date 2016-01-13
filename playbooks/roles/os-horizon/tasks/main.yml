@@ -1,0 +1,14 @@
+---
+
+- name: Install Openstack-dashboard
+  yum: name=openstack-dashboard state=present
+
+
+- name: Create Openstack-dashboard config file
+  template:
+    src: local_settings.j2
+    dest: /etc/openstack-dashboard/local_settings
+
+- name: Start HTTPD
+  service: name=httpd state=started
+
