@@ -1,9 +1,5 @@
 ---
-<<<<<<< HEAD
 - hosts: localhost
-=======
-- hosts: localhost 
->>>>>>> 8093ca433b85c770d64d6ecc76aad97d0f0f7ddb
   sudo: yes
   roles:
       - role: nginx-proxy
