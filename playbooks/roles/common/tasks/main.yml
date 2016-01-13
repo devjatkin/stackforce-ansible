@@ -5,3 +5,13 @@
 - name: Update config
   template: src=rsyslog.conf.j2 dest=/etc/rsyslog.conf
   notify: Restart rsyslog
+  when: groups.syslog is defined
+
+- name: create .repo files
+  template: src=yumrepos.j2 dest="/etc/yum.repos.d/{{ item.name }}.repo"
+  with_items: yum_repo_files
+
+- name: GPG key cloudlinux
+  rpm_key: key="{{ rpm_gpg_key_url }}" state=present
+  tags:
+    - rpm-gpg-key

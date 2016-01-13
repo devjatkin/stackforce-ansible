@@ -1,2 +1,14 @@
 ---
 rdoproject_release_rpm: "https://www.rdoproject.org/repos/rdo-release.rpm"
+yum_repo_files:
+  - name: "stackforce"
+    descr: "Stackforce repository"
+    baseurl: "http://repo.cloudlinux.com/stackforce/x86_64/"
+    gpgcheck: 1
+    enabled: 0
+  - name: "stackforce-testing"
+    descr: "Stackforce testing repository"
+    baseurl: "http://repo.cloudlinux.com/stackforce-testing/x86_64/"
+    gpgcheck: 1
+    enabled: 1
+rpm_gpg_key_url: "http://repo.cloudlinux.com/stackforce-testing/RPM-GPG-KEY-CloudLinux"
