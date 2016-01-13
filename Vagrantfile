@@ -77,5 +77,7 @@ Vagrant.configure(2) do |config|
     ansible-playbook -i inventory -c local --extra-vars 'lxc_container_user_name=vagrant' /vagrant/playbooks/create_lxc_containers.yml
     sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
 	sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/horizon_proxy.yml
+	ansible-playbook -i inventory -c local /vagrant/test/playbooks/install_bats.yml 
+	bats /vagrant/test/integration/default/bats/test_admin_openrc.bats
   SHELL
 end
