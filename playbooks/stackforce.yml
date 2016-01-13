@@ -9,4 +9,4 @@
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
 - include: rsyslog.yml
-- include: os-horizon.yml 
+- include: os-horizon.yml
