@@ -14,6 +14,8 @@
     lxc_container_user_name: "sdeviatkin"
     lxc_container_template_options: >
       --user {{ lxc_container_user_name }}
+  roles:
+    - role: common
   tasks:
   - lvg: vg=lxc pvs=/dev/sdb
     tags:
@@ -38,7 +40,7 @@
       - lxc-templates
       - libvirt-daemon-lxc.x86_64
       - libvirt-daemon-config-network.x86_64
-      - "http://stackforce.cloudlinux.com/repos/lxc-python2-0.1-1.x86_64.rpm"
+      - python2-lxc
     tags:
       - yum
 
