@@ -65,7 +65,7 @@
       - lxc-base-container
 
   - name: Clone containers
-    shell: "echo lxc-clone -o {{ lxc_base_container }} -n {{ item }}"
+    shell: "lxc-clone -s -o {{ lxc_base_container }} -n {{ item }}"
     with_items: lxc_containers
     tags:
       - lxc
@@ -85,6 +85,7 @@
     tags:
       - lxc
       - lxc-start-containers
+      - lxc-clone-containers
 
   - name: Create user
     lxc_container:
