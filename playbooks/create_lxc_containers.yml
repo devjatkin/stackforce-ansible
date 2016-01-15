@@ -2,7 +2,8 @@
 ---
 - hosts: all
   gather_facts: none
-  sudo: yes
+  become: yes
+  become_method: sudo
   vars:
     lxc_base_container: "stackforce_base_container"
     lxc_containers:
@@ -23,7 +24,8 @@
 
   - name: Custom ssh config
     copy: src="files/dot_ssh/config" dest="~/.ssh/config" mode=600 owner="{{ lxc_container_user_name }}"
-    sudo_user: "{{ lxc_container_user_name }}"
+    become: yes
+    become_user: "{{ lxc_container_user_name }}"
 
   - name: EPEL repository
     yum: name="{{ item }}" state=present
@@ -105,7 +107,8 @@
   - name: Generate ssh key
     shell: "ssh-keygen -q -f /home/{{ lxc_container_user_name }}/.ssh/id_rsa -N ''"
     when: not pub_key.stat.exists
-    sudo_user: "{{ lxc_container_user_name }}"
+    become: yes
+    become_user: "{{ lxc_container_user_name }}"
     tags:
       - ssh_key
 
