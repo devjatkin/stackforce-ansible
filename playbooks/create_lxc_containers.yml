@@ -66,6 +66,19 @@
       - lxc
       - lxc-base-container
 
+  - name: Waiting for ping
+    lxc_container:
+      name: "{{ item }}"
+      container_command: |
+        ping -c 1 8.8.8.8
+    register: lvm_container_info
+    until: lvm_container_info.lxc_container.ips.0 is defined
+    retries: 10
+    delay: 30
+    with_items: lxc_base_container
+    tags:
+      - ping
+
   - name: Install packages
     lxc_container:
       name: "{{ item }}"
@@ -132,6 +145,21 @@
       - lxc
       - lxc-clone-containers
 
+  - name: Create a started container
+    lxc_container:
+      name: "{{ item }}"
+      container_log: true
+      template: centos
+      state: started
+      backing_store: lvm
+      vg_name: "lxc"
+      container_config:
+        - lxc.kmsg=0
+    with_items: lxc_containers
+    tags:
+      - lxc
+      - lxc-start-containers
+      - lxc-clone-containers
 
   - name: Waiting for ping
     lxc_container:
@@ -145,4 +173,3 @@
     with_items: lxc_containers
     tags:
       - ping
-
