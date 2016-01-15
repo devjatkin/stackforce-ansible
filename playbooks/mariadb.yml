@@ -1,6 +1,7 @@
 ---
 - hosts: mariadb*
-  sudo: yes
+  become: yes
+  become_method: sudo
   roles:
     - role: mysql
       mysql_packages:

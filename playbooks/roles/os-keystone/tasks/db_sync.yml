@@ -28,4 +28,5 @@
 
 - name: Keystone DB sync
   command: "keystone-manage db_sync"
-  sudo_user: keystone
+  become: yes
+  become_user: keystone

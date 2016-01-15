@@ -31,4 +31,5 @@
         recursive: yes
         accept_hostkey: yes
         key_file: "/home/{{ username }}/.ssh/id_rsa"
-      sudo_user: "{{ username }}"
+        become: yes
+        become_user: "{{ username }}"
