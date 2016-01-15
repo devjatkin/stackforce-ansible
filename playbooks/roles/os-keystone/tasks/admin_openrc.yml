@@ -5,3 +5,21 @@
       src: admin-openrc.sh.j2
       dest: /root/admin-openrc.sh
   delegate_to: localhost
+
+- name: Openstack config directory (localhost)
+  file: path=/etc/openstack state=directory
+  delegate_to: localhost
+
+- name: Create clouds.yaml file (localhost)
+  template:
+      src: clouds.yaml.j2
+      dest: /etc/openstack/clouds.yaml
+  delegate_to: localhost
+
+- name: Openstack config directory
+  file: path=/etc/openstack state=directory
+
+- name: Create clouds.yaml file
+  template:
+      src: clouds.yaml.j2
+      dest: /etc/openstack/clouds.yaml

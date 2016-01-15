@@ -4,7 +4,13 @@
     - create-db
 
 - name: Install Keystone
-  yum: name=openstack-keystone state=present
+  yum: name="{{ item }}" state=present
+  with_items:
+    - openstack-keystone
+    - python-pip
+
+- name: Install required pip packages
+  pip: name=shade state=present
 
 - name: Create config file
   template:
@@ -21,9 +27,9 @@
 - name: Start Keystone
   service: name=openstack-keystone state=started
 
-- include: service.yml
-
 - include: admin_openrc.yml
+
+- include: service.yml
 
 - name: Install opanstack-client
   yum: name=python-openstackclient state=present

@@ -1,0 +1,12 @@
+---
+clouds:
+  stackforce:
+    auth:
+      auth_url: "{{ keystone_service_adminurl }}"
+      project_name: "{{ keystone_os_tenant_name}}"
+      project_domain_name: default
+      user_domain_name: default
+      username: "{{ keystone_os_username }}"
+      password: "{{ keystone_os_admin_password }}"
+    identity_api_version: "3"
+    region_name: "{{ keystone_service_region }}"
