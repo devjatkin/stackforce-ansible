@@ -1,5 +1,7 @@
 ---
 - hosts: controller*
+  become: yes
+  become_method: sudo
   vars:
     username: "buildbot"
   tasks:
@@ -23,7 +25,10 @@
         state: present
       with_items:
         - git
-        - ansible
+        - python-devel
+        - gcc
+        - python-pip
+    - pip: name=ansible
 
     - git:
         repo: "git@bitbucket.org:stackforce/stackforce-ansible.git"
@@ -31,5 +36,4 @@
         recursive: yes
         accept_hostkey: yes
         key_file: "/home/{{ username }}/.ssh/id_rsa"
-        become: yes
-        become_user: "{{ username }}"
+      become_user: "{{ username }}"

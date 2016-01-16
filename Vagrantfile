@@ -73,7 +73,8 @@ Vagrant.configure(2) do |config|
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
     sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    sudo yum install -y ansible
+    sudo yum install -y python-devel gcc python-pip
+    sudo pip install ansible
     echo localhost > inventory
     ansible-playbook -i inventory -c local /vagrant/playbooks/ping.yml
     ansible-playbook -i inventory -c local --extra-vars 'lxc_container_user_name=vagrant' /vagrant/playbooks/create_lxc_containers.yml

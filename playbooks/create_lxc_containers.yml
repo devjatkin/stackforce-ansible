@@ -23,9 +23,8 @@
       - lvm
 
   - name: Custom ssh config
-    copy: src="files/dot_ssh/config" dest="~/.ssh/config" mode=600 owner="{{ lxc_container_user_name }}"
-    become: yes
     become_user: "{{ lxc_container_user_name }}"
+    copy: src="files/dot_ssh/config" dest="~/.ssh/config" mode=600 owner="{{ lxc_container_user_name }}"
 
   - name: EPEL repository
     yum: name="{{ item }}" state=present
@@ -57,44 +56,46 @@
       name: "{{ lxc_base_container }}"
       container_log: true
       template: centos
-      state: stopped
+      state: started
       backing_store: lvm
       vg_name: "lxc"
+      clone_snapshot: true
       container_config:
         - lxc.kmsg=0
     tags:
       - lxc
       - lxc-base-container
 
-  - name: Clone containers
-    shell: "lxc-clone -s -o {{ lxc_base_container }} -n {{ item }}"
-    with_items: lxc_containers
-    tags:
-      - lxc
-      - lxc-clone-containers
-
-  - name: Create a started container
+  - name: Waiting for ping
     lxc_container:
       name: "{{ item }}"
-      container_log: true
-      template: centos
-      state: started
-      backing_store: lvm
-      vg_name: "lxc"
-      container_config:
-        - lxc.kmsg=0
-    with_items: lxc_containers
+      container_command: |
+        ping -c 1 8.8.8.8
+    register: lvm_container_info
+    until: lvm_container_info.lxc_container.ips.0 is defined
+    retries: 10
+    delay: 30
+    with_items: lxc_base_container
     tags:
-      - lxc
-      - lxc-start-containers
-      - lxc-clone-containers
+      - ping
+
+  - name: Install packages
+    lxc_container:
+      name: "{{ item }}"
+      container_command: |
+        yum update &&
+        yum install -y sudo openssh-clients rsync &&
+        sed --in-place 's/^#\s*\(%wheel\s\+ALL=(ALL)\s\+NOPASSWD:\s\+ALL\)/\1/' /etc/sudoers
+    with_items: lxc_base_container
+    tags:
+      - yum
 
   - name: Create user
     lxc_container:
       name: "{{ item }}"
       container_command: |
         useradd --create-home -G wheel -s /bin/bash {{ lxc_container_user_name }}
-    with_items: lxc_containers
+    with_items: lxc_base_container
     tags:
       - user
 
@@ -107,7 +108,6 @@
   - name: Generate ssh key
     shell: "ssh-keygen -q -f /home/{{ lxc_container_user_name }}/.ssh/id_rsa -N ''"
     when: not pub_key.stat.exists
-    become: yes
     become_user: "{{ lxc_container_user_name }}"
     tags:
       - ssh_key
@@ -128,9 +128,25 @@
         chown -R "{{ lxc_container_user_name }}":"{{ lxc_container_user_name }}" "/home/{{ lxc_container_user_name }}/.ssh"
     no_log: True
     when: pub_key.stat.exists
-    with_items: lxc_containers
+    with_items: lxc_base_container
     tags:
       - ssh_key
+
+  - name: Stop Base conainer
+    lxc_container:
+      name: "{{ lxc_base_container }}"
+      state: stopped
+
+  - name: Clone containers
+    lxc_container:
+      name: "{{ lxc_base_container }}"
+      backing_store: lvm
+      clone_name: "{{ item }}"
+      clone_snapshot: true
+    with_items: lxc_containers
+    tags:
+      - lxc
+      - lxc-clone-containers
 
   - name: Waiting for ping
     lxc_container:
@@ -144,14 +160,3 @@
     with_items: lxc_containers
     tags:
       - ping
-
-  - name: Install packages
-    lxc_container:
-      name: "{{ item }}"
-      container_command: |
-        yum update &&
-        yum install -y sudo openssh-clients rsync &&
-        sed --in-place 's/^#\s*\(%wheel\s\+ALL=(ALL)\s\+NOPASSWD:\s\+ALL\)/\1/' /etc/sudoers
-    with_items: lxc_containers
-    tags:
-      - yum
