@@ -1,8 +1,4 @@
 ---
-- debug: var="{{ hostvars[groups.mariadb.0]['ansible_eth0']['ipv4']['address'] }}"
-  tags:
-    - create-db
-
 - name: Install Keystone
   yum: name="{{ item }}" state=present
   with_items:
