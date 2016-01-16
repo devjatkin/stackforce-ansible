@@ -23,9 +23,8 @@
       - lvm
 
   - name: Custom ssh config
-    copy: src="files/dot_ssh/config" dest="~/.ssh/config" mode=600 owner="{{ lxc_container_user_name }}"
-    become: yes
     become_user: "{{ lxc_container_user_name }}"
+    copy: src="files/dot_ssh/config" dest="~/.ssh/config" mode=600 owner="{{ lxc_container_user_name }}"
 
   - name: EPEL repository
     yum: name="{{ item }}" state=present
@@ -109,7 +108,6 @@
   - name: Generate ssh key
     shell: "ssh-keygen -q -f /home/{{ lxc_container_user_name }}/.ssh/id_rsa -N ''"
     when: not pub_key.stat.exists
-    become: yes
     become_user: "{{ lxc_container_user_name }}"
     tags:
       - ssh_key

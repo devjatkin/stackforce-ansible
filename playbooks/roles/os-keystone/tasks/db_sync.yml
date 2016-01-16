@@ -28,5 +28,4 @@
 
 - name: Keystone DB sync
   command: "keystone-manage db_sync"
-  become: yes
   become_user: keystone

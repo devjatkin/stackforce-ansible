@@ -1,5 +1,7 @@
 ---
 - hosts: controller*
+  become: yes
+  become_method: sudo
   vars:
     username: "buildbot"
   tasks:
@@ -31,5 +33,4 @@
         recursive: yes
         accept_hostkey: yes
         key_file: "/home/{{ username }}/.ssh/id_rsa"
-        become: yes
         become_user: "{{ username }}"
