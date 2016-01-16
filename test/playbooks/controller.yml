@@ -26,6 +26,11 @@
       with_items:
         - git
         - ansible
+        - python-devel
+        - gcc
+        - python-pip
+        - python-dev
+    - pip: name=ansible
 
     - git:
         repo: "git@bitbucket.org:stackforce/stackforce-ansible.git"
