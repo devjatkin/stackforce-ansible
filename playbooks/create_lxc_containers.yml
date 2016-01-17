@@ -132,11 +132,6 @@
     tags:
       - ssh_key
 
-  - name: Stop Base conainer
-    lxc_container:
-      name: "{{ lxc_base_container }}"
-      state: stopped
-
   - name: Clone containers
     lxc_container:
       name: "{{ lxc_base_container }}"
@@ -160,3 +155,8 @@
     with_items: lxc_containers
     tags:
       - ping
+
+  - name: Stop Base conainer
+    lxc_container:
+      name: "{{ lxc_base_container }}"
+      state: stopped
