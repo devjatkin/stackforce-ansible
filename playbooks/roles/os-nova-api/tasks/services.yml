@@ -1,0 +1,52 @@
+---
+- name: Ensure nova user
+  keystone:
+    command: "ensure_user"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    user_name: "{{ nova_service_user_name }}"
+    tenant_name: "{{ nova_service_tenant_name }}"
+    password: "{{ nova_service_password }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - nova-setup
+- name: Ensure nova user to admin role
+  keystone:
+    command: "ensure_user_role"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    user_name: "{{ nova_service_user_name }}"
+    tenant_name: "{{ nova_service_tenant_name }}"
+    role_name: "admin"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - nova-setup
+- name: Ensure nova service
+  keystone:
+    command: "ensure_service"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    service_name: "{{ nova_service_name }}"
+    service_type: "{{ nova_service_type }}"
+    description: "{{ nova_service_description }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - nova-setup
+- name: Ensure nova endpoint
+  keystone:
+    command: "ensure_endpoint"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    region_name: "{{ nova_service_region }}"
+    service_name: "{{ nova_service_name }}"
+    service_type: "{{ nova_service_type }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+    endpoint_list:
+      - url: "{{ nova_service_publicurl }}"
+        interface: "public"
+      - url: "{{ nova_service_internalurl }}"
+        interface: "internal"
+      - url: "{{ nova_service_adminurl }}"
+        interface: "admin"
+  tags:
+    - nova-setup

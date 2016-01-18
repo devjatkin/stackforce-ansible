@@ -1,0 +1,14 @@
+---
+- name: Install Nova packages
+  yum: name="{{ item }}" state=present
+  with_items:
+    - openstack-nova-api
+    - openstack-nova-cert
+    - openstack-nova-conductor
+    - openstack-nova-console
+    - openstack-nova-novncproxy
+    - openstack-nova-scheduler
+    - python-novaclient
+  tags:
+    - install_nova_api
+
