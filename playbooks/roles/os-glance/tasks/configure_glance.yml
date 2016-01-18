@@ -8,3 +8,7 @@
   template:
     src: glance-registry.conf.j2
     dest: /etc/glance/glance-registry.conf
+- name: Copy Glance policy file
+  copy:
+    src: "files/glance_policy.json"
+    dest: "/etc/glance/policy.json"
