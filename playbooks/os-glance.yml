@@ -1,0 +1,7 @@
+---
+- hosts: glance*
+  become: yes
+  become_method: sudo
+  roles:
+    - role: common
+    - role: os-glance

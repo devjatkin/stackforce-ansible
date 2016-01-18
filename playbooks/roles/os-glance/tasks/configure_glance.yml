@@ -1,0 +1,10 @@
+---
+- name: Create Glance api conf
+  template:
+    src: glance-api.conf.j2
+    dest: /etc/glance/glance-api.conf
+
+- name: Create Glance registry conf
+  template:
+    src: glance-registry.conf.j2
+    dest: /etc/glance/glance-registry.conf
