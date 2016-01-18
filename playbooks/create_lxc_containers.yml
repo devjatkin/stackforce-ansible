@@ -47,7 +47,9 @@
       - yum
 
   - name: Remove setfcap from centos.common.conf
-    shell: "sed -i 's/setfcap$//' /usr/share/lxc/config/centos.common.conf"
+    copy:
+      src: "files/lxc_centos.common.conf"
+      dest: "/usr/share/lxc/config/centos.common.conf"
 
   - name: Restart libvirtd
     service: name=libvirtd state=restarted
