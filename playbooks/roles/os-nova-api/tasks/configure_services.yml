@@ -1,0 +1,5 @@
+---
+- name: Setup Nova config
+  template:
+    src: nova.conf
+    dest: /etc/nova/nova.conf

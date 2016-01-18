@@ -1,0 +1,15 @@
+---
+- include: install_packages.yml
+- include: configure_services.yml
+- include: services.yml
+- include: db_sync.yml
+
+- name: Start Nova services
+  service: name="{{ item }}" state=started
+  with_items:
+    - openstack-nova-api
+    - openstack-nova-cert
+    - openstack-nova-consoleauth
+    - openstack-nova-scheduler
+    - openstack-nova-conductor
+    - openstack-nova-novncproxy

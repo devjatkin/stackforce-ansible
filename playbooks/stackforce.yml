@@ -13,3 +13,6 @@
 - include: os-glance.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
+- include: os-nova-api.yml
+  vars:
+    mysql_root_password: 'Jovoh4aceloduush'

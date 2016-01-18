@@ -13,6 +13,7 @@
       - "keystone_container-2dc354cb"
       - "horizon_container-81aca944"
       - "glance_container-95c4da2b"
+      - "nova_api_container-47fb1655"
     lxc_container_user_name: "sdeviatkin"
     lxc_container_template_options: >
       --user {{ lxc_container_user_name }}
