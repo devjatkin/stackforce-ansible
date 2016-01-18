@@ -3,10 +3,6 @@
   yum: name="{{ item }}" state=present
   with_items:
     - openstack-keystone
-    - python-pip
-
-- name: Install required pip packages
-  pip: name=shade state=present
 
 - name: Create config file
   template:
@@ -18,7 +14,10 @@
 - include: rabbitmq.yml
 
 - name: Ensure owner for log files
-  file: path=/var/log/keystone recurse=yes owner=keystone group=keystone
+  file: path="{{ item }}" recurse=yes owner=keystone group=keystone state=directory
+  with_items:
+    - /etc/keystone
+    - /var/log/keystone
 
 - name: Start Keystone
   service: name=openstack-keystone state=started

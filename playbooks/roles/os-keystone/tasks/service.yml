@@ -1,4 +1,15 @@
 ---
+- name: Ensure service tenant
+  keystone:
+    command: "ensure_tenant"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    tenant_name: "{{ keystone_service_tenant_name }}"
+    description: "{{ keystone_service_description }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - keystone-setup
+
 - name: Ensure admin tenant
   keystone:
     command: "ensure_tenant"
@@ -44,16 +55,6 @@
   tags:
     - keystone-setup
 
-- name: Ensure service tenant
-  os_project:
-    cloud: "stackforce"
-    state: present
-    name: "{{ keystone_service_tenant_name }}"
-    description: "{{ keystone_service_description }}"
-    enabled: True
-  tags:
-    - keystone-setup
-
 - name: Ensure default keystone user role
   keystone:
     command: "ensure_role"
@@ -77,13 +78,14 @@
     - keystone-setup
 
 - name: Ensure Keystone user
-  os_user:
-    cloud: "stackforce"
-    state: present
-    name: keystone
+  keystone:
+    command: "ensure_user"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    user_name: "keystone"
+    tenant_name: "{{ keystone_service_tenant_name }}"
     password: "{{ keystone_service_password }}"
-    default_project: "{{ keystone_service_tenant_name }}"
-    enabled: True
+    insecure: "{{ keystone_service_adminuri_insecure }}"
   tags:
     - keystone-setup
 
