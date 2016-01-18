@@ -12,6 +12,7 @@
       - "syslog_container-c2a56e86"
       - "keystone_container-2dc354cb"
       - "horizon_container-81aca944"
+      - "glance_container-95c4da2b"
     lxc_container_user_name: "sdeviatkin"
     lxc_container_template_options: >
       --user {{ lxc_container_user_name }}
@@ -46,7 +47,9 @@
       - yum
 
   - name: Remove setfcap from centos.common.conf
-    shell: "sed -i 's/setfcap$//' /usr/share/lxc/config/centos.common.conf"
+    copy:
+      src: "files/lxc_centos.common.conf"
+      dest: "/usr/share/lxc/config/centos.common.conf"
 
   - name: Restart libvirtd
     service: name=libvirtd state=restarted

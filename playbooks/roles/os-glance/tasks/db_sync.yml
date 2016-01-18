@@ -1,0 +1,30 @@
+---
+- name: Create DB
+  mysql_db:
+    login_user: "root"
+    login_password: "{{ mysql_root_password }}"
+    login_host: "localhost"
+    name: "glance"
+    state: "present"
+  delegate_to: "{{ groups.mariadb.0 }}"
+  tags:
+    - create-db
+
+- name: Create DB user
+  mysql_user:
+    login_user: "root"
+    login_password: "{{ mysql_root_password }}"
+    login_host: "localhost"
+    name: "glance"
+    password: "{{ glance_db_password }}"
+    host: "{{ item }}"
+    state: "present"
+    priv: "glance.*:ALL"
+  with_items:
+    - "localhost"
+    - "%"
+  delegate_to: "{{ groups.mariadb.0 }}"
+
+- name: Sync Glance DB
+  command: "glance-manage db_sync"
+  become_user: glance
