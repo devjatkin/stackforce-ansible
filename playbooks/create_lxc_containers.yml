@@ -13,6 +13,7 @@
       - "horizon_container"
       - "glance_container"
       - "nova_api_container"
+      - "memcached_container"
     lxc_container_user_name: "sdeviatkin"
     lxc_container_template_options: >
       --user {{ lxc_container_user_name }}
@@ -145,7 +146,7 @@
     lxc_container:
       name: "{{ lxc_base_container }}"
       backing_store: lvm
-      clone_name: "{{ item }}-{{ (item | to_uuid )[:8]}}"
+      clone_name: "{{ item }}-{{ (lookup('pipe','uuidgen'))[:8] }}"
       clone_snapshot: true
     with_items: lxc_containers
     tags:
