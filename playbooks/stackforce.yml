@@ -5,6 +5,9 @@
 - include: mariadb.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
+- include: memcached.yml
+  vars:
+    memcached_listen_ip: "0.0.0.0"
 - include: os-keystone.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'

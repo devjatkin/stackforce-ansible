@@ -4,5 +4,4 @@
   become_method: sudo
   roles:
     - role: common
-    - role: memcached
     - role: os-keystone
