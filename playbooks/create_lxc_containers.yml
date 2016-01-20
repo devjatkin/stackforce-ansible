@@ -7,14 +7,15 @@
   vars:
     lxc_base_container: "stackforce_base_container"
     lxc_containers:
-      - "rabbitmq_container"
-      - "mariadb_container"
-      - "syslog_container"
-      - "keystone_container"
-      - "horizon_container"
-      - "glance_container"
-      - "nova_api_container"
-      - "memcached_container"
+      - "rabbitmq_container-0cac5cd9"
+      - "mariadb_container-f4e260fa"
+      - "syslog_container-c2a56e86"
+      - "keystone_container-2dc354cb"
+      - "horizon_container-81aca944"
+      - "glance_container-95c4da2b"
+      - "nova_api_container-47fb1655"
+      - "memcached_container-dc167f64"
+      - "compute_container-be4ff942"
     lxc_container_user_name: "sdeviatkin"
     lxc_container_template_options: >
       --user {{ lxc_container_user_name }}
@@ -67,6 +68,11 @@
       clone_snapshot: true
       container_config:
         - lxc.kmsg=0
+        - lxc.aa_profile=lxc-container-default-with-nesting
+        - lxc.cgroup.devices.allow = c 10:232 rwm
+        - lxc.cgroup.devices.allow = c 10:200 rwm
+
+
     tags:
       - lxc
       - lxc-base-container
@@ -141,7 +147,7 @@
     lxc_container:
       name: "{{ lxc_base_container }}"
       backing_store: lvm
-      clone_name: "{{ item }}-{{ (lookup('pipe','uuidgen'))[:8] }}"
+      clone_name: "{{ item }}"
       clone_snapshot: true
     with_items: lxc_containers
     tags:
@@ -150,7 +156,7 @@
 
   - name: Waiting for ping
     lxc_container:
-      name: "{{ item }}-{{ (item | to_uuid )[:8]}}"
+      name: "{{ item }}"
       container_command: |
         ping -c 1 8.8.8.8
     register: lvm_container_info

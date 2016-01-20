@@ -1,0 +1,12 @@
+
+---
+nova_service_user_name: "nova"
+nova_service_password: "Que5vohgahwebohh"
+keystone_service_publicurl: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:5000/v3"
+keystone_service_internalurl: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:5000/v3"
+keystone_service_adminurl: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:35357/v3"
+keystone_auth_admin_token: "Gee4soopohsusaki"
+keystone_service_adminuri_insecure: true
+keystone_rabbitmq_userid: "keystone"
+keystone_rabbitmq_password: "Iengaiv1sahxughu"
+keystone_rabbitmq_vhost_name: "keystone"
