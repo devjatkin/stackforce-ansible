@@ -1,1 +1,2 @@
 ansible-lint>=2.2
+python-openstackclient
