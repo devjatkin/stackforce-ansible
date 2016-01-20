@@ -5,3 +5,4 @@
       rabbitmq_ssl: false
       rabbitmq_os_package: true
       rabbitmq_plugins: [ 'rabbitmq_management' ]
+      rabbitmq_conf_tcp_listeners_address: "{{ hostvars[groups.rabbitmq.0]['ansible_ssh_host'] }}"

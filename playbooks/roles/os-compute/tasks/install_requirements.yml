@@ -1,0 +1,32 @@
+---
+- name: EPEL repository
+  yum: name="{{ item }}" state=present
+  with_items:
+    - "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+  tags:
+    - yum
+  delegate_to: localhost
+
+- name: LXC packages
+  yum: name="{{ item }}" state=present
+  with_items:
+    - lxc
+    - lxc-libs
+    - lxc-templates
+    - libvirt-daemon-lxc.x86_64
+    - libvirt-daemon-config-network.x86_64
+    - python2-lxc
+    - sysfsutils
+  tags:
+    - yum
+  delegate_to: localhost
+
+- name: Remove setfcap from centos.common.conf
+  copy:
+    src: "files/lxc_centos.common.conf"
+    dest: "/usr/share/lxc/config/centos.common.conf"
+  delegate_to: localhost
+
+- name: Restart libvirtd
+  service: name=libvirtd state=restarted
+  delegate_to: localhost

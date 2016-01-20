@@ -6,6 +6,8 @@ import json
 import lxc
 import re
 
+#static = ('localhost', 'nova-compute')
+
 if os.geteuid() != 0:
     os.execvp("sudo", ["sudo"] + sys.argv)
 
@@ -14,6 +16,7 @@ result['all'] = {}
 hostvars = {}
 
 containers = lxc.list_containers(active=True, defined=False)
+#containers += static
 for container_name in containers:
     srv = re.split('_', container_name)
     group = srv[0]

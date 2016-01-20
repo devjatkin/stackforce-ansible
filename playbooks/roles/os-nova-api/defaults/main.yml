@@ -14,6 +14,7 @@ nova_database_connection: "mysql://nova:{{ nova_db_password }}@{{ hostvars[group
 keystone_service_publicurl: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:5000/v3"
 keystone_service_internalurl: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:5000/v3"
 keystone_service_adminurl: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:35357/v3"
+keystone_service_adminurl_for_conf: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:35357"
 keystone_auth_admin_token: "Gee4soopohsusaki"
 keystone_service_adminuri_insecure: true
 keystone_rabbitmq_userid: "keystone"

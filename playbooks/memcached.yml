@@ -1,0 +1,6 @@
+---
+- hosts: memcached*
+  become: yes
+  become_method: sudo
+  roles:
+  - role: memcached
