@@ -25,6 +25,6 @@
     - "%"
   delegate_to: "{{ groups.mariadb.0 }}"
 
-- name: Sync Glance DB
+- name: Sync Nova DB
   command: "nova-manage db sync"
   become_user: nova

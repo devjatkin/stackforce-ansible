@@ -5,3 +5,4 @@
     - openstack-nova-compute
   tags:
     - yum
+  delegate_to: localhost

@@ -7,3 +7,4 @@
   service: name="{{ item }}" state=started
   with_items:
     - openstack-nova-compute
+  delegate_to: localhost
