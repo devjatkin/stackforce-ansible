@@ -1,5 +1,5 @@
 ---
-- name: Install Nova packages
+- name: Install Neutron packages
   yum: name="{{ item }}" state=present
   with_items:
     - openstack-neutron

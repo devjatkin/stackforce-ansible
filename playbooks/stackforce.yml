@@ -16,14 +16,12 @@
 - include: os-glance.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
+- include: os-neutronService.yml
+  vars:
+    mysql_root_password: 'Jovoh4aceloduush'
 - include: os-nova-api.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
 - include: os-compute.yml
   vars:
     compute_virt_type: 'lxc'
-- include: os-neutronService.yml
-  vars:
-    mysql_root_password: 'Jovoh4aceloduush'
-  tags:
-    - install_neutronService
