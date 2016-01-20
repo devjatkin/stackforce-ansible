@@ -5,3 +5,6 @@
 - name: Configure haproxy
   template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
   notify: restart haproxy
+
+- name: Stop firewalld
+  service: name=firewalld state=stopped
