@@ -20,3 +20,6 @@ keystone_service_adminuri_insecure: true
 keystone_rabbitmq_userid: "keystone"
 keystone_rabbitmq_password: "Iengaiv1sahxughu"
 keystone_rabbitmq_vhost_name: "keystone"
+neutron_service_user_name: "neutron"
+neutron_service_password: "Que5vohgahwebohh"
+neutron_metadata_proxy_shared_secret: 'iPhoe2aviLi4uze2uR3v'

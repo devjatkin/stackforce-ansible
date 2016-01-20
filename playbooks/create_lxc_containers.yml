@@ -16,6 +16,7 @@
       - "nova_api_container-47fb1655"
       - "memcached_container-dc167f64"
       - "compute_container-be4ff942"
+      - "neutronService_container-25aac556"
     lxc_container_user_name: "sdeviatkin"
     lxc_container_template_options: >
       --user {{ lxc_container_user_name }}
