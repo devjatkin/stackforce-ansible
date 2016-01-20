@@ -1,7 +1,6 @@
 # vim:ft=ansible:
 ---
 - hosts: all
-  gather_facts: none
   become: yes
   become_method: sudo
   vars:
@@ -22,6 +21,12 @@
   - lvg: vg=lxc pvs=/dev/sdb
     tags:
       - lvm
+  - file: path=/etc/stackforce state=directory
+    tags:
+      - parameters
+  - template: src=parameters.ini.j2 dest=/etc/stackforce/parameters.ini
+    tags:
+      - parameters
 
   - name: Custom ssh config
     become_user: "{{ lxc_container_user_name }}"

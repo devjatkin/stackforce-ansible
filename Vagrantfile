@@ -35,6 +35,9 @@ Vagrant.configure(2) do |config|
   # your network.
   # config.vm.network "public_network"
   config.vm.network "forwarded_port", guest: 8080, host: 8080
+  config.vm.network "forwarded_port", guest: 9000, host: 9000
+  config.vm.network "forwarded_port", guest: 5000, host: 5000
+  config.vm.network "forwarded_port", guest: 35357, host: 35357
 
 
   # Share an additional folder to the guest VM. The first argument is
@@ -75,7 +78,6 @@ Vagrant.configure(2) do |config|
     sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     sudo yum install -y http://repo.cloudlinux.com/stackforce-testing/x86_64/ansible-2.0.0.2-1.el7.noarch.rpm
     echo localhost > inventory
-    ansible-playbook -i inventory -c local /vagrant/playbooks/ping.yml
     ansible-playbook -i inventory -c local --extra-vars 'lxc_container_user_name=vagrant' /vagrant/playbooks/create_lxc_containers.yml
     sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
     sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/horizon_proxy.yml
