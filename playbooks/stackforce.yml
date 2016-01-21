@@ -16,6 +16,9 @@
 - include: os-glance.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
+    public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
+    glance_service_publicurl: "http://{{ public_address }}:9292"
+    glance_service_adminurl: "http://{{ public_address }}:9292"
 - include: os-neutronService.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
@@ -26,3 +29,5 @@
 - include: os-compute.yml
   vars:
     compute_virt_type: 'lxc'
+
+
