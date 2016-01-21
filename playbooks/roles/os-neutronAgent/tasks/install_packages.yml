@@ -1,0 +1,9 @@
+---
+- name: Install Neutron packages
+  yum: name="{{ item }}" state=present
+  with_items:
+    - openstack-neutron
+    - openstack-neutron-linuxbridge
+    - ebtables
+    - ipset
+  delegate_to: localhost
