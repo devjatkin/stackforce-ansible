@@ -1003,7 +1003,7 @@ lock_path = /var/lib/neutron/tmp
 # The RabbitMQ broker address where a single node is used. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_host
 # rabbit_host = localhost
-rabbit_host={{ groups['rabbitmq'][0] }}
+rabbit_host={{ hostvars[groups.rabbitmq.0]['ansible_ssh_host'] }}
 # The RabbitMQ broker port where a single node is used. (integer value)
 # Deprecated group/name - [DEFAULT]/rabbit_port
 # rabbit_port = 5672
