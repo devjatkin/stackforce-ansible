@@ -55,7 +55,7 @@ Vagrant.configure(2) do |config|
     end
     vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', file_to_disk]
     # Customize the amount of memory on the VM:
-    vb.memory = "2048"
+    vb.memory = "3072"
   end
   #
   # View the documentation for the provider you are using for more
