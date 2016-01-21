@@ -26,5 +26,8 @@
 - include: os-compute.yml
   vars:
     compute_virt_type: 'lxc'
-
-
+- include: os-cinder-api.yml
+  vars:
+    mysql_root_password: 'Jovoh4aceloduush'
+  tags:
+    - install_cinder

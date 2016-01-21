@@ -1,0 +1,99 @@
+---
+- name: Ensure cinder user
+  keystone:
+    command: "ensure_user"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    user_name: "{{ cinder_service_user_name }}"
+    tenant_name: "{{ cinder_service_tenant_name }}"
+    password: "{{ cinder_service_password }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  register: add_service
+  tags:
+    - cinder-api-setup
+    - cinder-service-add
+    - cinder-setup
+
+- name: Ensure cinder user to admin role
+  keystone:
+    command: "ensure_user_role"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    user_name: "{{ cinder_service_user_name }}"
+    tenant_name: "{{ cinder_service_tenant_name }}"
+    role_name: "admin"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - cinder-api-setup
+    - cinder-service-add
+    - cinder-setup
+
+- name: Ensure cinder service
+  keystone:
+    command: "ensure_service"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    service_name: "{{ cinder_service_name }}"
+    service_type: "{{ cinder_service_type }}"
+    description: "{{ cinder_service_description }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - cinder-api-setup
+    - cinder-service-add
+    - cinder-setup
+
+- name: Ensure cinderv2 service
+  keystone:
+    command: "ensure_service"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    service_name: "{{ cinder_service_v2_name }}"
+    service_type: "{{ cinder_service_v2_type }}"
+    description: "{{ cinder_service_description }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - cinder-api-setup
+    - cinder-service-add
+    - cinder-setup
+
+- name: Ensure cinder endpoint
+  keystone:
+    command: "ensure_endpoint"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    region_name: "{{ cinder_service_region }}"
+    service_name: "{{ cinder_service_name }}"
+    service_type: "{{ cinder_service_type }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+    endpoint_list:
+      - url: "{{ cinder_service_publicurl }}"
+        interface: "public"
+      - url: "{{ cinder_service_internalurl }}"
+        interface: "internal"
+      - url: "{{ cinder_service_adminurl }}"
+        interface: "admin"
+  tags:
+    - cinder-api-setup
+    - cinder-service-add
+    - cinder-setup
+
+- name: Ensure cinderv2 endpoint
+  keystone:
+    command: "ensure_endpoint"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    region_name: "{{ cinder_service_region }}"
+    service_name: "{{ cinder_service_v2_name }}"
+    service_type: "{{ cinder_service_v2_type }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+    endpoint_list:
+      - url: "{{ cinder_service_v2_publicurl }}"
+        interface: "public"
+      - url: "{{ cinder_service_v2_internalurl }}"
+        interface: "internal"
+      - url: "{{ cinder_service_v2_adminurl }}"
+        interface: "admin"
+  tags:
+    - cinder-api-setup
+    - cinder-service-add
+    - cinder-setup
