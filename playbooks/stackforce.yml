@@ -10,6 +10,7 @@
     mysql_root_password: 'Jovoh4aceloduush'
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
     keystone_service_publicurl: "http://{{ public_address }}:5000/v3"
+    keystone_service_adminurl: "http://{{ public_address }}:35357/v3"
 - include: rsyslog.yml
 - include: os-horizon.yml
 - include: os-glance.yml
