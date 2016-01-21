@@ -97,3 +97,14 @@ listen keystone_api 0.0.0.0:5000
         option httpchk
         maxconn 10000
         server node1 {{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:5000 check inter 2000 rise 2 fall 5
+
+#---------------------------------------------------------------------
+# glance
+#---------------------------------------------------------------------
+listen glance_api 0.0.0.0:9292
+        balance source
+        option tcpka
+        option httpchk
+        maxconn 10000
+        server node1 {{ hostvars[groups.glance.0]['ansible_ssh_host'] }}:9292 check inter 2000 rise 2 fall 5
+
