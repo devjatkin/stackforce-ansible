@@ -12,12 +12,20 @@
     - authorized_key:
         user: "{{ username }}"
         key:  "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-    - copy:
+    - name: private ssh key
+      copy:
         src: "~/.ssh/id_rsa"
         dest: "/home/{{ username }}/.ssh/id_rsa"
         owner: "{{ username }}"
         group: "{{ username }}"
         mode: "600"
+    - name: public ssh key
+      copy:
+        src: "~/.ssh/id_rsa.pub"
+        dest: "/home/{{ username }}/.ssh/id_rsa.pub"
+        owner: "{{ username }}"
+        group: "{{ username }}"
+        mode: "644"
     - yum:
         name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
     - yum:
