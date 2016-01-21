@@ -19,6 +19,7 @@
 - include: os-neutronService.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
+- include: os-neutronAgent.yml
 - include: os-nova-api.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
