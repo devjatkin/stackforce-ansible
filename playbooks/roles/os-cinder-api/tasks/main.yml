@@ -1,0 +1,11 @@
+---
+- include: install_packages.yml
+- include: configure_services.yml
+- include: services.yml
+- include: db_sync.yml
+
+- name: Start Cinder services
+  service: name="{{ item }}" state=started
+  with_items:
+    - openstack-cinder-api
+    - openstack-cinder-scheduler

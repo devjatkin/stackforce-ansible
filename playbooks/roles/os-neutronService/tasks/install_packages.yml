@@ -1,0 +1,10 @@
+---
+- name: Install Neutron packages
+  yum: name="{{ item }}" state=present
+  with_items:
+    - openstack-neutron
+    - openstack-neutron-ml2
+    - openstack-neutron-linuxbridge
+    - python-neutronclient
+    - ebtables
+    - ipset

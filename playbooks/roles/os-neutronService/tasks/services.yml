@@ -1,0 +1,63 @@
+---
+- name: Ensure neutron user
+  keystone:
+    command: "ensure_user"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    user_name: "{{ neutron_service_user_name }}"
+    tenant_name: "{{ neutron_service_tenant_name }}"
+    password: "{{ neutron_service_password }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - neutron-api-setup
+    - neutron-service-add
+    - neutron-setup
+
+- name: Ensure neutron user to admin role
+  keystone:
+    command: "ensure_user_role"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    user_name: "{{ neutron_service_user_name }}"
+    tenant_name: "{{ neutron_service_tenant_name }}"
+    role_name: "admin"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - neutron-api-setup
+    - neutron-service-add
+    - neutron-setup
+
+- name: Ensure neutron service
+  keystone:
+    command: "ensure_service"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    service_name: "{{ neutron_service_name }}"
+    service_type: "{{ neutron_service_type }}"
+    description: "{{ neutron_service_description }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+  tags:
+    - neutron-api-setup
+    - neutron-service-add
+    - neutron-setup
+
+- name: Ensure neutron endpoint
+  keystone:
+    command: "ensure_endpoint"
+    token: "{{ keystone_auth_admin_token }}"
+    endpoint: "{{ keystone_service_adminurl }}"
+    region_name: "{{ neutron_service_region }}"
+    service_name: "{{ neutron_service_name }}"
+    service_type: "{{ neutron_service_type }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+    endpoint_list:
+      - url: "{{ neutron_service_publicurl }}"
+        interface: "public"
+      - url: "{{ neutron_service_internalurl }}"
+        interface: "internal"
+      - url: "{{ neutron_service_adminurl }}"
+        interface: "admin"
+  tags:
+    - neutron-api-setup
+    - neutron-service-add
+    - neutron-setup

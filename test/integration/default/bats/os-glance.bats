@@ -17,8 +17,8 @@
     glance image-list | grep cirros
 }
 
-@test "Delete test image" {
-    source /root/admin-openrc.sh
-    glance image-list | grep cirros | echo `awk -F "| " '{print $2}'` | xargs glance image-delete
-    rm -rf cirros-0.3.4-x86_64-disk.img
-}
+#@test "Delete test image" {
+#    source /root/admin-openrc.sh
+#    glance image-list | grep cirros | echo `awk -F "| " '{print $2}'` | xargs glance image-delete
+#    rm -rf cirros-0.3.4-x86_64-disk.img
+#}

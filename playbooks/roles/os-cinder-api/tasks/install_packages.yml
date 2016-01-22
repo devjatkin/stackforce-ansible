@@ -1,0 +1,7 @@
+---
+- name: Install Nova packages
+  yum: name="{{ item }}" state=present
+  with_items:
+    - openstack-cinder
+    - python-cinderclient
+    - python-oslo-policy

@@ -1,0 +1,12 @@
+---
+- name: Setup Neutron config
+  template:
+    src: neutron.conf.j2
+    dest: /etc/neutron/neutron.conf
+  delegate_to: localhost
+- name: Setup linuxbridge_agent.ini config
+  template:
+    src: linuxbridge_agent.ini.j2
+    dest: /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+  delegate_to: localhost
+

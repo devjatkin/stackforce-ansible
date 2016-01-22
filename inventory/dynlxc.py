@@ -6,6 +6,7 @@ import json
 import lxc
 import re
 
+
 if os.geteuid() != 0:
     os.execvp("sudo", ["sudo"] + sys.argv)
 
