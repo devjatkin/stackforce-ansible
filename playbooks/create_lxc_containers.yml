@@ -75,11 +75,6 @@
       clone_snapshot: true
       container_config:
         - lxc.kmsg=0
-        - lxc.aa_profile=lxc-container-default-with-nesting
-        - lxc.cgroup.devices.allow = c 10:232 rwm
-        - lxc.cgroup.devices.allow = c 10:200 rwm
-
-
     tags:
       - lxc
       - lxc-base-container
