@@ -23,7 +23,7 @@
   roles:
     - role: common
   tasks:
-  - lvg: vg=lxc pvs=/dev/sdb state=present
+  - lvg: vg=lxc pvs=/dev/sdb
     tags:
       - lvm
   - file: path=/etc/stackforce state=directory
