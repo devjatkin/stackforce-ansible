@@ -147,3 +147,13 @@ listen horizon_api 0.0.0.0:8080
         option httpchk
         maxconn 10000
         server node1 {{ hostvars[groups.horizon.0]['ansible_ssh_host'] }}:80 check inter 2000 rise 2 fall 5
+
+#---------------------------------------------------------------------
+# rabbitmq
+#---------------------------------------------------------------------
+listen rabbitmq 0.0.0.0:5672
+        balance source
+        option tcpka
+        option httpchk
+        maxconn 10000
+        server node1 {{ hostvars[groups.rabbitmq.0]['ansible_ssh_host'] }}:5672 check inter 2000 rise 2 fall 5
