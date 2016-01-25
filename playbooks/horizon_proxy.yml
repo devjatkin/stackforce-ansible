@@ -3,5 +3,4 @@
   become: yes
   become_method: sudo
   roles:
-      - role: nginx-proxy
       - role: haproxy
