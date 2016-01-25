@@ -38,6 +38,10 @@ Vagrant.configure(2) do |config|
   config.vm.network "forwarded_port", guest: 9000, host: 9000
   config.vm.network "forwarded_port", guest: 5000, host: 5000
   config.vm.network "forwarded_port", guest: 35357, host: 35357
+  config.vm.network "forwarded_port", guest: 9292, host: 9292
+  config.vm.network "forwarded_port", guest: 8774, host: 8774
+  config.vm.network "forwarded_port", guest: 9696, host: 9696
+  config.vm.network "forwarded_port", guest: 8776, host: 8776
 
 
   # Share an additional folder to the guest VM. The first argument is

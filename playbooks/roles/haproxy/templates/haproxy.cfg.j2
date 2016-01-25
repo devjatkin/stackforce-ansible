@@ -108,3 +108,42 @@ listen glance_api 0.0.0.0:9292
         maxconn 10000
         server node1 {{ hostvars[groups.glance.0]['ansible_ssh_host'] }}:9292 check inter 2000 rise 2 fall 5
 
+#---------------------------------------------------------------------
+# nova
+#---------------------------------------------------------------------
+listen nova_api 0.0.0.0:8774
+        balance source
+        option tcpka
+        option httpchk
+        maxconn 10000
+        server node1 {{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:8774 check inter 2000 rise 2 fall 5
+
+#---------------------------------------------------------------------
+# neutron
+#---------------------------------------------------------------------
+listen neutron_api 0.0.0.0:9696
+        balance source
+        option tcpka
+        option httpchk
+        maxconn 10000
+        server node1 {{ hostvars[groups.neutronService.0]['ansible_ssh_host'] }}:9696 check inter 2000 rise 2 fall 5
+
+#---------------------------------------------------------------------
+# cinder
+#---------------------------------------------------------------------
+listen cinder_api 0.0.0.0:8776
+        balance source
+        option tcpka
+        option httpchk
+        maxconn 10000
+        server node1 {{ hostvars[groups.cinder.0]['ansible_ssh_host'] }}:8776 check inter 2000 rise 2 fall 5
+
+#---------------------------------------------------------------------
+# horizon
+#---------------------------------------------------------------------
+listen horizon_api 0.0.0.0:8080
+        balance source
+        option tcpka
+        option httpchk
+        maxconn 10000
+        server node1 {{ hostvars[groups.horizon.0]['ansible_ssh_host'] }}:80 check inter 2000 rise 2 fall 5
