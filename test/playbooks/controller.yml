@@ -12,6 +12,9 @@
     - authorized_key:
         user: "{{ username }}"
         key:  "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    - name: Custom ssh config
+      become_user: "{{ username }}"
+      copy: src="files/dot_ssh/config" dest="~/.ssh/config" mode=600 owner="{{ username }}"
     - name: private ssh key
       copy:
         src: "~/.ssh/id_rsa"
