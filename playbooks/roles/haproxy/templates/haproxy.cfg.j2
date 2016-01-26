@@ -162,5 +162,6 @@ listen rabbitmq 0.0.0.0:5672
 #---------------------------------------------------------------------
 listen mysql-cluster 0.0.0.0:3306
     mode tcp
-    option mysql-check
-    server node1 {{ hostvars[groups.mariadb.0]['ansible_ssh_host']}}:3306 check
+    option tcpka
+    option httpchk
+    server node1 {{ hostvars[groups.mariadb.0]['ansible_ssh_host']}}:3306 port 9200 inter 12000 rise 3 fall 3 check

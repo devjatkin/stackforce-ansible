@@ -1,0 +1,42 @@
+---
+- name: Create DB user
+  mysql_user:
+    login_user: "root"
+    login_host: "localhost"
+    name: "{{ clustercheck_db_user }}"
+    password: "{{ clustercheck_db_password }}"
+    host: "{{ item }}"
+    state: "present"
+    priv: "*.*:ALL"
+  with_items:
+    - "localhost"
+  delegate_to: "{{ groups.mariadb.0 }}"
+
+#- name: Copy clustercheck script
+#  template: src=sbin/clustercheck dest=/usr/local/sbin/clustercheck mode=755
+#  tags:
+#    - clustercheck
+
+- name: Copy clustercheck script
+  template: src=sbin/mysqlchk dest=/usr/local/sbin/mysql-chk mode=755
+  tags:
+    - clustercheck
+
+- name: Install xinetd
+  yum: name=xinetd state=present
+  tags:
+    - clustercheck
+
+- name: Config
+  template: src=etc/xinetd.d/clustercheck dest=/etc/xinetd.d/mysql-chk
+  tags:
+    - clustercheck
+
+- lineinfile: dest=/etc/services line="mysql-chk     9200/tcp"
+  tags:
+    - clustercheck
+
+- name: Start xinetd
+  service: name=xinetd state=started
+  tags:
+    - clustercheck

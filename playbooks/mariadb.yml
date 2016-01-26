@@ -14,3 +14,4 @@
       mysql_log_error: /var/log/mariadb/mariadb.log
       mysql_syslog_tag: mariadb
       mysql_pid_file: /var/run/mariadb/mariadb.pid
+    - role: clustercheck
