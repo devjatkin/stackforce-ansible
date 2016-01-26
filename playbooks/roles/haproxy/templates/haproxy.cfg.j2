@@ -157,3 +157,10 @@ listen rabbitmq 0.0.0.0:5672
         option tcpka
         maxconn 10000
         server node1 {{ hostvars[groups.rabbitmq.0]['ansible_ssh_host'] }}:5672 check inter 2000 rise 2 fall 5
+#---------------------------------------------------------------------
+# mysql
+#---------------------------------------------------------------------
+listen mysql-cluster 0.0.0.0:3306
+    mode tcp
+    option mysql-check
+    server node1 {{ hostvars[groups.mariadb.0]['ansible_ssh_host']}}:3306 check
