@@ -8,6 +8,8 @@
   template:
     src: keystone.conf.j2
     dest: /etc/keystone/keystone.conf
+  tags:
+    - keystone-config
 
 - include: db_sync.yml
 

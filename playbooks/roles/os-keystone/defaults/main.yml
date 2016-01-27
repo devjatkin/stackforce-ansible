@@ -1,5 +1,7 @@
 ---
 keystone_db_password: "Que5vohgahwebohh"
+keystone_rabbit_host: "{{ os_rabbit_host}}"
+keystone_rabbit_port: "{{ os_rabbit_port}}"
 keystone_rabbitmq_vhost_name: "keystone"
 keystone_rabbitmq_userid: "keystone"
 keystone_rabbitmq_password: "Iengaiv1sahxughu"
