@@ -1547,13 +1547,13 @@ servers = {{hostvars[groups.memcached.0]['ansible_ssh_host']}}:11211
 
 # The RabbitMQ broker address where a single node is used. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_host
-rabbit_host = {{ groups['rabbitmq'][0] }}
+rabbit_host = {{ keystone_rabbit_host }}
 
 # The RabbitMQ broker port where a single node is used. (port value)
 # Minimum value: 1
 # Maximum value: 65535
 # Deprecated group/name - [DEFAULT]/rabbit_port
-#rabbit_port = 5672
+rabbit_port = {{ keystone_rabbit_port }}
 
 # RabbitMQ HA cluster host:port pairs. (list value)
 # Deprecated group/name - [DEFAULT]/rabbit_hosts

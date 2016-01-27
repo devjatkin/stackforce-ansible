@@ -5,14 +5,21 @@ import sys
 import json
 import lxc
 import re
-
+import ConfigParser
 
 if os.geteuid() != 0:
     os.execvp("sudo", ["sudo"] + sys.argv)
 
+config = ConfigParser.ConfigParser()
+config.read('/etc/stackforce/parameters.ini')
+
 result = {}
 result['all'] = {}
 hostvars = {}
+os_vars = {
+    'os_rabbit_host': config.get('public', 'address'),
+    'os_rabbit_port': config.get('os', 'rabbit_port')}
+
 
 containers = lxc.list_containers(active=True, defined=False)
 for container_name in containers:
@@ -21,6 +28,7 @@ for container_name in containers:
     if not group in result:
         result[group] = {}
         result[group]['hosts'] = []
+        result[group]['vars'] = os_vars
     if isinstance(result[group], dict):
         result[group]['hosts'].append(container_name)
     # get ip from container object
