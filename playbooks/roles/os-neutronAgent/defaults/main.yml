@@ -18,6 +18,8 @@ keystone_service_adminurl: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_h
 keystone_service_adminurl_for_conf: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:35357"
 keystone_auth_admin_token: "Gee4soopohsusaki"
 keystone_service_adminuri_insecure: true
-keystone_rabbitmq_userid: "keystone"
-keystone_rabbitmq_password: "Iengaiv1sahxughu"
-keystone_rabbitmq_vhost_name: "keystone"
+neutron_rabbit_host: "{{ os_rabbit_host }}"
+neutron_rabbit_port: "{{ os_rabbit_port }}"
+neutron_rabbitmq_userid: "neutron"
+neutron_rabbitmq_password: "aaqu2seel5ahNaBo"
+neutron_rabbitmq_vhost_name: "neutron"
