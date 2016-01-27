@@ -17,9 +17,11 @@ keystone_service_adminurl: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_h
 keystone_service_adminurl_for_conf: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:35357"
 keystone_auth_admin_token: "Gee4soopohsusaki"
 keystone_service_adminuri_insecure: true
-keystone_rabbitmq_userid: "keystone"
-keystone_rabbitmq_password: "Iengaiv1sahxughu"
-keystone_rabbitmq_vhost_name: "keystone"
 neutron_service_user_name: "neutron"
 neutron_service_password: "Que5vohgahwebohh"
 neutron_metadata_proxy_shared_secret: 'iPhoe2aviLi4uze2uR3v'
+nova_rabbit_host: "{{ os_rabbit_host }}"
+nova_rabbit_port: "{{ os_rabbit_port }}"
+nova_rabbitmq_userid: "nova"
+nova_rabbitmq_password: "zaoqu7pie7zuuGhu"
+nova_rabbitmq_vhost_name: "nova"
