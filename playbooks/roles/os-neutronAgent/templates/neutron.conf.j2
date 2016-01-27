@@ -1002,11 +1002,10 @@ lock_path = /var/lib/neutron/tmp
 
 # The RabbitMQ broker address where a single node is used. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_host
-# rabbit_host = localhost
-rabbit_host={{ hostvars[groups.rabbitmq.0]['ansible_ssh_host'] }}
+rabbit_host={{ neutron_rabbit_host }}
 # The RabbitMQ broker port where a single node is used. (integer value)
 # Deprecated group/name - [DEFAULT]/rabbit_port
-# rabbit_port = 5672
+rabbit_port = {{ neutron_rabbit_port }}
 
 # RabbitMQ HA cluster host:port pairs. (list value)
 # Deprecated group/name - [DEFAULT]/rabbit_hosts
@@ -1018,21 +1017,20 @@ rabbit_use_ssl = false
 
 # The RabbitMQ userid. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_userid
-# rabbit_userid = guest
-rabbit_userid = {{ keystone_rabbitmq_userid }}
-rabbit_virtual_host= {{ keystone_rabbitmq_vhost_name }}
+rabbit_userid = {{ neutron_rabbitmq_userid }}
+
 # The RabbitMQ password. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_password
-# rabbit_password = guest
-rabbit_password={{ keystone_rabbitmq_password }}
+rabbit_password={{ neutron_rabbitmq_password }}
+
 # The RabbitMQ login method. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_login_method
 # rabbit_login_method = AMQPLAIN
 
 # The RabbitMQ virtual host. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_virtual_host
-# rabbit_virtual_host = /
-rabbit_virtual_host= {{ keystone_rabbitmq_vhost_name }}
+rabbit_virtual_host= {{ neutron_rabbitmq_vhost_name }}
+
 # How frequently to retry connecting with RabbitMQ. (integer value)
 # rabbit_retry_interval = 1
 
