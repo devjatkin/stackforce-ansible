@@ -1,6 +1,7 @@
 ---
 - include: install_packages.yml
 - include: services.yml
+- include: rabbitmq.yml
 - include: configure_services.yml
 - include: db_sync.yml
 
