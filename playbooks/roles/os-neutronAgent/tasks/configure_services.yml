@@ -3,10 +3,16 @@
   template:
     src: neutron.conf.j2
     dest: /etc/neutron/neutron.conf
-  delegate_to: localhost
+  notify: restart agents
+
 - name: Setup linuxbridge_agent.ini config
   template:
     src: linuxbridge_agent.ini.j2
     dest: /etc/neutron/plugins/ml2/linuxbridge_agent.ini
-  delegate_to: localhost
+  notify: restart agents
 
+- name: Setup ml2_conf.ini.j2 config
+  template:
+    src: ml2_conf.ini.j2
+    dest: /etc/neutron/plugins/ml2/ml2_conf.ini
+  notify: restart agents

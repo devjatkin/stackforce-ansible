@@ -6,4 +6,3 @@
   service: name="{{ item }}" state=started
   with_items:
     - neutron-linuxbridge-agent
-  delegate_to: localhost
