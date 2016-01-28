@@ -27,3 +27,13 @@ neutron_nova_url: "http://{{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:8774
 neutron_nova_admin_username : "nova"
 neutron_nova_admin_tenant_name: "service"
 neutron_nova_admin_password: "Que5vohgahwebohh"
+
+neutron_ml2_type_drivers: "flat,vlan"
+neutron_ml2_tenant_network_types: ""
+neutron_ml2_mechanism_drivers: "linuxbridge"
+neutron_ml2_extension_drivers: "port_security"
+neutron_ml2_flat_networks: "public"
+neutron_ml2_enable_ipset: "True"
+neutron_physical_interface_mappings: "public:eth0"
+neutron_enable_vxlan: "False"
+neutron_prevent_arp_spoofing: "True"

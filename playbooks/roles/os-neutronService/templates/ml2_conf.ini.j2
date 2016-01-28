@@ -2,38 +2,22 @@
 # (ListOpt) List of network type driver entrypoints to be loaded from
 # the neutron.ml2.type_drivers namespace.
 #
-# type_drivers = local,flat,vlan,gre,vxlan,geneve
-# Example: type_drivers = flat,vlan,gre,vxlan,geneve
-
-type_drivers = flat,vlan,vxlan
-
+type_drivers = {{ neutron_ml2_type_drivers }}
 
 # (ListOpt) Ordered list of network_types to allocate as tenant
 # networks. The default value 'local' is useful for single-box testing
 # but provides no connectivity between hosts.
 #
-# tenant_network_types = local
-# Example: tenant_network_types = vlan,gre,vxlan,geneve
+tenant_network_types = {{ neutron_ml2_tenant_network_types }}
 
-tenant_network_types = vxlan
 
 # (ListOpt) Ordered list of networking mechanism driver entrypoints
 # to be loaded from the neutron.ml2.mechanism_drivers namespace.
-# mechanism_drivers =
-# Example: mechanism_drivers = openvswitch,mlnx
-# Example: mechanism_drivers = arista
-# Example: mechanism_drivers = openvswitch,cisco_nexus,logger
-# Example: mechanism_drivers = openvswitch,brocade
-# Example: mechanism_drivers = linuxbridge,brocade
-
-mechanism_drivers = linuxbridge,l2population
+mechanism_drivers = {{ neutron_ml2_mechanism_drivers }}
 
 # (ListOpt) Ordered list of extension driver entrypoints
 # to be loaded from the neutron.ml2.extension_drivers namespace.
-# extension_drivers =
-# Example: extension_drivers = anewextensiondriver
-
-extension_drivers = port_security
+extension_drivers = {{ neutron_ml2_extension_drivers }}
 
 # =========== items for MTU selection and advertisement =============
 # (IntOpt) Path MTU.  The maximum permissible size of an unfragmented
@@ -72,11 +56,7 @@ extension_drivers = port_security
 # can be created. Use * to allow flat networks with arbitrary
 # physical_network names.
 #
-# flat_networks =
-# Example:flat_networks = physnet1,physnet2
-# Example:flat_networks = *
-
-flat_networks = public
+flat_networks = {{ neutron_ml2_flat_networks }}
 
 [ml2_type_vlan]
 # (ListOpt) List of <physical_network>[:<vlan_min>:<vlan_max>] tuples
@@ -96,8 +76,6 @@ flat_networks = public
 # ranges of VXLAN VNI IDs that are available for tenant network allocation.
 #
 # vni_ranges =
-
-vni_ranges = 1:1000
 
 # (StrOpt) Multicast group for the VXLAN interface. When configured, will
 # enable sending all broadcast traffic to this multicast group. When left
@@ -129,5 +107,4 @@ vni_ranges = 1:1000
 
 # Use ipset to speed-up the iptables security groups. Enabling ipset support
 # requires that ipset is installed on L2 agent node.
-# enable_ipset = True
-enable_ipset = True
+enable_ipset = {{ neutron_ml2_enable_ipset }}
