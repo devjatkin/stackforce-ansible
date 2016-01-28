@@ -20,3 +20,5 @@ neutron_service_password: "Que5vohgahwebohh"
 neutron_metadata_proxy_shared_secret: 'iPhoe2aviLi4uze2uR3v'
 neutron_service_region: "RegionOne"
 glance_service_publicurl: "http://{{ hostvars[groups.glance.0]['ansible_ssh_host'] }}:9292"
+nova_novncproxy_base_url: "http://{{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:6080/vnc_auto.html"
+nova_glance_host: "{{ hostvars[groups.glance.0]['ansible_ssh_host'] }}"
