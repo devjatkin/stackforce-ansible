@@ -1,9 +1,9 @@
 ---
+os_debug: True
+os_verbose: True
 neutron_db_password: 'Zohchi0ik2Oowo5'
 neutron_service_user_name: "neutron"
 neutron_service_password: "Que5vohgahwebohh"
-neutron_service_tenant_name: "service"
-neutron_service_description: "OpenStack Networking"
 neutron_service_region: "RegionOne"
 neutron_service_name: "neutron"
 neutron_service_type: "network"
@@ -12,8 +12,6 @@ neutron_service_internalurl: "http://{{ hostvars[groups.neutronService.0]['ansib
 neutron_service_adminurl: "http://{{ hostvars[groups.neutronService.0]['ansible_ssh_host'] }}:9696"
 neutron_database_connection: "mysql://neutron:{{ neutron_db_password }}@{{ hostvars[groups.mariadb.0]['ansible_eth0']['ipv4']['address'] }}/neutron"
 neutron_metadata_proxy_shared_secret: 'iPhoe2aviLi4uze2uR3v'
-keystone_service_publicurl: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:5000/v3"
-keystone_service_internalurl: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:5000/v3"
 keystone_service_adminurl: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:35357/v3"
 keystone_service_adminurl_for_conf: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:35357"
 keystone_auth_admin_token: "Gee4soopohsusaki"
@@ -23,3 +21,14 @@ neutron_rabbit_port: "{{ os_rabbit_port }}"
 neutron_rabbitmq_userid: "neutron"
 neutron_rabbitmq_password: "aaqu2seel5ahNaBo"
 neutron_rabbitmq_vhost_name: "neutron"
+neutron_nova_url: "http://{{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:8774/v2"
+
+neutron_ml2_type_drivers: "flat,vlan"
+neutron_ml2_tenant_network_types: ""
+neutron_ml2_mechanism_drivers: "linuxbridge"
+neutron_ml2_extension_drivers: "port_security"
+neutron_ml2_flat_networks: "public"
+neutron_ml2_enable_ipset: "True"
+neutron_physical_interface_mappings: "public:eth0"
+neutron_enable_vxlan: "False"
+neutron_prevent_arp_spoofing: "True"

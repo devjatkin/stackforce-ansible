@@ -1,7 +1,6 @@
 [DEFAULT]
 # Print more verbose output (set logging level to INFO instead of default WARNING level).
-# verbose = True
-verbose = True
+verbose = {{ os_verbose }}
 
 # =========Start Global Config Option for Distributed L3 Router===============
 # Setting the "router_distributed" flag to "True" will default to the creation
@@ -14,7 +13,7 @@ verbose = True
 # ===========End Global Config Option for Distributed L3 Router===============
 
 # Print debugging output (set logging level to DEBUG instead of default WARNING level).
-# debug = False
+debug = {{ os_debug }}
 
 # Where to store Neutron state files.  This directory must be writable by the
 # user executing the agent.
@@ -374,8 +373,7 @@ notify_nova_on_port_status_changes = True
 notify_nova_on_port_data_changes = True
 
 # URL for connection to nova (Only supports one nova region currently).
-# nova_url = http://127.0.0.1:8774/v2
-nova_url = http://{{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:8774/v2
+nova_url = {{ neutron_nova_url }}
 
 # Name of nova region to use. Useful if keystone manages more than one region
 # nova_region_name =
@@ -727,7 +725,7 @@ rpc_backend=rabbit
 
 [keystone_authtoken]
 auth_uri = {{ keystone_service_adminurl }}
-identity_uri = {{ keystone_service_adminurl_for_conf }}
+identity_uri = {{ keystone_service_adminurl }}
 admin_tenant_name = service
 admin_user = {{ neutron_service_user_name }}
 admin_password = {{ neutron_service_password }}
@@ -1003,6 +1001,7 @@ lock_path = /var/lib/neutron/tmp
 # The RabbitMQ broker address where a single node is used. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_host
 rabbit_host={{ neutron_rabbit_host }}
+
 # The RabbitMQ broker port where a single node is used. (integer value)
 # Deprecated group/name - [DEFAULT]/rabbit_port
 rabbit_port = {{ neutron_rabbit_port }}

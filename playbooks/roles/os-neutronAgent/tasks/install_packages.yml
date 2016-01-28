@@ -4,6 +4,6 @@
   with_items:
     - openstack-neutron
     - openstack-neutron-linuxbridge
+    - openstack-neutron-ml2
     - ebtables
     - ipset
-  delegate_to: localhost

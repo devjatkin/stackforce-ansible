@@ -7,6 +7,10 @@
     tenant_name: "{{ keystone_service_tenant_name }}"
     description: "{{ keystone_service_description }}"
     insecure: "{{ keystone_service_adminuri_insecure }}"
+  register: add_service_tenant
+  until: add_service_tenant|success
+  retries: 3
+  delay: 10
   tags:
     - keystone-setup
 
