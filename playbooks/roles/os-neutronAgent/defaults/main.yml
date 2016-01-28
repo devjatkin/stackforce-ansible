@@ -21,6 +21,7 @@ neutron_rabbit_port: "{{ os_rabbit_port }}"
 neutron_rabbitmq_userid: "neutron"
 neutron_rabbitmq_password: "aaqu2seel5ahNaBo"
 neutron_rabbitmq_vhost_name: "neutron"
+neutron_nova_url: "http://{{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:8774/v2"
 
 neutron_ml2_type_drivers: "flat,vlan"
 neutron_ml2_tenant_network_types: ""
