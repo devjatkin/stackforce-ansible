@@ -374,14 +374,13 @@ notify_nova_on_port_status_changes = True
 notify_nova_on_port_data_changes = True
 
 # URL for connection to nova (Only supports one nova region currently).
-# nova_url = http://127.0.0.1:8774/v2
-nova_url = http://{{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:8774/v2
+nova_url = {{ neutron_nova_url }}
 
 # Name of nova region to use. Useful if keystone manages more than one region
-# nova_region_name =
+nova_region_name = RegionOne
 
 # Username for connection to nova in admin context
-# nova_admin_username =
+nova_admin_username = {{ neutron_nova_admin_username }}
 
 # The uuid of the admin nova tenant
 # nova_admin_tenant_id =
@@ -389,13 +388,13 @@ nova_url = http://{{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:8774/v2
 # The name of the admin nova tenant. If the uuid of the admin nova tenant
 # is set, this is optional.  Useful for cases where the uuid of the admin
 # nova tenant is not available when configuration is being done.
-# nova_admin_tenant_name =
+nova_admin_tenant_name = {{ neutron_nova_admin_tenant_name }}
 
 # Password for connection to nova in admin context.
-# nova_admin_password =
+nova_admin_password = {{ neutron_nova_admin_password }}
 
 # Authorization URL for connection to nova in admin context.
-# nova_admauth_url =
+nova_admauth_url = {{ keystone_service_adminurl }}
 
 # CA file for novaclient to verify server certificates
 # nova_ca_certificates_file =
