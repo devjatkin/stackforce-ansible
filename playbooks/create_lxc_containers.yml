@@ -5,6 +5,7 @@
   become_method: sudo
   vars:
     parameters_file: "/etc/stackforce/parameters.ini"
+    inventory_filepath: "/vagrant/test/inventory/vagrant"
     lxc_base_container: "stackforce_base_container"
     lxc_containers:
       - "rabbitmq_container-0cac5cd9"
