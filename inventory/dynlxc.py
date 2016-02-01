@@ -6,12 +6,20 @@ import json
 import lxc
 import re
 import ConfigParser
+from ansible.parsing.dataloader import DataLoader
+from ansible.inventory.group import Group
+from ansible.inventory.ini import InventoryParser
 
 if os.geteuid() != 0:
     os.execvp("sudo", ["sudo"] + sys.argv)
 
 config = ConfigParser.ConfigParser()
+# setting defaults
+config.add_section("os")
+config.set("os", "inventory_file", None)
+
 config.read('/etc/stackforce/parameters.ini')
+
 
 result = {}
 result['all'] = {}
@@ -20,6 +28,18 @@ os_vars = {
     'os_rabbit_host': config.get('public', 'address'),
     'os_rabbit_port': config.get('os', 'rabbit_port')}
 
+# TODO: Handle hosts with same name
+inventory_file = config.get("os", "inventory_file")
+if inventory_file:
+    dl = DataLoader()
+    inv = InventoryParser(dl, {"ungrouped":Group("ungrouped"), "all":Group("all")}, inventory_file)
+    for grp in inv.groups:
+        if grp not in result:
+            result[grp]={'hosts':[], 'vars':os_vars}
+        for host in inv.groups[grp].hosts:
+            result[grp]['hosts'].append(host.name)
+            hostvars[host.name]=host.vars
+    
 
 containers = lxc.list_containers(active=True, defined=False)
 for container_name in containers:
