@@ -1,7 +1,6 @@
 [DEFAULT]
 # Print more verbose output (set logging level to INFO instead of default WARNING level).
-# verbose = True
-verbose = True
+verbose = {{ os_verbose }}
 
 # =========Start Global Config Option for Distributed L3 Router===============
 # Setting the "router_distributed" flag to "True" will default to the creation
@@ -14,7 +13,7 @@ verbose = True
 # ===========End Global Config Option for Distributed L3 Router===============
 
 # Print debugging output (set logging level to DEBUG instead of default WARNING level).
-# debug = False
+debug = {{ os_debug }}
 
 # Where to store Neutron state files.  This directory must be writable by the
 # user executing the agent.
@@ -61,8 +60,8 @@ verbose = True
 # core_plugin =
 # Example: core_plugin = ml2
 #
-core_plugin = ml2
-service_plugins = router
+core_plugin = {{ neutron_core_plugin }}
+service_plugins = {{ neutron_service_plugins }}
 allow_overlapping_ips = True
 
 # (StrOpt) Neutron IPAM (IP address management) driver to be loaded from the
@@ -726,7 +725,7 @@ rpc_backend=rabbit
 
 [keystone_authtoken]
 auth_uri = {{ keystone_service_adminurl }}
-identity_uri = {{ keystone_service_adminurl_for_conf }}
+identity_uri = {{ neutron_identity_uri }}
 admin_tenant_name = service
 admin_user = {{ neutron_service_user_name }}
 admin_password = {{ neutron_service_password }}
