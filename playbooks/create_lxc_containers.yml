@@ -129,6 +129,9 @@
     stat: path="/home/{{ lxc_container_user_name }}/.ssh/id_rsa.pub"
     register: pub_key
 
+  - name: Add public rsa key to authorized_keys
+    authorized_key: user={{ lxc_container_user_name }} key="{{ lookup('file', '/home/{{ lxc_container_user_name }}/.ssh/id_rsa.pub') }}"
+
   - name: Force container user authorized_keys
     lxc_container:
       name: "{{ item }}"

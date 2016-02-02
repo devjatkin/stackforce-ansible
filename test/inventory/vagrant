@@ -1,4 +1,4 @@
 [compute]
-localhost
+localhost ansible_connection=local
 [controller]
-localhost
+localhost ansible_connection=local
