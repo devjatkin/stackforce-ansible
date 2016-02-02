@@ -28,7 +28,7 @@ Vagrant.configure(2) do |config|
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
+  #config.vm.network "private_network", ip: "192.168.33.10"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -36,12 +36,6 @@ Vagrant.configure(2) do |config|
   # config.vm.network "public_network"
   config.vm.network "forwarded_port", guest: 8080, host: 8080
   config.vm.network "forwarded_port", guest: 9000, host: 9000
-  config.vm.network "forwarded_port", guest: 5000, host: 5000
-  config.vm.network "forwarded_port", guest: 35357, host: 35357
-  config.vm.network "forwarded_port", guest: 9292, host: 9292
-  config.vm.network "forwarded_port", guest: 8774, host: 8774
-  config.vm.network "forwarded_port", guest: 9696, host: 9696
-  config.vm.network "forwarded_port", guest: 8776, host: 8776
 
 
   # Share an additional folder to the guest VM. The first argument is

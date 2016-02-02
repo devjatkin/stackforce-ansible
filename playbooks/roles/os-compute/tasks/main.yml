@@ -1,4 +1,9 @@
 ---
+- name: Check KVM Hardware support
+  shell: "egrep -c '(vmx|svm)' /proc/cpuinfo"
+  register: support_kvm
+  ignore_errors: true
+
 - include: install_requirements.yml
 - include: install_compute.yml
 - include: configure_services.yml
@@ -7,4 +12,3 @@
   service: name="{{ item }}" state=started
   with_items:
     - openstack-nova-compute
-  delegate_to: localhost

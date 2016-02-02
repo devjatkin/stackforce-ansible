@@ -5,7 +5,17 @@
     - "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
   tags:
     - yum
-  delegate_to: localhost
+  ignore_errors: true
+
+- name: KVM packages
+  yum: name="{{ item }}" state=present
+  with_items:
+    - libvirt-daemon-kvm.x86_64
+    - sysfsutils
+  when: compute_virt_type == 'kvm'
+  tags:
+    - yum
+    - lxc
 
 - name: LXC packages
   yum: name="{{ item }}" state=present
@@ -17,16 +27,18 @@
     - libvirt-daemon-config-network.x86_64
     - python2-lxc
     - sysfsutils
+  when: compute_virt_type == 'lxc'
   tags:
     - yum
-  delegate_to: localhost
+    - lxc
 
 - name: Remove setfcap from centos.common.conf
   copy:
     src: "files/lxc_centos.common.conf"
     dest: "/usr/share/lxc/config/centos.common.conf"
-  delegate_to: localhost
+  when: compute_virt_type == 'lxc'
+  tags:
+    - lxc
 
 - name: Restart libvirtd
   service: name=libvirtd state=restarted
-  delegate_to: localhost

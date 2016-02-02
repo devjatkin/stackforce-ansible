@@ -60,8 +60,8 @@ debug = {{ os_debug }}
 # core_plugin =
 # Example: core_plugin = ml2
 #
-core_plugin = ml2
-service_plugins = router
+core_plugin = {{ neutron_core_plugin }}
+service_plugins = {{ neutron_service_plugins }}
 allow_overlapping_ips = True
 
 # (StrOpt) Neutron IPAM (IP address management) driver to be loaded from the
@@ -376,10 +376,10 @@ notify_nova_on_port_data_changes = True
 nova_url = {{ neutron_nova_url }}
 
 # Name of nova region to use. Useful if keystone manages more than one region
-# nova_region_name =
+nova_region_name = RegionOne
 
 # Username for connection to nova in admin context
-# nova_admin_username =
+nova_admin_username = {{ neutron_nova_admin_username }}
 
 # The uuid of the admin nova tenant
 # nova_admin_tenant_id =
@@ -387,13 +387,13 @@ nova_url = {{ neutron_nova_url }}
 # The name of the admin nova tenant. If the uuid of the admin nova tenant
 # is set, this is optional.  Useful for cases where the uuid of the admin
 # nova tenant is not available when configuration is being done.
-# nova_admin_tenant_name =
+nova_admin_tenant_name = {{ neutron_nova_admin_tenant_name }}
 
 # Password for connection to nova in admin context.
-# nova_admin_password =
+nova_admin_password = {{ neutron_nova_admin_password }}
 
 # Authorization URL for connection to nova in admin context.
-# nova_admauth_url =
+nova_admauth_url = {{ keystone_service_adminurl }}
 
 # CA file for novaclient to verify server certificates
 # nova_ca_certificates_file =
@@ -725,7 +725,7 @@ rpc_backend=rabbit
 
 [keystone_authtoken]
 auth_uri = {{ keystone_service_adminurl }}
-identity_uri = {{ keystone_service_adminurl }}
+identity_uri = {{ neutron_identity_uri }}
 admin_tenant_name = service
 admin_user = {{ neutron_service_user_name }}
 admin_password = {{ neutron_service_password }}
@@ -1001,7 +1001,6 @@ lock_path = /var/lib/neutron/tmp
 # The RabbitMQ broker address where a single node is used. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_host
 rabbit_host={{ neutron_rabbit_host }}
-
 # The RabbitMQ broker port where a single node is used. (integer value)
 # Deprecated group/name - [DEFAULT]/rabbit_port
 rabbit_port = {{ neutron_rabbit_port }}

@@ -1,0 +1,50 @@
+---
+- hosts: compute*
+  become: yes
+  become_method: sudo
+  vars:
+    os_verbose: True
+    os_debug: True
+    neutron_service_publicurl: "http://192.168.10.6:9696"
+    glance_service_publicurl: "http://192.168.10.6:9292"
+    keystone_service_publicurl: "http://192.168.10.6:5000/v3"
+    keystone_service_adminurl: "http://192.168.10.6:35357/v3"
+    neutron_identity_uri: "http://192.168.10.6:35357"
+    os_rabbit_host: "192.168.10.6"
+    os_rabbit_port: "5672"
+    neutron_db_password: "Zohchi0ik2Oowo5"
+    neutron_database_connection: "mysql://neutron:{{ neutron_db_password }}@192.168.10.6/neutron"
+    neutron_nova_url: "http://192.168.0.6:8774/v2"
+    nova_novncproxy_base_url: "http://127.0.0.1:6080/vnc_auto.html"
+    nova_glance_host: "192.168.10.6"
+    neutron_ml2_extension_drivers: ""
+    neutron_physical_interface_mappings: "provider:eth0"
+  roles:
+    - role: common
+    - role: os-compute
+    - role: os-neutronAgent
+- hosts: controller*
+  become: yes
+  become_method: sudo
+  vars:
+    os_verbose: True
+    os_debug: True
+    neutron_service_publicurl: "http://192.168.10.6:9696"
+    neutron_service_internalurl: "http://192.168.10.6:9696"
+    neutron_service_adminurl: "http://192.168.10.6:9696"
+    neutron_identity_uri: "http://192.168.10.6:35357"
+    glance_service_publicurl: "http://192.168.10.6:9292"
+    keystone_service_publicurl: "http://192.168.10.6:5000/v3"
+    keystone_service_adminurl: "http://192.168.10.6:35357/v3"
+    os_rabbit_host: "192.168.10.6"
+    os_rabbit_port: "5672"
+    neutron_db_password: "Zohchi0ik2Oowo5"
+    neutron_database_connection: "mysql://neutron:{{ neutron_db_password }}@192.168.10.6/neutron"
+    neutron_nova_url: "http://192.168.0.6:8774/v2"
+    nova_novncproxy_base_url: "http://127.0.0.1:6080/vnc_auto.html"
+    nova_glance_host: "192.168.10.6"
+    nova_metadata_ip: "192.168.0.6"
+    neutron_ml2_extension_drivers: ""
+    neutron_physical_interface_mappings: "provider:eth0"
+  roles:
+    - role: os-neutronService

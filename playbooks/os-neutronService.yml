@@ -1,5 +1,5 @@
 ---
-- hosts: neutronService*
+- hosts: controller*
   become: yes
   become_method: sudo
   roles:
