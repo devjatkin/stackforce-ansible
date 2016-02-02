@@ -26,10 +26,13 @@
 
 - include: os-neutronService.yml
   vars:
+    os_verbose: "True"
+    os_debug: "True"
     mysql_root_password: 'Jovoh4aceloduush'
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
     neutron_service_publicurl: "http://{{ public_address }}:9696"
     neutron_service_adminurl: "http://{{ public_address }}:9696"
+    neutron_service_internalurl: "http://{{ public_address }}:9696"
 - include: os-neutronAgent.yml
 - include: os-nova-api.yml
   vars:
@@ -37,9 +40,12 @@
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
     nova_service_publicurl: "http://{{ public_address }}:8774/v2/%(tenant_id)s"
     nova_service_adminurl: "http://{{ public_address }}:8774/v2/%(tenant_id)s"
+    nova_neutron_url: "http://{{ public_address }}:9696"
 - include: os-compute.yml
   vars:
     compute_virt_type: 'lxc'
+    public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
+    neutron_service_publicurl: "http://{{ public_address }}:9696"
 - include: os-cinder-api.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'

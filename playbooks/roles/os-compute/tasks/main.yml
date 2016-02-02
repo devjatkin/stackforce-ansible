@@ -1,6 +1,8 @@
 ---
 - name: Check KVM Hardware support
   shell: "egrep -c '(vmx|svm)' /proc/cpuinfo"
+  register: support_kvm
+  ignore_errors: true
 
 - include: install_requirements.yml
 - include: install_compute.yml
