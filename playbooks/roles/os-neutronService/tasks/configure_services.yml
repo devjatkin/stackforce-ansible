@@ -29,6 +29,11 @@
     src: l3_agent.ini.j2
     dest: /etc/neutron/l3_agent.ini
 
+- name: Setup metadata config
+  template:
+    src: metadata_agent.ini.j2
+    dest: /etc/neutron/metadata_agent.ini
+
 
 - name: Create symlinc
   file:
