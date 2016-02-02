@@ -3,37 +3,43 @@
   template:
     src: neutron.conf.j2
     dest: /etc/neutron/neutron.conf
+  notify: Restart Neutron services
 
 - name: Setup ml2_conf.ini config
   template:
     src: ml2_conf.ini.j2
     dest: /etc/neutron/plugins/ml2/ml2_conf.ini
+  notify: Restart Neutron services
 
 - name: Setup linuxbridge_agent.ini config
   template:
     src: linuxbridge_agent.ini.j2
     dest: /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+  notify: Restart Neutron services
 
 - name: Setup DNSmasq config
   template:
     src: dnsmasq-neutron.conf.j2
     dest: /etc/neutron/dnsmasq-neutron.conf
+  notify: Restart Neutron services
 
 - name: Setup DHCP config
   template:
     src: dhcp_agent.ini.j2
     dest: /etc/neutron/dhcp_agent.ini
+  notify: Restart Neutron services
 
 - name: Setup l3_agent config
   template:
     src: l3_agent.ini.j2
     dest: /etc/neutron/l3_agent.ini
+  notify: Restart Neutron services
 
 - name: Setup metadata config
   template:
     src: metadata_agent.ini.j2
     dest: /etc/neutron/metadata_agent.ini
-
+  notify: Restart Neutron services
 
 - name: Create symlinc
   file:

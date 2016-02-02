@@ -1,0 +1,11 @@
+---
+
+- name: Restart Nova services
+  service: name="{{ item }}" state=restarted
+  with_items:
+    - openstack-nova-api
+    - openstack-nova-cert
+    - openstack-nova-consoleauth
+    - openstack-nova-scheduler
+    - openstack-nova-conductor
+    - openstack-nova-novncproxy
