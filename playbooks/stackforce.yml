@@ -33,6 +33,7 @@
     neutron_service_publicurl: "http://{{ public_address }}:9696"
     neutron_service_adminurl: "http://{{ public_address }}:9696"
     neutron_service_internalurl: "http://{{ public_address }}:9696"
+    neutron_nova_metadata_ip: "{{ public_address }}"
 - include: os-neutronAgent.yml
 - include: os-nova-api.yml
   vars:

@@ -9,12 +9,8 @@
 # auth_insecure = False
 # Certificate Authority public key (CA cert) file for ssl
 # auth_ca_cert =
-#admin_tenant_name = %SERVICE_TENANT_NAME%
-#admin_user = %SERVICE_USER%
-#admin_password = %SERVICE_PASSWORD%
 
-
-auth_uri = {{ keystone_service_adminurl_for_conf }}
+auth_uri = {{ neutron_identity_uri }}
 auth_region = {{ neutron_service_region }}
 admin_tenant_name = service
 admin_user = {{ neutron_service_user_name }}
@@ -26,7 +22,7 @@ admin_password = {{ neutron_service_password }}
 
 # IP address used by Nova metadata server
 # nova_metadata_ip = 127.0.0.1
-nova_metadata_ip = {{ hostvars[groups.nova.0]['ansible_ssh_host'] }}
+nova_metadata_ip = {{ neutron_nova_metadata_ip }}
 
 
 # TCP Port used by Nova metadata server

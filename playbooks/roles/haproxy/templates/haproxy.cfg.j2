@@ -119,6 +119,16 @@ listen nova_api 0.0.0.0:8774
         server node1 {{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:8774 check inter 2000 rise 2 fall 5
 
 #---------------------------------------------------------------------
+# nova-metadata
+#---------------------------------------------------------------------
+listen nova_metadata 0.0.0.0:8775
+        balance source
+        option tcpka
+        option httpchk
+        maxconn 10000
+        server node1 {{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:8774 check inter 2000 rise 2 fall 5
+
+#---------------------------------------------------------------------
 # cinder
 #---------------------------------------------------------------------
 listen cinder_api 0.0.0.0:8776
