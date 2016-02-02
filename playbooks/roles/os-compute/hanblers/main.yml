@@ -1,0 +1,5 @@
+---
+- name: Restart Compute service
+  service: name="{{ item }}" state=restarted
+  with_items:
+    - openstack-nova-compute

@@ -3,3 +3,4 @@
   template:
     src: nova.conf
     dest: /etc/nova/nova.conf
+  notify: Restart Nova services
