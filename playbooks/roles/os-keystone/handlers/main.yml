@@ -1,0 +1,4 @@
+---
+
+- name: Restart Keystone
+  service: name=openstack-keystone state=restarted

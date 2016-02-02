@@ -3,12 +3,16 @@
   template:
     src: glance-api.conf.j2
     dest: /etc/glance/glance-api.conf
+  notify: Restart Glance services
 
 - name: Create Glance registry conf
   template:
     src: glance-registry.conf.j2
     dest: /etc/glance/glance-registry.conf
+  notify: Restart Glance services
+
 - name: Copy Glance policy file
   copy:
     src: "files/glance_policy.json"
     dest: "/etc/glance/policy.json"
+  notify: Restart Glance services

@@ -26,7 +26,9 @@ result['all'] = {}
 hostvars = {}
 os_vars = {
     'os_rabbit_host': config.get('public', 'address'),
-    'os_rabbit_port': config.get('os', 'rabbit_port')}
+    'os_rabbit_port': config.get('os', 'rabbit_port'),
+    'os_verbose': config.get('os_logs', 'verbose'),
+    'os_debug': config.get('os_logs', 'debug')}
 
 # TODO: Handle hosts with same name
 inventory_file = config.get("os", "inventory_file")
@@ -39,7 +41,7 @@ if inventory_file:
         for host in inv.groups[grp].hosts:
             result[grp]['hosts'].append(host.name)
             hostvars[host.name]=host.vars
-    
+
 
 containers = lxc.list_containers(active=True, defined=False)
 for container_name in containers:
