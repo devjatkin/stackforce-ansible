@@ -12,5 +12,3 @@ yum_repo_files:
     gpgcheck: 1
     enabled: 1
 rpm_gpg_key_url: "http://repo.cloudlinux.com/stackforce-testing/RPM-GPG-KEY-CloudLinux"
-
-epel_package_rpm: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"

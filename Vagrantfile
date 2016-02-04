@@ -68,7 +68,6 @@ Vagrant.configure(2) do |config|
   # config.push.define "atlas" do |push|
   #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
   # end
-
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
@@ -78,7 +77,7 @@ Vagrant.configure(2) do |config|
     echo localhost > inventory
     ansible-playbook -i inventory -c local --extra-vars 'lxc_container_user_name=vagrant' /vagrant/playbooks/create_lxc_containers.yml
     sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/horizon_proxy.yml
-    sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
+    sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --extra-vars 'neutron_physical_interface_mappings="provider:enp0s3"' --sudo /vagrant/playbooks/stackforce.yml
     ansible-playbook -i inventory -c local /vagrant/test/playbooks/install_bats.yml
     bats /vagrant/test/integration/default/bats/*.bats
   SHELL
