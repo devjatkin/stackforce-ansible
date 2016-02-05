@@ -7,9 +7,9 @@
 }
 
 @test "Upload image" {
-    curl -O http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
+    curl -O stackforce.cloudlinux.com/repos/cirros-lxc.img
     source /root/admin-openrc.sh
-    glance  image-create --name "cirros"   --file cirros-0.3.4-x86_64-disk.img   --disk-format qcow2 --container-format bare  --visibility public --progress
+	glance image-create --name cirros-lxc --visibility public --disk-format raw --container-format bare --progress --file  cirros-lxc.img
 }
 
 @test "List uploaded image" {
