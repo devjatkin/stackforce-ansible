@@ -4,7 +4,7 @@
 @test "Create external network" {
     source /root/admin-openrc.sh
     neutron net-create public --router:external True --provider:physical_network external  --provider:network_type flat
-    neutron subnet-create public --name ext-subnet --allocation-pool start=192.168.1.100,end=192.168.1.200 --gateway 192.168.1.1 192.168.1.0/24
+    neutron subnet-create public --name ext-subnet --allocation-pool start=10.0.2.100,end=10.0.2.200 --gateway 10.0.2.1 10.0.2.0/24
 }
 
 @test "Create tenant network" {
