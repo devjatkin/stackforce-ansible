@@ -25,7 +25,7 @@ external_network_bridge =
 # iproute2 package that supports namespaces). This option is deprecated and
 # will be removed in a future release, at which point the old behavior of
 # use_namespaces = True will be enforced.
-# use_namespaces = True
+use_namespaces = True
 
 # If use_namespaces is set as False then the agent can only configure one router.
 
@@ -103,7 +103,7 @@ external_network_bridge =
 # This should not be a problem any more.  Refer to bug:
 # https://bugs.launchpad.net/neutron/+bug/1418079
 # This option is deprecated and will be removed in the M release
-# router_delete_namespaces = True
+router_delete_namespaces = True
 
 # Timeout for ovs-vsctl commands.
 # If the timeout expires, ovs commands will fail with ALARMCLOCK error.

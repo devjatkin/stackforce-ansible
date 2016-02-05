@@ -39,7 +39,7 @@ local_ip = {{ ansible_default_ipv4.address }}
 # It enables plugin to populate VXLAN forwarding table, in order to limit
 # the use of broadcast emulation (multicast will be turned off if kernel and
 # iproute2 supports unicast flooding - requires 3.11 kernel and iproute2 3.10)
-# l2_population = False
+l2_population = {{ neutron_l2_population }}
 
 [agent]
 # Agent's polling interval in seconds
@@ -58,6 +58,6 @@ prevent_arp_spoofing = {{ neutron_prevent_arp_spoofing }}
 
 # Controls if neutron security group is enabled or not.
 # It should be false when you use nova security group.
-# enable_security_group = True
-enable_security_group = True
 firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+enable_security_group = True
+enable_ipset = True

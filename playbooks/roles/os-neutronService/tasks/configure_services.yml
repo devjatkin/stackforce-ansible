@@ -41,7 +41,7 @@
     dest: /etc/neutron/metadata_agent.ini
   notify: Restart Neutron services
 
-- name: Create symlinc
+- name: Create symlink
   file:
     src: /etc/neutron/plugins/ml2/ml2_conf.ini
     dest: /etc/neutron/plugin.ini
