@@ -28,7 +28,7 @@ Vagrant.configure(2) do |config|
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  #config.vm.network "private_network", ip: "192.168.33.10"
+  config.vm.network "private_network", ip: "192.168.33.10"
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -77,7 +77,7 @@ Vagrant.configure(2) do |config|
     echo localhost > inventory
     ansible-playbook -i inventory -c local --extra-vars 'lxc_container_user_name=vagrant' /vagrant/playbooks/create_lxc_containers.yml
     sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/horizon_proxy.yml
-    sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --extra-vars 'neutron_physical_interface_mappings="provider:enp0s3"' --sudo /vagrant/playbooks/stackforce.yml
+    sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
     ansible-playbook -i inventory -c local /vagrant/test/playbooks/install_bats.yml
     bats /vagrant/test/integration/default/bats/*.bats
   SHELL

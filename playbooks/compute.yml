@@ -14,11 +14,9 @@
     os_rabbit_port: "5672"
     neutron_db_password: "Zohchi0ik2Oowo5"
     neutron_database_connection: "mysql://neutron:{{ neutron_db_password }}@192.168.10.6/neutron"
-    neutron_nova_url: "http://192.168.0.6:8774/v2"
+    neutron_nova_url: "http://192.168.10.6:8774/v2"
     nova_novncproxy_base_url: "http://127.0.0.1:6080/vnc_auto.html"
     nova_glance_host: "192.168.10.6"
-    neutron_ml2_extension_drivers: ""
-    neutron_physical_interface_mappings: "provider:eth0"
   roles:
     - role: common
     - role: os-compute
@@ -40,11 +38,10 @@
     os_rabbit_port: "5672"
     neutron_db_password: "Zohchi0ik2Oowo5"
     neutron_database_connection: "mysql://neutron:{{ neutron_db_password }}@192.168.10.6/neutron"
-    neutron_nova_url: "http://192.168.0.6:8774/v2"
+    neutron_nova_url: "http://192.168.10.6:8774/v2"
     nova_novncproxy_base_url: "http://127.0.0.1:6080/vnc_auto.html"
     nova_glance_host: "192.168.10.6"
-    nova_metadata_ip: "192.168.0.6"
-    neutron_ml2_extension_drivers: ""
-    neutron_physical_interface_mappings: "provider:eth0"
+    nova_metadata_ip: "192.168.10.6"
+    neutron_nova_metadata_ip: "192.168.10.6"
   roles:
     - role: os-neutronService

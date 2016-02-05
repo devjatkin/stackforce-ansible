@@ -5,6 +5,9 @@
 - include: configure_services.yml
 - include: db_sync.yml
 
+- name: Patch ip_lib.py
+  copy: src=ip_lib.py  dest=/usr/lib/python2.7/site-packages/neutron/agent/linux/ip_lib.py
+
 - name: Start Neutron services
   service: name="{{ item }}" state=started
   with_items:
