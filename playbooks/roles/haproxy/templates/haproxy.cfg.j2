@@ -128,6 +128,16 @@ listen nova_metadata 0.0.0.0:8775
         maxconn 10000
         server node1 {{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:8775 check inter 2000 rise 2 fall 5
 
+
+#---------------------------------------------------------------------
+# nova-novncproxy
+#---------------------------------------------------------------------
+listen nova_novncproxy 0.0.0.0:6080
+        balance source
+        option tcpka
+        maxconn 10000
+        server node1 {{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:6080 check inter 2000 rise 2 fall 5
+
 #---------------------------------------------------------------------
 # cinder
 #---------------------------------------------------------------------
