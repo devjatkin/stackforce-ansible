@@ -1,0 +1,7 @@
+---
+
+- name: Restart Cinder volumes
+  service: name="{{ item }}" state=restarted
+  with_items:
+    - openstack-cinder-volume
+    - target

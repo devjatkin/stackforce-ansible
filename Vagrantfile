@@ -55,6 +55,11 @@ Vagrant.configure(2) do |config|
       vb.customize ['createhd', '--filename', file_to_disk, '--size', 100 * 1024]
     end
     vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', file_to_disk]
+    file_to_disk_cinder = File.join(VAGRANT_ROOT, '.vagrant/lvm_cinder.vdi')
+    unless File.exist?(file_to_disk_cinder)
+      vb.customize ['createhd', '--filename', file_to_disk_cinder, '--size', 100 * 1024]
+    end
+    vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', file_to_disk_cinder]
     # Customize the amount of memory on the VM:
     vb.memory = "3072"
   end

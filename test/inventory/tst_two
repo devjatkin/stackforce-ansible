@@ -10,3 +10,4 @@ cid02-tst
 cid03-tst
 [compute:vars]
 os_rabbit_port=5672
+cinder_disk="/dev/sdb"

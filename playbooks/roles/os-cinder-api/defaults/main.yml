@@ -1,7 +1,7 @@
 ---
-cinder_db_password: "Que5vohgahwebohh"
+cinder_db_password: "Aphaeghu3uphei9h"
 cinder_service_user_name: "cinder"
-cinder_service_password: "Que5vohgahwebohh"
+cinder_service_password: "arie2eeJ9jiphoh7"
 cinder_service_tenant_name: "service"
 cinder_service_description: "OpenStack Block Storage"
 cinder_service_region: "RegionOne"

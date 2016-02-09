@@ -1,0 +1,14 @@
+---
+cinder_db_password: "Que5vohgahwebohh"
+cinder_service_user_name: "cinder"
+cinder_service_password: "Que5vohgahwebohh"
+cinder_service_tenant_name: "service"
+cinder_database_connection: "mysql://cinder:{{ cinder_db_password }}@{{ hostvars[groups.mariadb.0]['ansible_eth0']['ipv4']['address'] }}/cinder"
+keystone_service_publicurl: "http://{{ public_address }}:5000/v3"
+keystone_service_internalurl: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:5000/v3"
+keystone_service_adminurl: "http://{{ public_address }}:35357/v3"
+keystone_auth_admin_token: "Gee4soopohsusaki"
+keystone_service_adminuri_insecure: true
+keystone_rabbitmq_userid: "keystone"
+keystone_rabbitmq_password: "Iengaiv1sahxughu"
+keystone_rabbitmq_vhost_name: "keystone"

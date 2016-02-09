@@ -1,0 +1,10 @@
+---
+- lvg: vg=cinder-volumes pvs="{{ cinder_disk }}"
+- include: install_packages.yml
+- include: configure_services.yml
+
+- name: Start Cinder services
+  service: name="{{ item }}" state=started
+  with_items:
+    - openstack-cinder-volume
+    - target
