@@ -540,6 +540,7 @@ auth_strategy = keystone
 # A list of backend names to use. These backend names should be backed by a
 # unique [CONFIG] group with its options (list value)
 #enabled_backends = <None>
+enabled_backends = lvm
 
 # Whether snapshots count against gigabyte quota (boolean value)
 #no_snapshot_gb_quota = false
@@ -1290,7 +1291,7 @@ auth_strategy = keystone
 # with the value "iser". The supported iSCSI protocol values are "iscsi" and
 # "iser". (string value)
 # Allowed values: iscsi, iser
-#iscsi_protocol = iscsi
+iscsi_protocol = iscsi
 
 # The path to the client certificate key for verification, if the driver
 # supports it. (string value)
@@ -1448,7 +1449,7 @@ auth_strategy = keystone
 #glance_core_properties = checksum,container_format,disk_format,image_name,image_id,min_disk,min_ram,name,size
 
 # Name for the VG that will contain exported volumes (string value)
-#volume_group = cinder-volumes
+volume_group = cinder-volumes
 
 # If >0, create LVs with multiple mirrors. Note that this requires lvm_mirrors
 # + 2 PVs with available space (integer value)
@@ -1457,7 +1458,7 @@ auth_strategy = keystone
 # Type of LVM volumes to deploy; (default, thin, or auto). Auto defaults to
 # thin if thin is supported. (string value)
 # Allowed values: default, thin, auto
-#lvm_type = default
+lvm_type = default
 
 # LVM conf file to use for the LVM driver in Cinder; this setting is ignored if
 # the specified file does not exist (You can also specify 'None' to not use a
@@ -1980,7 +1981,7 @@ auth_strategy = keystone
 #hitachi_auth_password = HBSD-CHAP-password
 
 # Driver to use for volume creation (string value)
-#volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
+volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
 
 # Timeout for creating the volume to migrate to when performing volume
 # migration (seconds) (integer value)
@@ -3178,7 +3179,7 @@ lock_path = /var/lib/cinder/tmp
 # The RabbitMQ broker address where a single node is used. (string value)
 # Deprecated group/name - [DEFAULT]/rabbit_host
 #rabbit_host = localhost
-rabbit_host = {{ os_rabbit_host  }}
+rabbit_host = {{ os_rabbit_host }}
 
 # The RabbitMQ broker port where a single node is used. (integer value)
 # Deprecated group/name - [DEFAULT]/rabbit_port
@@ -3424,3 +3425,8 @@ rabbit_virtual_host = {{ keystone_rabbitmq_vhost_name }}
 
 # If False doesn't trace SQL requests. (boolean value)
 #trace_sqlalchemy = false
+[lvm]
+volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
+volume_group = cinder-volumes
+iscsi_protocol = iscsi
+iscsi_helper = lioadm

@@ -1,0 +1,6 @@
+---
+- name: Setup Cinder config
+  template:
+    src: cinder.conf.j2
+    dest: /etc/cinder/cinder.conf
+  notify: Restart Cinder volumes

@@ -1,0 +1,7 @@
+---
+- name: Install Cinder packages
+  yum: name="{{ item }}" state=present
+  with_items:
+    - openstack-cinder
+    - targetcli
+    - python-oslo-policy
