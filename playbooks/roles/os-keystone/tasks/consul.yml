@@ -1,0 +1,9 @@
+---
+- name: Add kestone service
+  template: src="{{ item }}.json.j2" dest="/etc/consul/{{ item }}.json" owner=root group=consul
+  with_items:
+    - keystone-public
+    - keystone-admin
+  notify: Restart consul
+  tags:
+    - consul-config

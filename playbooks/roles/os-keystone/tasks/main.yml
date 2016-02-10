@@ -31,3 +31,5 @@
 
 - name: Install opanstack-client
   yum: name=python-openstackclient state=present
+
+- include: consul.yml

@@ -1,0 +1,8 @@
+---
+- name: Add mariadb service
+  template: src="{{ item }}.json.j2" dest="/etc/consul/{{ item }}.json" owner=root group=consul
+  with_items:
+    - mariadb
+  notify: Restart consul
+  tags:
+    - consul-config

@@ -1,0 +1,14 @@
+---
+- hosts: controller*
+  vars:
+    public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
+  tasks:
+  - name: Install consul-ui
+    yum: name=http://stackforce.cloudlinux.com/repos/consul-ui-0.6.3-1.el7.centos.x86_64.rpm state=present
+
+  - name: Default consul config
+    template: src=consul.json.j2 dest=/etc/consul/consul.json owner=root group=consul
+    notify: Restart consul
+
+  - name: Enable consul
+    service: name=consul state=started enabled=yes

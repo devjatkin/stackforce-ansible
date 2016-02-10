@@ -175,3 +175,11 @@ listen mysql-cluster 0.0.0.0:3306
     option tcpka
     option httpchk
     server node1 {{ hostvars[groups.mariadb.0]['ansible_ssh_host']}}:3306 port 9200 inter 12000 rise 3 fall 3 check
+#---------------------------------------------------------------------
+# consul
+#---------------------------------------------------------------------
+listen consul-ui {{ ansible_default_ipv4.address }}:8500
+    mode tcp
+    option tcpka
+    option httpchk
+    server localhost 127.0.0.1 port 8500 inter 12000 rise 3 fall 3 check

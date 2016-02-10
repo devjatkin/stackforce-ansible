@@ -1,0 +1,2 @@
+---
+public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
