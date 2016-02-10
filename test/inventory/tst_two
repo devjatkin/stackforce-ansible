@@ -7,7 +7,7 @@ cid03-tst
 [controller]
 cid02-tst
 [compute]
-cid03-tst
+cid03-tst cinder_disk="/dev/sdb"
 [compute:vars]
 os_rabbit_port=5672
 cinder_disk="/dev/sdb"
