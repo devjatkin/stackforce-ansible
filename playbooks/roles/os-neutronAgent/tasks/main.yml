@@ -3,6 +3,6 @@
 - include: configure_services.yml
 
 - name: Start Neutron services
-  service: name="{{ item }}" state=started
+  service: name="{{ item }}" state=started enabled=yes
   with_items:
     - neutron-linuxbridge-agent

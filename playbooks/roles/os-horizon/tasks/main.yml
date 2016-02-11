@@ -10,5 +10,5 @@
     dest: /etc/openstack-dashboard/local_settings
 
 - name: Start HTTPD
-  service: name=httpd state=started
+  service: name=httpd state=started enabled=yes
 

@@ -9,7 +9,7 @@
   copy: src=ip_lib.py  dest=/usr/lib/python2.7/site-packages/neutron/agent/linux/ip_lib.py
 
 - name: Start Neutron services
-  service: name="{{ item }}" state=started
+  service: name="{{ item }}" state=started enabled=yes
   with_items:
     - neutron-server
     - neutron-linuxbridge-agent
