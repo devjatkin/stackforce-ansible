@@ -6,7 +6,7 @@
 - include: db_sync.yml
 
 - name: Start Nova services
-  service: name="{{ item }}" state=started
+  service: name="{{ item }}" state=started enabled=yes
   with_items:
     - openstack-nova-api
     - openstack-nova-cert

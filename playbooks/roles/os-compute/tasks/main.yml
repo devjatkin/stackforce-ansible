@@ -9,6 +9,6 @@
 - include: configure_services.yml
 
 - name: Start Compute service
-  service: name="{{ item }}" state=started
+  service: name="{{ item }}" state=started enabled=yes 
   with_items:
     - openstack-nova-compute

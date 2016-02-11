@@ -23,7 +23,7 @@
     - /var/log/keystone
 
 - name: Start Keystone
-  service: name=openstack-keystone state=started
+  service: name=openstack-keystone state=started enabled=yes
 
 - include: admin_openrc.yml
 

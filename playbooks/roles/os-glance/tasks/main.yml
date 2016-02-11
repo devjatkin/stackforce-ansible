@@ -5,7 +5,7 @@
 - include: db_sync.yml
 
 - name: Start Glance API service
-  service: name=openstack-glance-api state=started
+  service: name=openstack-glance-api state=started enabled=yes
 
 - name: Start Glance registry service
-  service: name=openstack-glance-registry state=started
+  service: name=openstack-glance-registry state=started enabled=yes
