@@ -37,6 +37,8 @@
     - clustercheck
 
 - name: Start xinetd
-  service: name=xinetd state=started
+  service: name=xinetd state=started enabled=true
   tags:
     - clustercheck
+
+- include: consul.yml
