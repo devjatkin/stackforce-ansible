@@ -4,6 +4,10 @@
   with_items:
     - keystone-public
     - keystone-admin
-  notify: Restart consul
+  register: consul_cfg
+
+- name: Enable consul
+  service: name=consul state=restarted enabled=yes
+  when: consul_cfg|changed
   tags:
     - consul-config

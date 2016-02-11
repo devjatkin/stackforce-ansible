@@ -182,4 +182,4 @@ listen consul-ui {{ ansible_default_ipv4.address }}:8500
     mode tcp
     option tcpka
     option httpchk
-    server localhost 127.0.0.1 port 8500 inter 12000 rise 3 fall 3 check
+    server localhost 127.0.0.1 port 8500 inter 2000 rise 3 fall 3 check

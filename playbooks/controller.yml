@@ -8,7 +8,8 @@
 
   - name: Default consul config
     template: src=consul.json.j2 dest=/etc/consul/consul.json owner=root group=consul
-    notify: Restart consul
+    register: consul_cfg
 
   - name: Enable consul
-    service: name=consul state=started enabled=yes
+    service: name=consul state=restarted enabled=yes
+    when: consul_cfg|changed
