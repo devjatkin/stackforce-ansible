@@ -416,10 +416,10 @@
 
 # IP address of this host (string value)
 #my_ip = 172.20.1.16
-my_ip = {{ public_address }}
+my_ip = {{  ansible_default_ipv4.address }}
 
 # Default glance host name or IP (string value)
-glance_host = $my_ip
+glance_host = {{ public_address }}
 
 # Default glance port (integer value)
 # Minimum value: 1
