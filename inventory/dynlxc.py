@@ -20,10 +20,10 @@ config.set("os", "inventory_file", None)
 
 config.read('/etc/stackforce/parameters.ini')
 
-
-result = {}
+result = dict()
 result['all'] = {}
 hostvars = {}
+groupvars = {}
 os_vars = {
     'os_rabbit_host': config.get('public', 'address'),
     'os_rabbit_port': config.get('os', 'rabbit_port'),
@@ -34,20 +34,22 @@ os_vars = {
 inventory_file = config.get("os", "inventory_file")
 if inventory_file:
     dl = DataLoader()
-    inv = InventoryParser(dl, {"ungrouped":Group("ungrouped"), "all":Group("all")}, inventory_file)
+    inv = InventoryParser(dl, {"ungrouped": Group("ungrouped"), "all": Group("all")}, inventory_file)
     for grp in inv.groups:
         if grp not in result:
-            result[grp]={'hosts':[], 'vars':os_vars}
+            result[grp] = {'hosts': [], 'vars': os_vars}
+        groupvars[grp] = inv.groups[grp].vars
+
         for host in inv.groups[grp].hosts:
             result[grp]['hosts'].append(host.name)
-            hostvars[host.name]=host.vars
+            hostvars[host.name] = host.vars
 
 
 containers = lxc.list_containers(active=True, defined=False)
 for container_name in containers:
     srv = re.split('_', container_name)
     group = srv[0]
-    if not group in result:
+    if group not in result:
         result[group] = {}
         result[group]['hosts'] = []
         result[group]['vars'] = os_vars
@@ -62,7 +64,8 @@ for container_name in containers:
             hostvars[container_name] = dict(ansible_ssh_host=ips[0])
 
 result['all'] = containers
-result['_meta'] = {'hostvars': hostvars}
+result['_meta'] = {'hostvars': hostvars,
+                   'groupvars': groupvars}
 
 if len(sys.argv) == 2 and sys.argv[1] == '--list':
     print(json.dumps(result))
