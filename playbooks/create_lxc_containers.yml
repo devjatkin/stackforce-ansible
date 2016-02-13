@@ -64,6 +64,9 @@
   - name: Restart libvirtd
     service: name=libvirtd state=restarted
 
+  - name: Enable LXC service
+    service: name=lxc enabled=yes
+
   - name: Create a base container
     lxc_container:
       name: "{{ lxc_base_container }}"
@@ -78,6 +81,9 @@
     tags:
       - lxc
       - lxc-base-container
+
+  - name: Make the base container autostarted
+    lineinfile: dest=/var/lib/lxc/{{ lxc_base_container }}/config line="lxc.start.auto = 1"
 
   - name: Waiting for ping
     lxc_container:

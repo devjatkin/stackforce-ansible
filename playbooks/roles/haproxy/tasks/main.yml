@@ -11,5 +11,5 @@
     - haproxy-config
   notify: restart haproxy
 
-- name: Stop firewalld
-  service: name=firewalld state=stopped
+- name: Remove firewalld
+  yum: name=firewalld state=absent
