@@ -1,5 +1,5 @@
 import unittest
-from inventory.dynlxc import result
+from inventory.dynlxc import result, config
 
 
 class TestInventory(unittest.TestCase):
@@ -16,3 +16,12 @@ class TestInventory(unittest.TestCase):
         self.assertEqual(result["compute"]["vars"]["os_debug"], "true")
         self.assertEqual(result["compute"]["vars"]["os_rabbit_port"], "5672")
         self.assertEqual(result["compute"]["vars"]["os_verbose"], "true")
+
+    def test_config(self):
+        self.assertTrue(config.has_section("os"))
+        self.assertTrue(config.has_section("os_logs"))
+        self.assertTrue(config.has_section("public"))
+        self.assertTrue(config.has_option("public", "address"))
+        self.assertTrue(config.has_option("os", "rabbit_port"))
+        self.assertTrue(config.has_option("os_logs", "verbose"))
+        self.assertTrue(config.has_option("os_logs", "debug"))

@@ -13,12 +13,17 @@ from ansible.inventory.ini import InventoryParser
 if os.geteuid() != 0:
     os.execvp("sudo", ["sudo"] + sys.argv)
 
-config = ConfigParser.ConfigParser()
-# setting defaults
-config.add_section("os")
-config.set("os", "inventory_file", None)
 
-config.read('/etc/stackforce/parameters.ini')
+def get_config(config_file='/etc/stackforce/parameters.ini'):
+    cnf = ConfigParser.ConfigParser()
+    # setting defaults
+    cnf.add_section("os")
+    cnf.set("os", "inventory_file", None)
+
+    cnf.read(config_file)
+    return cnf
+
+config = get_config()
 
 result = dict()
 result['all'] = {}
