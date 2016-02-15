@@ -1,3 +1,6 @@
 .venv/
 .vagrant/
 .idea/
+.cache/
+*.pyc
+*.pyo
