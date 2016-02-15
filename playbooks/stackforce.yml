@@ -1,9 +1,9 @@
 ---
-- hosts: all
+- include: controller.yml
+- hosts: all:!controller*
   roles:
     - role: consul-agent
   serial: 3
-- include: controller.yml
 
 - include: rabbitmq.yml
 - include: mariadb.yml

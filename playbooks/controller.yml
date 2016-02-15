@@ -4,7 +4,10 @@
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
   tasks:
   - name: Install consul-ui
-    yum: name=http://stackforce.cloudlinux.com/repos/consul-ui-0.6.3-1.el7.centos.x86_64.rpm state=present
+    yum: name="{{ item }}" state=present
+    with_items:
+      - http://stackforce.cloudlinux.com/repos/consul-0.6.3-1.el7.centos.x86_64.rpm
+      - http://stackforce.cloudlinux.com/repos/consul-ui-0.6.3-1.el7.centos.x86_64.rpm
 
   - name: Default consul config
     template: src=consul.json.j2 dest=/etc/consul/consul.json owner=root group=consul
