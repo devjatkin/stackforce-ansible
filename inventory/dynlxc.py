@@ -23,7 +23,6 @@ def get_config(config_file='/etc/stackforce/parameters.ini'):
     cnf.read(config_file)
     return cnf
 
-config = get_config()
 
 
 def read_inventory_file(inventory_filepath):
@@ -47,41 +46,56 @@ def read_inventory_file(inventory_filepath):
     res["all"] = hostvars.keys()
     return res
 
-inventory_file = config.get("os", "inventory_file")
-result = read_inventory_file(inventory_file)
-hostvars = result["_meta"]['hostvars']
-groupvars = result["_meta"]["groupvars"]
-os_vars = {
-    'os_rabbit_host': config.get('public', 'address'),
-    'os_rabbit_port': config.get('os', 'rabbit_port'),
-    'os_verbose': config.get('os_logs', 'verbose'),
-    'os_debug': config.get('os_logs', 'debug')}
 
-# containers = lxc.list_containers(active=True, defined=False)
-# for container_name in containers:
-#     srv = re.split('_', container_name)
-#     group = srv[0]
-#     if group not in result:
-#         result[group] = {}
-#         result[group]['hosts'] = []
-#         result[group]['vars'] = os_vars
-#     if isinstance(result[group], dict):
-#         result[group]['hosts'].append(container_name)
-#     # get ip from container object
-#     container = lxc.Container(name=container_name)
-#     result['all']['hosts'] = containers
-#     if container.get_interfaces():
-#         ips = container.get_ips()
-#         if len(ips):
-#             hostvars[container_name] = dict(ansible_ssh_host=ips[0])
-#
-# result['all'] = containers
-result['_meta'] = {'hostvars': hostvars,
-                   'groupvars': groupvars}
+def list_containers():
+    res = dict()
+    hostvars = {}
+    containers = lxc.list_containers(active=True, defined=False)
+    for container_name in containers:
+        srv = re.split('_', container_name)
+        group = srv[0]
+        if group not in res:
+            res[group] = {}
+            res[group]['hosts'] = []
+        if isinstance(res[group], dict):
+            res[group]['hosts'].append(container_name)
+        container = lxc.Container(name=container_name)
+        if container.get_interfaces():
+            ips = container.get_ips()
+            if len(ips):
+                hostvars[container_name] = dict(ansible_ssh_host=ips[0])
+    res["_meta"] = {"hostvars": hostvars}
+    res['all'] = containers
+    return res
 
-if len(sys.argv) == 2 and sys.argv[1] == '--list':
-    print(json.dumps(result))
-elif len(sys.argv) == 3 and sys.argv[1] == '--host':
-    print("TODO: SSH support")
-else:
-    print("Need an argument, either --list or --host <host>")
+
+# TODO: Handle hosts with same name
+# TODO: Handle groups with same name
+def merge_results(a, b):
+    raise NotImplementedError
+
+
+def add_extravars(res, extra_vars):
+    for host in res["_meta"]["hostvars"]:
+        for var in extra_vars:
+            res["_meta"]["hostvars"][host][var] = extra_vars[var]
+    return res
+
+if __name__ == "__main__":
+    config = get_config()
+    inventory_file = config.get("os", "inventory_file")
+    os_vars = {
+        'os_rabbit_host': config.get('public', 'address'),
+        'os_rabbit_port': config.get('os', 'rabbit_port'),
+        'os_verbose': config.get('os_logs', 'verbose'),
+        'os_debug': config.get('os_logs', 'debug')}
+    # result = merge_results(list_containers(),
+    #                        read_inventory_file(inventory_file))
+    result = list_containers()
+    result = add_extravars(result, os_vars)
+    if len(sys.argv) == 2 and sys.argv[1] == '--list':
+        print(json.dumps(result))
+    elif len(sys.argv) == 3 and sys.argv[1] == '--host':
+        print("TODO: SSH support")
+    else:
+        print("Need an argument, either --list or --host <host>")

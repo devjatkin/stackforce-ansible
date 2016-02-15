@@ -1,24 +1,10 @@
 import unittest
-from inventory.dynlxc import result, config, get_config, read_inventory_file
+from inventory.dynlxc import get_config, read_inventory_file, list_containers, add_extravars
 
 
-class TestInventory(unittest.TestCase):
-    def test_common_result(self):
-        self.assertIn("all", result)
-        self.assertIn("_meta", result)
-        self.assertIn("hostvars", result["_meta"])
-        self.assertIn("groupvars", result["_meta"])
-
-    def test_inventory_file_vagrant(self):
-        self.assertIn("localhost", result["all"])
-        self.assertIn("compute", result)
-        self.assertIn("localhost", result["compute"]["hosts"])
-
-        # self.assertEqual(result["compute"]["vars"]["os_debug"], "true")
-        # self.assertEqual(result["compute"]["vars"]["os_rabbit_port"], "5672")
-        # self.assertEqual(result["compute"]["vars"]["os_verbose"], "true")
-
+class TestGetConfig(unittest.TestCase):
     def test_config(self):
+        config = get_config()
         self.assertTrue(config.has_section("os"))
         self.assertTrue(config.has_section("os_logs"))
         self.assertTrue(config.has_section("public"))
@@ -36,3 +22,33 @@ class TestReadInventoryFile(unittest.TestCase):
         self.assertIn("hostvars", res["_meta"])
         self.assertIn("groupvars", res["_meta"])
         self.assertIn("localhost", res["all"])
+        self.assertIn("compute", res)
+        self.assertIn("localhost", res["compute"]["hosts"])
+
+
+class TestListContainers(unittest.TestCase):
+    def test_base(self):
+        res = list_containers()
+        self.assertIn("all", res)
+        self.assertIn("_meta", res)
+        self.assertIn("hostvars", res["_meta"])
+        self.assertNotIn("groupvars", res["_meta"])
+        self.assertNotIn("localhost", res["all"])
+
+
+class TestAddExtravars(unittest.TestCase):
+    def test_base(self):
+        res_mockup = {"all": ["localhost", "server"],
+                      "local": ["localhost"],
+                      "remote": ["server"],
+                      "_meta": {"hostvars": {
+                                    "localhost": {},
+                                    "server": {}
+                                },
+                                "groupvars:": {
+                                    "local": {},
+                                    "remote": {}
+                                }}}
+        res = add_extravars(res_mockup, {"extravar": True})
+        for host in res["_meta"]["hostvars"]:
+            self.assertTrue(res["_meta"]["hostvars"][host]["extravar"])
