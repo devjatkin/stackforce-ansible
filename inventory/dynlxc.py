@@ -25,50 +25,57 @@ def get_config(config_file='/etc/stackforce/parameters.ini'):
 
 config = get_config()
 
-result = dict()
-result['all'] = {}
-hostvars = {}
-groupvars = {}
+
+def read_inventory_file(inventory_filepath):
+    res = dict()
+    hostvars = {}
+    groupvars = {}
+    dl = DataLoader()
+    inv = InventoryParser(dl, {"ungrouped": Group("ungrouped"),
+                               "all": Group("all")},
+                          inventory_filepath)
+    for grp in inv.groups:
+        res[grp] = {'hosts': [], 'vars': {}}
+        groupvars[grp] = inv.groups[grp].vars
+        for host in inv.groups[grp].hosts:
+            res[grp]['hosts'].append(host.name)
+            hostvars[host.name] = host.vars
+    res["_meta"] = {
+        "hostvars": hostvars,
+        "groupvars": groupvars
+    }
+    res["all"] = hostvars.keys()
+    return res
+
+inventory_file = config.get("os", "inventory_file")
+result = read_inventory_file(inventory_file)
+hostvars = result["_meta"]['hostvars']
+groupvars = result["_meta"]["groupvars"]
 os_vars = {
     'os_rabbit_host': config.get('public', 'address'),
     'os_rabbit_port': config.get('os', 'rabbit_port'),
     'os_verbose': config.get('os_logs', 'verbose'),
     'os_debug': config.get('os_logs', 'debug')}
 
-# TODO: Handle hosts with same name
-inventory_file = config.get("os", "inventory_file")
-if inventory_file:
-    dl = DataLoader()
-    inv = InventoryParser(dl, {"ungrouped": Group("ungrouped"), "all": Group("all")}, inventory_file)
-    for grp in inv.groups:
-        if grp not in result:
-            result[grp] = {'hosts': [], 'vars': os_vars}
-        groupvars[grp] = inv.groups[grp].vars
-
-        for host in inv.groups[grp].hosts:
-            result[grp]['hosts'].append(host.name)
-            hostvars[host.name] = host.vars
-
-
-containers = lxc.list_containers(active=True, defined=False)
-for container_name in containers:
-    srv = re.split('_', container_name)
-    group = srv[0]
-    if group not in result:
-        result[group] = {}
-        result[group]['hosts'] = []
-        result[group]['vars'] = os_vars
-    if isinstance(result[group], dict):
-        result[group]['hosts'].append(container_name)
-    # get ip from container object
-    container = lxc.Container(name=container_name)
-    result['all']['hosts'] = containers
-    if container.get_interfaces():
-        ips = container.get_ips()
-        if len(ips):
-            hostvars[container_name] = dict(ansible_ssh_host=ips[0])
-
-result['all'] = containers
+# containers = lxc.list_containers(active=True, defined=False)
+# for container_name in containers:
+#     srv = re.split('_', container_name)
+#     group = srv[0]
+#     if group not in result:
+#         result[group] = {}
+#         result[group]['hosts'] = []
+#         result[group]['vars'] = os_vars
+#     if isinstance(result[group], dict):
+#         result[group]['hosts'].append(container_name)
+#     # get ip from container object
+#     container = lxc.Container(name=container_name)
+#     result['all']['hosts'] = containers
+#     if container.get_interfaces():
+#         ips = container.get_ips()
+#         if len(ips):
+#             hostvars[container_name] = dict(ansible_ssh_host=ips[0])
+#
+# result['all'] = containers
 result['_meta'] = {'hostvars': hostvars,
                    'groupvars': groupvars}
 
