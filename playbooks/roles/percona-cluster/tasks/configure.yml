@@ -7,8 +7,13 @@
     dest: /etc/my.cnf
   notify: Restart mysql
 
+- name: Get default configs list
+  shell: ls -l /etc/my.cnf.d/
+  register: configs_list
+
 - name: Remove default configs
-  shell: rm -rf /etc/my.cnf.d/*
+  file: name=/etc/my.cnf.d/{{ item }} state=absent
+  with_items: configs_list.stdout_lines
 
 - name: Copy cluster.conf
   template:
