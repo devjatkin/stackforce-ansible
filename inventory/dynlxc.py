@@ -99,7 +99,7 @@ def add_extravars(res, extra_vars):
 if __name__ == "__main__":
     if os.geteuid() != 0:
         os.execvp("sudo", ["sudo"] + sys.argv)
-        
+
     config = get_config()
     inventory_file = config.get("os", "inventory_file")
     os_vars = {

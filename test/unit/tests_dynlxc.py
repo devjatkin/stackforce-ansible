@@ -1,17 +1,15 @@
 import unittest
+from mock import MagicMock, patch
 from inventory.dynlxc import get_config, read_inventory_file, list_containers, add_extravars, merge_results
 
 
 class TestGetConfig(unittest.TestCase):
-    def test_config(self):
-        config = get_config()
-        self.assertTrue(config.has_section("os"))
-        self.assertTrue(config.has_section("os_logs"))
-        self.assertTrue(config.has_section("public"))
-        self.assertTrue(config.has_option("public", "address"))
-        self.assertTrue(config.has_option("os", "rabbit_port"))
-        self.assertTrue(config.has_option("os_logs", "verbose"))
-        self.assertTrue(config.has_option("os_logs", "debug"))
+    @patch('ConfigParser.ConfigParser')
+    def test_config(self, mock_class):
+        cnf = get_config()
+        cnf.add_section.assert_called_with("os")
+        cnf.set.assert_called_with("os", "inventory_file", None)
+        cnf.read.assert_called_with("/etc/stackforce/parameters.ini")
 
 
 class TestReadInventoryFile(unittest.TestCase):
