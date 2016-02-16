@@ -1,5 +1,5 @@
 import unittest
-from inventory.dynlxc import get_config, read_inventory_file, list_containers, add_extravars
+from inventory.dynlxc import get_config, read_inventory_file, list_containers, add_extravars, merge_results
 
 
 class TestGetConfig(unittest.TestCase):
@@ -39,8 +39,8 @@ class TestListContainers(unittest.TestCase):
 class TestAddExtravars(unittest.TestCase):
     def test_base(self):
         res_mockup = {"all": ["localhost", "server"],
-                      "local": ["localhost"],
-                      "remote": ["server"],
+                      "local": {"hosts": ["localhost"]},
+                      "remote": {"hosts": ["server"]},
                       "_meta": {"hostvars": {
                                     "localhost": {},
                                     "server": {}
@@ -52,3 +52,23 @@ class TestAddExtravars(unittest.TestCase):
         res = add_extravars(res_mockup, {"extravar": True})
         for host in res["_meta"]["hostvars"]:
             self.assertTrue(res["_meta"]["hostvars"][host]["extravar"])
+
+
+class TestMergeResults(unittest.TestCase):
+    def test_base(self):
+        res_a = {"all": ["localhost"],
+                 "local": {"hosts": ["localhost"],
+                           "vars": {"ansible_connection": "local"}},
+                 "_meta":{"groupvars":{"local":[]},
+                          "hostvars":{"localhost": {"os_debug": True}}}}
+        res_b = {"all": ["server"],
+                 "remote": {"hosts": ["server"],
+                            "vars": {"ansible_ssh_host": "192.168.254.1"}},
+                 "_meta": {"groupvars": {"remote": []},
+                           "hostvars": {"server": {"os_debug": False}}}}
+        res = merge_results(res_a, res_b)
+        self.assertEqual(res["all"], ["localhost", "server"])
+        self.assertTrue(res["_meta"]["hostvars"]["localhost"]["os_debug"])
+        self.assertFalse(res["_meta"]["hostvars"]["server"]["os_debug"])
+
+
