@@ -1,6 +1,10 @@
+.cache/
 .venv/
 .vagrant/
 .idea/
+<<<<<<< HEAD
 .cache/
+=======
+>>>>>>> STAC-73
 *.pyc
 *.pyo
