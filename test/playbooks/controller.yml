@@ -39,6 +39,9 @@
         - python-devel
         - gcc
         - python-pip
+        - python-nose
+        - python-ipython
+        - ansible-lint
     - pip: name=ansible
 
     - git:
