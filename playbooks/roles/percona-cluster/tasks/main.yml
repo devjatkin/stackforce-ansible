@@ -1,0 +1,12 @@
+---
+- include: install.yml
+- include: configure.yml
+- include: bootstrap.yml
+- include: secure-installation.yml
+  when: inventory_hostname == percona_server_bootstrap_node
+- name: Flush handlers
+  meta: flush_handlers
+- include: percona_setup.yml
+  when: inventory_hostname == percona_server_bootstrap_node
+  tags:
+    - test

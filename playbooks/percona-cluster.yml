@@ -1,0 +1,7 @@
+---
+- hosts: mariadb*
+  become: yes
+  become_method: sudo
+  roles:
+    - role: percona-cluster
+    - role: clustercheck
