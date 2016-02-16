@@ -1,0 +1,22 @@
+---
+- name: Create log dirs
+  file: path=/var/log/mysql_logs state=directory mode=0755
+- name: Copy my.cnf
+  template:
+    src: my.cnf.j2
+    dest: /etc/my.cnf
+  notify: Restart mysql
+
+- name: Get default configs list
+  shell: ls -l /etc/my.cnf.d/
+  register: configs_list
+
+- name: Remove default configs
+  file: name=/etc/my.cnf.d/{{ item }} state=absent
+  with_items: configs_list.stdout_lines
+
+- name: Copy cluster.conf
+  template:
+    src: cluster.cnf.j2
+    dest: /etc/my.cnf.d/cluster.cnf
+  notify: Restart mysql

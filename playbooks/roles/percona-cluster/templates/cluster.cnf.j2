@@ -1,0 +1,52 @@
+# {{ ansible_managed }}
+
+[mysqld]
+# Path to Galera library
+wsrep_provider = /usr/lib64/libgalera_smm.so
+{% if percona_wsrep_provider_options is defined %}
+wsrep_provider_options = "
+  {%- for item in percona_wsrep_provider_options -%}
+    {{ item.option }} = {{ item.value }}{% if not loop.last %}; {% endif -%}
+  {%- endfor -%}
+  "
+{% endif %}
+
+# Cluster connection URL contains the IPs of node#1, node#2 and node#3
+wsrep_cluster_address = gcomm://{{ percona_wsrep_cluster_address }}
+
+# Address for incoming client connections.
+wsrep_node_incoming_address = {{ percona_wsrep_address }}
+
+# In order for Galera to work correctly binlog format should be ROW
+binlog_format = ROW
+
+# MyISAM storage engine has only experimental support
+default_storage_engine = InnoDB
+
+# This changes how InnoDB autoincrement locks are managed and is a requirement for Galera
+innodb_autoinc_lock_mode = 2
+
+# This should be the IP and DNS name for the current system on which you're editing the file.
+wsrep_node_address = {{ percona_wsrep_address }}
+wsrep_node_name = {{ percona_wsrep_node_name }}
+
+# to enable debug level logging, set this to 1
+wsrep_debug = {{ percona_wsrep_debug }}
+
+# SST method
+wsrep_sst_method = {{ percona_wsrep_sst_method }}
+wsrep_sst_auth = {{ percona_wsrep_sst_auth_user }}:{{ percona_wsrep_sst_auth_password }}
+wsrep_slave_threads = {{ percona_wsrep_slave_threads }}
+
+# Cluster name
+wsrep_cluster_name = "{{ percona_cluster_name }}"
+
+# how many times to retry deadlocked autocommits
+wsrep_retry_autocommit = {{ percona_wsrep_retry_autocommit }}
+
+[xtrabackup]
+compress
+compact
+parallel = {{ percona_xtrabackup_threads }}
+compress-threads = {{ percona_xtrabackup_threads }}
+rebuild-threads = {{ percona_xtrabackup_threads }}

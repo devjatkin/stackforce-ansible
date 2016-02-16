@@ -1,0 +1,83 @@
+---
+# mysqldump settings.
+mysql_mysqldump_max_allowed_packet: "64M"
+# Slow query log settings.
+mysql_slow_query_log_enabled: no
+mysql_slow_query_log_file: /var/log/mysql-slow.log
+mysql_slow_query_time: 2
+mysql_key_buffer_size: "64M"
+mysql_max_allowed_packet: "16M"
+mysql_table_open_cache: "64"
+mysql_sort_buffer_size: "1M"
+mysql_read_buffer_size: "1M"
+mysql_read_rnd_buffer_size: "4M"
+mysql_thread_cache_size: "8"
+mysql_query_cache_size: "16M"
+mysql_max_connections: 151
+
+# Other settings.
+mysql_wait_timeout: 28800
+
+# Try number of CPU's * 2 for thread_concurrency.
+mysql_thread_concurrency: 2
+
+# InnoDB settings.
+# Set .._buffer_pool_size up to 80% of RAM but beware of setting too high.
+mysql_innodb_file_per_table: "1"
+mysql_innodb_buffer_pool_size: "64M"
+mysql_innodb_additional_mem_pool_size: "20M"
+# Set .._log_file_size to 25% of buffer pool size.
+mysql_innodb_log_file_size: "64M"
+mysql_innodb_log_buffer_size: "8M"
+mysql_innodb_flush_log_at_trx_commit: "1"
+mysql_innodb_lock_wait_timeout: 50
+
+mysql_install_packages: "{{ rh_mysql_install_packages is defined and rh_mysql_install_packages.changed }}"
+mysql_root_password_update: no
+mysql_root_username: root
+mysql_root_password: "Jovoh4aceloduush"
+percona_max_connections: 500
+
+percona_server_bootstrap_node: "{{ groups['mariadb'][0] }}"
+percona_ignore_cluster_state: false
+
+percona_wsrep_node_name: "{{ inventory_hostname }}"
+percona_cluster_name: openstack_percona_cluster
+
+percona_existing_cluster: true
+percona_running_and_bootstrapped: false
+
+percona_monitoring_user: monitoring
+percona_monitoring_user_password: "eFei9SiereeXiv5Z"
+
+percona_sst_user: sstuser
+percona_sst_user_password: "lee7Aing7yah8phi"
+
+percona_max_heap_table_size: 32M
+percona_tmp_table_size: 32M
+
+percona_file_limits: 65535
+percona_wait_timeout: 28800
+
+## innodb options
+percona_innodb_buffer_pool_size: 128M
+percona_innodb_log_file_size: 100M
+percona_innodb_log_buffer_size: 128M
+
+## wsrep configuration
+percona_wsrep_address: "{{ ansible_ssh_host }}"
+percona_wsrep_cluster_address: "{% for host in groups['mariadb'] %}{{ hostvars[host]['ansible_ssh_host'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+percona_wsrep_node_incoming_address: "{{ percona_wsrep_address }}"
+percona_wsrep_slave_threads: "{{ ansible_processor_vcpus | default(2) }}"
+percona_wsrep_retry_autocommit: 3
+percona_wsrep_debug: 0
+percona_wsrep_sst_method_orig: xtrabackup-v2
+percona_wsrep_sst_method: xtrabackup-v2
+percona_wsrep_sst_auth_user: "{{ percona_sst_user }}"
+percona_wsrep_sst_auth_password: "{{ percona_sst_user_password }}"
+# xtrabackup parallel/compression/sync threads
+percona_xtrabackup_threads: 2
+
+# Galera slow/unindexed query logging
+percona_slow_query_logging: 0
+percona_unindexed_query_logging: 0

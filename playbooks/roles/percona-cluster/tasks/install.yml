@@ -1,0 +1,16 @@
+---
+- name: install Percona repository (RedHat)
+  yum: name="http://www.percona.com/downloads/percona-release/percona-release-0.0-1.x86_64.rpm" state=present
+
+- name: Install Percona-XtraDB-Cluster-full-56
+  yum:  name="{{ item }}" state=present
+  with_items:
+    - Percona-XtraDB-Cluster-full-56
+  register: rh_mysql_install_packages
+
+- name: Install Percona-XtraDB-Cluster-full-56 dependencys
+  yum:  name="{{ item }}" state=present
+  with_items:
+    - MySQL-python
+    - which
+
