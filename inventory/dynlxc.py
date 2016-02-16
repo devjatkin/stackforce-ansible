@@ -10,9 +10,6 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.group import Group
 from ansible.inventory.ini import InventoryParser
 
-if os.geteuid() != 0:
-    os.execvp("sudo", ["sudo"] + sys.argv)
-
 
 def get_config(config_file='/etc/stackforce/parameters.ini'):
     cnf = ConfigParser.ConfigParser()
@@ -100,6 +97,9 @@ def add_extravars(res, extra_vars):
     return res
 
 if __name__ == "__main__":
+    if os.geteuid() != 0:
+        os.execvp("sudo", ["sudo"] + sys.argv)
+        
     config = get_config()
     inventory_file = config.get("os", "inventory_file")
     os_vars = {
