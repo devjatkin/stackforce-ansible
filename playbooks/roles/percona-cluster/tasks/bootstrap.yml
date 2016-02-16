@@ -1,0 +1,23 @@
+---
+- name: Start cluster with wsrep
+  service:
+    name: mysql@bootstrap.service
+    state: restarted
+  when:
+    - inventory_hostname == percona_server_bootstrap_node
+
+- name: Wait for operational state
+  command: mysql --silent --skip-column-names -e 'SHOW STATUS LIKE "wsrep_evs_state"'
+  register: percona_check_wait
+  until: percona_check_wait|success
+  failed_when: not percona_check_wait.stdout | search("OPERATIONAL")
+  retries: 6
+  delay: 5
+  when:
+    - inventory_hostname == percona_server_bootstrap_node
+
+- set_fact:
+    percona_running_and_bootstrapped: true
+  when:
+    - inventory_hostname == percona_server_bootstrap_node
+

@@ -1,0 +1,41 @@
+---
+- name: Create percona users
+  mysql_user:
+    login_user: "root"
+    login_host: "localhost"
+    name: "{{ item.name }}"
+    host: "{{ item.host }}"
+    password: "{{ item.password }}"
+    priv: "{{ item.priv }}"
+    state: "{{ item.state }}"
+  with_items:
+    - name: "{{ mysql_root_username }}"
+      host: "%"
+      password: "{{ mysql_root_password }}"
+      priv: "*.*:ALL,GRANT"
+      state: present
+    - name: "{{ mysql_root_username }}"
+      host: "localhost"
+      password: "{{ mysql_root_password }}"
+      priv: "*.*:ALL"
+      state: absent
+    - name: "{{ percona_monitoring_user }}"
+      host: '%'
+      password: "{{ percona_monitoring_user_password }}"
+      priv: "*.*:USAGE"
+      state: present
+    - name: "{{ percona_monitoring_user }}"
+      host: 'localhost'
+      password: "{{ percona_monitoring_user_password }}"
+      priv: "*.*:USAGE"
+      state: present
+    - name: "{{ percona_sst_user }}"
+      host: '%'
+      password: "{{ percona_sst_user_password }}"
+      priv: "*.*:RELOAD,LOCK TABLES,REPLICATION CLIENT"
+      state: present
+    - name: "{{ percona_sst_user }}"
+      host: 'localhost'
+      password: "{{ percona_sst_user_password }}"
+      priv: "*.*:RELOAD,LOCK TABLES,REPLICATION CLIENT"
+      state: present
