@@ -9,16 +9,6 @@
     priv: "{{ item.priv }}"
     state: "{{ item.state }}"
   with_items:
-    - name: "{{ mysql_root_username }}"
-      host: "%"
-      password: "{{ mysql_root_password }}"
-      priv: "*.*:ALL,GRANT"
-      state: present
-    - name: "{{ mysql_root_username }}"
-      host: "localhost"
-      password: "{{ mysql_root_password }}"
-      priv: "*.*:ALL"
-      state: absent
     - name: "{{ percona_monitoring_user }}"
       host: '%'
       password: "{{ percona_monitoring_user_password }}"
