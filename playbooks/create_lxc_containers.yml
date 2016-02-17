@@ -23,7 +23,7 @@
   roles:
     - role: common
   tasks:
-  - lvg: vg=lxc pvs=/dev/sdb
+  - lvg: vg=lxc pvs="{{ lxc_disk }}"
     tags:
       - lvm
   - file: path=/etc/stackforce state=directory
@@ -84,12 +84,10 @@
       clone_snapshot: true
       container_config:
         - lxc.kmsg=0
+        - lxc.start.auto=1
     tags:
       - lxc
       - lxc-base-container
-
-  - name: Make the base container autostarted
-    lineinfile: dest=/var/lib/lxc/{{ lxc_base_container }}/config line="lxc.start.auto = 1"
 
   - name: Waiting for ping
     lxc_container:
@@ -188,3 +186,6 @@
     lxc_container:
       name: "{{ lxc_base_container }}"
       state: stopped
+
+  - name: Make the base container non-autostarted
+    lineinfile: dest=/var/lib/lxc/{{ lxc_base_container }}/config line="lxc.start.auto = 1" state=absent

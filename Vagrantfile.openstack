@@ -81,11 +81,11 @@ Vagrant.configure(2) do |config|
     os.volumes = [
         {
           name: VOLLXC,
-          device: '/dev/sdb'
+          device: '/dev/vdb'
         },
         {
           name: VOLCINDER,
-          device: '/dev/sdc'
+          device: '/dev/vdc'
         }
     ]
   end
@@ -111,21 +111,12 @@ Vagrant.configure(2) do |config|
 
     sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     sudo yum install -y http://repo.cloudlinux.com/stackforce-testing/x86_64/ansible-2.0.0.2-1.el7.noarch.rpm
-    sudo chmod +x /vagrant/inventory/dynlxc.py
-    sudo adduser vagrant 
-    sudo -u vagrant ssh-keygen -t rsa -N "" -f /home/vagrant/.ssh/id_rsa || /bin/true
     sudo yum -y install lvm2 
-    sudo echo "vagrant ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/91-vagrant-passwordless-sudo
-    sudo chmod +x /etc/rc.d/rc.local
-    sudo echo "ln -sT /dev/vdb /dev/sdb" >> /etc/rc.d/rc.local
-    sudo echo "ln -sT /dev/vdc /dev/sdc" >> /etc/rc.d/rc.local
-    sudo /etc/rc.d/rc.local || /bin/true
-    
-    sudo -u vagrant ansible-playbook -i "localhost," -c local --extra-vars 'lxc_container_user_name=vagrant' /vagrant/playbooks/create_lxc_containers.yml
-    sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/horizon_proxy.yml
-    sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
-    sudo -u vagrant ansible-playbook -i "localhost," -c local /vagrant/test/playbooks/install_bats.yml
-    sudo -u vagrant bats /vagrant/test/integration/default/bats/*.bats
+    sudo -u centos ansible-playbook -i "localhost," -c local --extra-vars 'lxc_container_user_name=vagrant lxc_disk=/dev/vdb' /vagrant/playbooks/create_lxc_containers.yml
+    sudo -u centos ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/horizon_proxy.yml
+    sudo -u centos ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
+    sudo -u centos ansible-playbook -i "localhost," -c local /vagrant/test/playbooks/install_bats.yml
+    #sudo -u centos bats /vagrant/test/integration/default/bats/*.bats
   SHELL
 end
 
