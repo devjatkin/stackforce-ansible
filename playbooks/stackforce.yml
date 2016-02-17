@@ -6,7 +6,7 @@
   serial: 3
 
 - include: rabbitmq.yml
-- include: mariadb.yml
+- include: percona-cluster.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
 - include: memcached.yml
