@@ -47,7 +47,6 @@
     - install_cinder
 - include: os-compute.yml
   vars:
-    compute_virt_type: 'lxc'
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
     neutron_service_publicurl: "http://{{ public_address }}:9696"
 
