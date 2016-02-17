@@ -14,15 +14,56 @@ class TestGetConfig(unittest.TestCase):
 
 class TestReadInventoryFile(unittest.TestCase):
     def test_base(self):
-        res = read_inventory_file("test/inventory/vagrant")
-        self.assertIn("all", res)
-        self.assertIn("_meta", res)
-        self.assertIn("hostvars", res["_meta"])
-        self.assertIn("groupvars", res["_meta"])
-        self.assertIn("localhost", res["all"])
-        self.assertIn("compute", res)
-        self.assertIn("localhost", res["compute"]["hosts"])
+        class MockGroup(MagicMock):
+            def __init__(self, name):
+                super(MockGroup, self).__init__()
+                self.name = name
+            hosts = []
+            vars = {}
 
+            def __repr__(self):
+                return str(self.name)
+
+        group_all = MockGroup("all")
+        compute = MockGroup("compute")
+        controller = MockGroup("controller")
+        ungrouped = MockGroup("ungrouped")
+        group_all.hosts = ['localhost']
+        compute.hosts = ['localhost']
+        compute.vars = {'localhost': {
+            "ansible_connection": "local",
+            "neutron_physical_interface_mappings": "vlan:enp0s8,external:enp0s3",
+            "cinder_disk": "/dev/sdc"}}
+        controller.hosts = ['localhost']
+        controller.vars = {'localhost': {
+            "ansible_connection": "local"
+        }}
+        mocked_inv = MagicMock()
+        mocked_inv.groups = {'all': group_all,
+                             'compute': compute,
+                             'controller': controller,
+                             'ungrouped': ungrouped}
+        mocked_dl = MagicMock()
+        inventory_path = "NonePath"
+        with patch.multiple('inventory.dynlxc', InventoryParser=mocked_inv,
+                            DataLoader=mocked_dl):
+            res = read_inventory_file(inventory_path)
+            mocked_dl.assert_called_once_with()
+            self.assertIn("all", res)
+            self.assertIn("_meta", res)
+            self.assertIn("hostvars", res["_meta"])
+            self.assertIn("groupvars", res["_meta"])
+            self.assertIn("localhost", res["all"])
+            self.assertIn("compute", res)
+            self.assertIn("localhost", res["compute"]["hosts"])
+    def test_mocked_dl(self):
+        mocked_dl = MagicMock()
+        mocked_dl._get_file_contents = MagicMock(return_value=("None", True))
+        inventory_path = "inventory_test_path"
+        # with patch.multiple('inventory.dynlxc', DataLoader=mocked_dl):
+        with patch('inventory.dynlxc.DataLoader', mocked_dl):
+            res = read_inventory_file(inventory_path)
+            mocked_dl._get_file_contents.assert_called_with(inventory_path)
 
 class TestListContainers(unittest.TestCase):
     def test_base(self):

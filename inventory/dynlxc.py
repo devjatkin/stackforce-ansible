@@ -26,19 +26,22 @@ def read_inventory_file(inventory_filepath):
     hostvars = {}
     groupvars = {}
     dl = DataLoader()
-    inv = InventoryParser(dl, {"ungrouped": Group("ungrouped"),
-                               "all": Group("all")},
-                          inventory_filepath)
-    for grp in inv.groups:
-        res[grp] = {'hosts': [], 'vars': {}}
-        groupvars[grp] = inv.groups[grp].vars
-        for host in inv.groups[grp].hosts:
-            res[grp]['hosts'].append(host.name)
-            hostvars[host.name] = host.vars
+    print "DEBUG: ", dl._get_file_contents("test/inventory/vagrant")
+    # inv = InventoryParser(dl, {"ungrouped": Group("ungrouped"),
+    #                            "all": Group("all")},
+    #                       inventory_filepath)
+    # for grp in inv.groups:
+    #     res[grp] = {'hosts': [], 'vars': {}}
+    #     groupvars[grp] = inv.groups[grp].vars
+    #     for host in inv.groups[grp].hosts:
+    #         res[grp]['hosts'].append(host.name)
+    #         hostvars[host.name] = host.vars
     res["_meta"] = {
         "hostvars": hostvars,
         "groupvars": groupvars
     }
+    import pprint
+    pprint.pprint(res)
     res["all"] = hostvars.keys()
     return res
 
