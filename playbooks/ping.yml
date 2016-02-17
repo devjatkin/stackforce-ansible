@@ -3,3 +3,5 @@
   tasks:
     - name: test connection
       ping:
+      retries: 10
+      delay: 30
