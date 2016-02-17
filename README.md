@@ -15,8 +15,12 @@ Openstack dev-environment over Openstack installation procedure:
 - $ vagrant plugin install vagrant-openstack-provider
 - A "centos7" image
 - Edit Vagrantfile.openstack, populating it with your tenant account
-- Create 2 100GB volumes, called "vol-lxc" and "vol-cinder"
+- Get your local PC username: $ echo $USER
+- Create 2 100GB volumes, called "$USER-lxc" and "$USER-cinder"
 - Edit the "default" security group, permitting all ingress traffic(the simpliest case)
 - $ export VAGRANT_OPENSTACK_LOG=debug
-- VAGRANT_VAGRANTFILE=Vagrantfile.openstack vagrant up --provider=openstack
+- $ VAGRANT_VAGRANTFILE=Vagrantfile.openstack vagrant up --provider=openstack
+- $ VAGRANT_VAGRANTFILE=Vagrantfile.openstack vagrant ssh
+- $ VAGRANT_VAGRANTFILE=Vagrantfile.openstack vagrant destroy
+- $ rm -rf .vagrant
 
