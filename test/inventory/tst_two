@@ -1,13 +1,17 @@
-cid02-tst ansible_connection=local
-cid03-tst ansible_host=192.168.10.7 ansible_user=root
+cid01-tst ansible_host=192.168.10.5 ansible_user=root
+cid02-tst ansible_host=192.168.10.6 ansible_user=root
+cid03-tst ansible_connection=local
 
 [baremetal]
+cid01-tst
 cid02-tst
 cid03-tst
 [controller]
-cid02-tst
+cid03-tst
 [compute]
-cid03-tst cinder_disk="/dev/sdb"
+cid01-tst cinder_disk="/dev/sdb"
+cid02-tst cinder_disk="/dev/sdb"
 [compute:vars]
+compute_virt_type="kvm"
 os_rabbit_port=5672
 cinder_disk="/dev/sdb"
