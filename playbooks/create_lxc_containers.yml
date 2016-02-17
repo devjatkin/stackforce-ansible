@@ -44,6 +44,12 @@
     tags:
       - yum
 
+  - name: Libselinux-python package installation
+    yum: name=libselinux-python state=present
+
+  - name: Set selinux state to permissive
+    selinux: policy=targeted state=permissive
+
   - name: LXC packages
     yum: name="{{ item }}" state=present
     with_items:
