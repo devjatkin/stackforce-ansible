@@ -7,12 +7,13 @@ mysql_slow_query_log_file: /var/log/mysql-slow.log
 mysql_slow_query_time: 2
 mysql_key_buffer_size: "64M"
 mysql_max_allowed_packet: "16M"
-mysql_table_open_cache: "64"
+mysql_table_open_cache: "128"
 mysql_sort_buffer_size: "1M"
 mysql_read_buffer_size: "1M"
 mysql_read_rnd_buffer_size: "4M"
 mysql_thread_cache_size: "8"
 mysql_query_cache_size: "16M"
+mysql_query_cache_type: "1"
 mysql_max_connections: 151
 
 # Other settings.
@@ -25,6 +26,7 @@ mysql_thread_concurrency: 2
 # Set .._buffer_pool_size up to 80% of RAM but beware of setting too high.
 mysql_innodb_file_per_table: "1"
 mysql_innodb_buffer_pool_size: "64M"
+mysql_innodb_buffer_pool_instances: "1"
 mysql_innodb_additional_mem_pool_size: "20M"
 # Set .._log_file_size to 25% of buffer pool size.
 mysql_innodb_log_file_size: "64M"
