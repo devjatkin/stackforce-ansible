@@ -3,3 +3,4 @@ python-openstackclient
 lxc-python2
 nose2
 mock
+fabric

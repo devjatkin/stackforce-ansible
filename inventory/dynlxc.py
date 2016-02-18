@@ -6,6 +6,7 @@ import json
 import lxc
 import re
 import ConfigParser
+import subprocess
 from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.group import Group
 from ansible.inventory.ini import InventoryParser
@@ -19,6 +20,51 @@ def get_config(config_file='/etc/stackforce/parameters.ini'):
 
     cnf.read(config_file)
     return cnf
+
+
+def list_remote_containers(hostvars):
+    """
+
+    @param hosts: ansible hostvars, uri:key, ex.: "root@192.168.10.6":"/home/vagrant/id_rsa"
+    @return: inventory result
+    """
+    res = {"_meta": {"hostvars": {}}}
+    tmpl_ssh_command = "ssh {host} -l {user} -p {port} -i {key_filename} {command}"
+    for host, data in hostvars.iteritems():
+        is_local = data.get("ansible_connection") == "local"
+        ssh_host = data.get("ansible_ssh_host", data.get("ansib"
+                                                         "le_host"))
+        if is_local:
+            ssh_host = "localhost"
+        ssh_user = data.get("ansible_ssh_user", data.get("ansible_user", "root"))
+        ssh_port = data.get("ansible_ssh_port", data.get("ansible_port", 22))
+        ssh_key_filename = data.get("ansible_ssh_private_key_file", "~/.ssh/id_rsa")
+        cmd_list_containers = tmpl_ssh_command.format(
+            host=ssh_host,
+            user=ssh_user,
+            port=ssh_port,
+            key_filename=ssh_key_filename,
+            command="sudo lxc-ls --active"
+        )
+        cmd_run_containers = run_command(cmd_list_containers)
+        containers = cmd_run_containers.split()
+        for name in containers:
+            cmd_get_container_ip = tmpl_ssh_command.format(
+                host=ssh_host,
+                user=ssh_user,
+                port=ssh_port,
+                key_filename=ssh_key_filename,
+                command="sudo lxc-info -i --name {}".format(name)
+            )
+            cmd_run_container_ip = run_command(cmd_get_container_ip)
+            res["_meta"]['hostvars'][name] = {"ansible_host": cmd_run_container_ip.split()[-1]}
+        # res["all"] = list(res['_meta']['hostvars'].keys())
+        print json.dumps(res)
+        # return res
+
+
+def run_command(command):
+    return subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
 
 
 def read_inventory_file(inventory_filepath):
@@ -39,8 +85,6 @@ def read_inventory_file(inventory_filepath):
         "hostvars": hostvars,
         "groupvars": groupvars
     }
-    import pprint
-    pprint.pprint(res)
     res["all"] = hostvars.keys()
     return res
 
