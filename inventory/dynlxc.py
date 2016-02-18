@@ -6,70 +6,178 @@ import json
 import lxc
 import re
 import ConfigParser
+import subprocess
 from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.group import Group
 from ansible.inventory.ini import InventoryParser
 
-if os.geteuid() != 0:
-    os.execvp("sudo", ["sudo"] + sys.argv)
 
-config = ConfigParser.ConfigParser()
-# setting defaults
-config.add_section("os")
-config.set("os", "inventory_file", None)
+def get_config(config_file='/etc/stackforce/parameters.ini'):
+    cnf = ConfigParser.ConfigParser()
+    # setting defaults
+    cnf.add_section("os")
+    cnf.set("os", "inventory_file", None)
 
-config.read('/etc/stackforce/parameters.ini')
+    cnf.read(config_file)
+    return cnf
 
-result = dict()
-result['all'] = {}
-hostvars = {}
-groupvars = {}
-os_vars = {
-    'os_rabbit_host': config.get('public', 'address'),
-    'os_rabbit_port': config.get('os', 'rabbit_port'),
-    'os_verbose': config.get('os_logs', 'verbose'),
-    'os_debug': config.get('os_logs', 'debug')}
+
+def list_remote_containers(hostvars):
+    """
+
+    @param hosts: ansible hostvars, uri:key, ex.: "root@192.168.10.6":"/home/vagrant/id_rsa"
+    @return: inventory result
+    """
+    res = {"_meta": {"hostvars": {}}}
+    tmpl_ssh_command = "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no {host} -l {user} -p {port} -i {key_filename} {command}"
+    for host, data in hostvars.iteritems():
+        is_local = data.get("ansible_connection") == "local"
+        ssh_host = data.get("ansible_ssh_host", data.get("ansible_host"))
+        if is_local:
+            ssh_host = "localhost"
+        ssh_user = data.get("ansible_ssh_user", data.get("ansible_user", "root"))
+        ssh_port = data.get("ansible_ssh_port", data.get("ansible_port", 22))
+        ssh_key_filename = data.get("ansible_ssh_private_key_file", "~/.ssh/id_rsa")
+        cmd_list_containers = tmpl_ssh_command.format(
+            host=ssh_host,
+            user=ssh_user,
+            port=ssh_port,
+            key_filename=ssh_key_filename,
+            command="sudo lxc-ls --active"
+        )
+        cmd_run_containers = run_command(cmd_list_containers)
+        containers = cmd_run_containers.split()
+        for name in containers:
+            cmd_get_container_ip = tmpl_ssh_command.format(
+                host=ssh_host,
+                user=ssh_user,
+                port=ssh_port,
+                key_filename=ssh_key_filename,
+                command="sudo lxc-info -i --name {}".format(name)
+            )
+            srv = re.split('_', name)
+            group = srv[0]
+            if group not in res:
+                res[group] = {}
+                res[group]['hosts'] = []
+            if isinstance(res[group], dict):
+                res[group]['hosts'].append(srv)
+            cmd_run_container_ip = run_command(cmd_get_container_ip).split()
+            if len(cmd_run_container_ip):
+                res["_meta"]['hostvars'][name] = {"ansible_host": cmd_run_container_ip[-1]}
+
+        res["all"] = list(res['_meta']['hostvars'].keys())
+        return res
+
+
+def get_remote_controllers(inventory):
+    res_hostvars = {}
+    controllers = inventory.get("controller", {})
+    for host in controllers.get("hosts", []):
+        if inventory["_meta"]["hostvars"][host].get("ansible_connection", "remote") != "local":
+            res_hostvars[host]=inventory["_meta"]["hostvars"][host]
+    return res_hostvars
+
+
+def run_command(command):
+    return subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
+
+
+def read_inventory_file(inventory_filepath):
+    res = dict()
+    hostvars = {}
+    groupvars = {}
+    dl = DataLoader()
+    inv = InventoryParser(dl, {"ungrouped": Group("ungrouped"),
+                               "all": Group("all")},
+                          inventory_filepath)
+    for grp in inv.groups:
+        res[grp] = {'hosts': [], 'vars': {}}
+        groupvars[grp] = inv.groups[grp].vars
+        for host in inv.groups[grp].hosts:
+            res[grp]['hosts'].append(host.name)
+            hostvars[host.name] = host.vars
+    res["_meta"] = {
+        "hostvars": hostvars,
+        "groupvars": groupvars
+    }
+    res["all"] = hostvars.keys()
+    return res
+
+
+def list_containers():
+    res = dict()
+    hostvars = {}
+    containers = lxc.list_containers(active=True, defined=False)
+    for container_name in containers:
+        srv = re.split('_', container_name)
+        group = srv[0]
+        if group not in res:
+            res[group] = {}
+            res[group]['hosts'] = []
+        if isinstance(res[group], dict):
+            res[group]['hosts'].append(container_name)
+        container = lxc.Container(name=container_name)
+        if container.get_interfaces():
+            ips = container.get_ips()
+            if len(ips):
+                hostvars[container_name] = dict(ansible_ssh_host=ips[0])
+    res["_meta"] = {"hostvars": hostvars}
+    res['all'] = list(containers)
+    return res
+
 
 # TODO: Handle hosts with same name
-inventory_file = config.get("os", "inventory_file")
-if inventory_file:
-    dl = DataLoader()
-    inv = InventoryParser(dl, {"ungrouped": Group("ungrouped"), "all": Group("all")}, inventory_file)
-    for grp in inv.groups:
-        if grp not in result:
-            result[grp] = {'hosts': [], 'vars': os_vars}
-        groupvars[grp] = inv.groups[grp].vars
+# TODO: Handle groups with same name
+# TODO: What if groupvars/hostvars doesn't exists?
+def merge_results(a, b):
+    res = a
+    res["all"] = res["all"] + b["all"]
+    for grp in b:
+        if grp == "all":
+            continue
+        if grp == "_meta":
+            if "groupvars" in b["_meta"]:
+                if "groupvars" not in res["_meta"]:
+                    res["_meta"]["groupvars"] = {}
+                for group in b["_meta"]["groupvars"]:
+                    res["_meta"]["groupvars"][group] = b["_meta"]["groupvars"][group]
+            if "hostvars" in b["_meta"]:
+                if "hostvars" not in res["_meta"]:
+                    res["_meta"]["hostvars"] = []
+                for host in b["_meta"]["hostvars"]:
+                    res["_meta"]["hostvars"][host] = b["_meta"]["hostvars"][host]
+        else:
+            res[grp] = b[grp]
+    return res
 
-        for host in inv.groups[grp].hosts:
-            result[grp]['hosts'].append(host.name)
-            hostvars[host.name] = host.vars
 
+def add_extravars(res, extra_vars):
+    for host in res["_meta"]["hostvars"]:
+        for var in extra_vars:
+            res["_meta"]["hostvars"][host][var] = extra_vars[var]
+    return res
 
-containers = lxc.list_containers(active=True, defined=False)
-for container_name in containers:
-    srv = re.split('_', container_name)
-    group = srv[0]
-    if group not in result:
-        result[group] = {}
-        result[group]['hosts'] = []
-        result[group]['vars'] = os_vars
-    if isinstance(result[group], dict):
-        result[group]['hosts'].append(container_name)
-    # get ip from container object
-    container = lxc.Container(name=container_name)
-    result['all']['hosts'] = containers
-    if container.get_interfaces():
-        ips = container.get_ips()
-        if len(ips):
-            hostvars[container_name] = dict(ansible_ssh_host=ips[0])
+if __name__ == "__main__":
+    if os.geteuid() != 0:
+        os.execvp("sudo", ["sudo"] + sys.argv)
 
-result['all'] = containers
-result['_meta'] = {'hostvars': hostvars,
-                   'groupvars': groupvars}
-
-if len(sys.argv) == 2 and sys.argv[1] == '--list':
-    print(json.dumps(result))
-elif len(sys.argv) == 3 and sys.argv[1] == '--host':
-    print("TODO: SSH support")
-else:
-    print("Need an argument, either --list or --host <host>")
+    config = get_config()
+    inventory_file = config.get("os", "inventory_file")
+    os_vars = {
+        'os_rabbit_host': config.get('public', 'address'),
+        'os_rabbit_port': config.get('os', 'rabbit_port'),
+        'os_verbose': config.get('os_logs', 'verbose'),
+        'os_debug': config.get('os_logs', 'debug')}
+    result = merge_results(list_containers(),
+                           read_inventory_file(inventory_file))
+    result = add_extravars(result, os_vars)
+    remote_controllers = get_remote_controllers(result)
+    result = merge_results(result,
+                           list_remote_containers(remote_controllers))
+    if len(sys.argv) == 2 and sys.argv[1] == '--list':
+        print(json.dumps(result))
+    elif len(sys.argv) == 3 and sys.argv[1] == '--host':
+        print("TODO: SSH support")
+    else:
+        print("Need an argument, either --list or --host <host>")
