@@ -1,5 +1,6 @@
 {
     "server": false,
+    "bind_addr": "{{ ansible_default_ipv4.address }}",
     "retry_join": ["{{ public_address }}"],
     "data_dir": "/var/lib/consul",
     "enable_syslog": true,
