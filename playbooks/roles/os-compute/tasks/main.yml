@@ -4,6 +4,9 @@
   register: support_kvm
   ignore_errors: true
 
+- name: Remove firewalld
+  yum: name=firewalld state=absent
+
 - include: install_requirements.yml
 - include: install_compute.yml
 - include: configure_services.yml
