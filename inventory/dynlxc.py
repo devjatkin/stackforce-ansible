@@ -29,11 +29,10 @@ def list_remote_containers(hostvars):
     @return: inventory result
     """
     res = {"_meta": {"hostvars": {}}}
-    tmpl_ssh_command = "ssh {host} -l {user} -p {port} -i {key_filename} {command}"
+    tmpl_ssh_command = "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no {host} -l {user} -p {port} -i {key_filename} {command}"
     for host, data in hostvars.iteritems():
         is_local = data.get("ansible_connection") == "local"
-        ssh_host = data.get("ansible_ssh_host", data.get("ansib"
-                                                         "le_host"))
+        ssh_host = data.get("ansible_ssh_host", data.get("ansible_host"))
         if is_local:
             ssh_host = "localhost"
         ssh_user = data.get("ansible_ssh_user", data.get("ansible_user", "root"))
@@ -56,11 +55,28 @@ def list_remote_containers(hostvars):
                 key_filename=ssh_key_filename,
                 command="sudo lxc-info -i --name {}".format(name)
             )
-            cmd_run_container_ip = run_command(cmd_get_container_ip)
-            res["_meta"]['hostvars'][name] = {"ansible_host": cmd_run_container_ip.split()[-1]}
-        # res["all"] = list(res['_meta']['hostvars'].keys())
-        print json.dumps(res)
-        # return res
+            srv = re.split('_', name)
+            group = srv[0]
+            if group not in res:
+                res[group] = {}
+                res[group]['hosts'] = []
+            if isinstance(res[group], dict):
+                res[group]['hosts'].append(srv)
+            cmd_run_container_ip = run_command(cmd_get_container_ip).split()
+            if len(cmd_run_container_ip):
+                res["_meta"]['hostvars'][name] = {"ansible_host": cmd_run_container_ip[-1]}
+
+        res["all"] = list(res['_meta']['hostvars'].keys())
+        return res
+
+
+def get_remote_controllers(inventory):
+    res_hostvars = {}
+    controllers = inventory.get("controller", {})
+    for host in controllers.get("hosts", []):
+        if inventory["_meta"]["hostvars"][host].get("ansible_connection", "remote") != "local":
+            res_hostvars[host]=inventory["_meta"]["hostvars"][host]
+    return res_hostvars
 
 
 def run_command(command):
@@ -156,6 +172,9 @@ if __name__ == "__main__":
     result = merge_results(list_containers(),
                            read_inventory_file(inventory_file))
     result = add_extravars(result, os_vars)
+    remote_controllers = get_remote_controllers(result)
+    result = merge_results(result,
+                           list_remote_containers(remote_controllers))
     if len(sys.argv) == 2 and sys.argv[1] == '--list':
         print(json.dumps(result))
     elif len(sys.argv) == 3 and sys.argv[1] == '--host':
