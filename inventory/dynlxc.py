@@ -65,7 +65,6 @@ def list_remote_containers(hostvars):
             cmd_run_container_ip = run_command(cmd_get_container_ip).split()
             if len(cmd_run_container_ip):
                 res["_meta"]['hostvars'][name] = {"ansible_host": cmd_run_container_ip[-1]}
-
         res["all"] = list(res['_meta']['hostvars'].keys())
         return res
 
@@ -173,8 +172,9 @@ if __name__ == "__main__":
                            read_inventory_file(inventory_file))
     result = add_extravars(result, os_vars)
     remote_controllers = get_remote_controllers(result)
-    result = merge_results(result,
-                           list_remote_containers(remote_controllers))
+    if remote_controllers:
+        result = merge_results(result,
+                               list_remote_containers(remote_controllers))
     if len(sys.argv) == 2 and sys.argv[1] == '--list':
         print(json.dumps(result))
     elif len(sys.argv) == 3 and sys.argv[1] == '--host':
