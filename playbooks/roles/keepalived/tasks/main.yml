@@ -1,0 +1,41 @@
+---
+- name: Install keepalived
+  yum: name=keepalived
+
+
+- debug: msg="{{ keepalived_master_priority }}"
+
+- name: Add vrrp priority counter
+  consul_kv:
+    key: keepalived/priority_counter
+    value: "{{ keepalived_master_priority }}"
+  when: inventory_hostname == keepalived_master_server
+
+- name: Get vrrp priority from consul
+  set_fact:
+    keepalived_vrrp_priority: "{{ lookup('consul_kv', 'keepalived/priority_counter') }}"
+
+- debug: msg="{{ keepalived_vrrp_priority }}"
+
+- name: Update vrrp counter
+  consul_kv:
+    key: keepalived/priority_counter
+    value: "{{ keepalived_master_priority | int - 10 }}"
+
+- name: Setkeepalived conf
+  template:
+    src: keepalived.conf.j2
+    dest: /etc/keepalived/keepalived.conf
+  notify: Restart keepalived
+
+- name: allow binding non-local IP
+  sysctl:
+    name: net.ipv4.ip_nonlocal_bind
+    value: "{{ keepalived_ip_nonlocal_bind }}"
+    reload: true
+    state: present
+  when: keepalived_ip_nonlocal_bind != false
+
+- name: Start keepalived
+  service: name=keepalived state=started enabled=yes
+
