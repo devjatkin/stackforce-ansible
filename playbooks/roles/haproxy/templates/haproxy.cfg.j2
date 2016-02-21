@@ -89,14 +89,18 @@ listen keystone_admin 0.0.0.0:35357
         option tcpka
         option httpchk
         maxconn 10000
-        server node1 {{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:35357 check inter 2000 rise 2 fall 5
+{% for host in groups['keystone'] %}
+        server {{ host }} {{ hostvars[host]['ansible_ssh_host'] }}:35357 check inter 2000 rise 2 fall 5
+{% endfor %}
 
 listen keystone_api 0.0.0.0:5000
         balance source
         option tcpka
         option httpchk
         maxconn 10000
-        server node1 {{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:5000 check inter 2000 rise 2 fall 5
+{% for host in groups['keystone'] %}
+        server {{ host }} {{ hostvars[host]['ansible_ssh_host'] }}:5000 check inter 2000 rise 2 fall 5
+{% endfor %}
 
 #---------------------------------------------------------------------
 # glance
@@ -106,7 +110,9 @@ listen glance_api 0.0.0.0:9292
         option tcpka
         option httpchk
         maxconn 10000
-        server node1 {{ hostvars[groups.glance.0]['ansible_ssh_host'] }}:9292 check inter 2000 rise 2 fall 5
+{% for host in groups['glance'] %}
+        server {{ host }} {{ hostvars[host]['ansible_ssh_host'] }}:9292 check inter 2000 rise 2 fall 5
+{% endfor %}
 
 #---------------------------------------------------------------------
 # nova
@@ -116,7 +122,9 @@ listen nova_api 0.0.0.0:8774
         option tcpka
         option httpchk
         maxconn 10000
-        server node1 {{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:8774 check inter 2000 rise 2 fall 5
+{% for host in groups['nova'] %}
+        server {{ host }} {{ hostvars[host]['ansible_ssh_host'] }}:8774 check inter 2000 rise 2 fall 5
+{% endfor %}
 
 #---------------------------------------------------------------------
 # nova-metadata
@@ -126,7 +134,9 @@ listen nova_metadata 0.0.0.0:8775
         option tcpka
         option httpchk
         maxconn 10000
-        server node1 {{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:8775 check inter 2000 rise 2 fall 5
+{% for host in groups['nova'] %}
+        server {{ host }} {{ hostvars[host]['ansible_ssh_host'] }}:8775 check inter 2000 rise 2 fall 5
+{% endfor %}
 
 
 #---------------------------------------------------------------------
@@ -136,7 +146,9 @@ listen nova_novncproxy 0.0.0.0:6080
         balance source
         option tcpka
         maxconn 10000
-        server node1 {{ hostvars[groups.nova.0]['ansible_ssh_host'] }}:6080 check inter 2000 rise 2 fall 5
+{% for host in groups['nova'] %}
+        server {{ host }} {{ hostvars[host]['ansible_ssh_host'] }}:6080 check inter 2000 rise 2 fall 5
+{% endfor %}
 
 #---------------------------------------------------------------------
 # cinder
@@ -146,7 +158,9 @@ listen cinder_api 0.0.0.0:8776
         option tcpka
         option httpchk
         maxconn 10000
-        server node1 {{ hostvars[groups.cinder.0]['ansible_ssh_host'] }}:8776 check inter 2000 rise 2 fall 5
+{% for host in groups['cinder'] %}
+        server {{ host }} {{ hostvars[host]['ansible_ssh_host'] }}:8776 check inter 2000 rise 2 fall 5
+{% endfor %}
 
 #---------------------------------------------------------------------
 # horizon
@@ -156,7 +170,9 @@ listen horizon_api 0.0.0.0:8080
         option tcpka
         option httpchk
         maxconn 10000
-        server node1 {{ hostvars[groups.horizon.0]['ansible_ssh_host'] }}:80 check inter 2000 rise 2 fall 5
+{% for host in groups['horizon'] %}
+        server {{ host }} {{ hostvars[host]['ansible_ssh_host'] }}:80 check inter 2000 rise 2 fall 5
+{% endfor %}
 
 #---------------------------------------------------------------------
 # rabbitmq
@@ -166,7 +182,9 @@ listen rabbitmq 0.0.0.0:5672
         mode tcp
         option tcpka
         maxconn 10000
-        server node1 {{ hostvars[groups.rabbitmq.0]['ansible_ssh_host'] }}:5672 check inter 2000 rise 2 fall 5
+{% for host in groups['rabbitmq'] %}
+        server {{ host }} {{ hostvars[host]['ansible_ssh_host'] }}:5672 check inter 2000 rise 2 fall 5
+{% endfor %}
 #---------------------------------------------------------------------
 # mysql
 #---------------------------------------------------------------------
@@ -174,7 +192,9 @@ listen mysql-cluster 0.0.0.0:3306
     mode tcp
     option tcpka
     option httpchk
-    server node1 {{ hostvars[groups.mariadb.0]['ansible_ssh_host']}}:3306 port 9200 inter 12000 rise 3 fall 3 check
+{% for host in groups['mariadb'] %}
+    server {{ host }} {{ hostvars[host]['ansible_ssh_host'] }}:3306 port 9200 inter 12000 rise 3 fall 3 check
+{% endfor %}
 #---------------------------------------------------------------------
 # consul
 #---------------------------------------------------------------------
