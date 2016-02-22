@@ -1,0 +1,15 @@
+---
+groups:
+  controller:
+    nova: 2
+hosts:
+  controller01:
+    rabbitmq_container: 1
+    mariadb_container: 1
+    syslog_container: 1
+    keystone_container: 1
+    horizon_container: 1
+    glance_container: 1
+    nova_api_container: 1
+    memcached_container: 1
+    cinder_api_container: 1

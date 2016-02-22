@@ -8,6 +8,7 @@ import lxc
 import re
 import ConfigParser
 import subprocess
+import hashlib
 from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.group import Group
 from ansible.inventory.ini import InventoryParser
@@ -18,6 +19,7 @@ def get_config(config_file='/etc/stackforce/parameters.ini'):
     # setting defaults
     cnf.add_section("os")
     cnf.set("os", "inventory_file", None)
+    cnf.set("os", "unique_containers_file", None)
 
     cnf.read(config_file)
     return cnf
@@ -28,6 +30,27 @@ def get_unique_containers_config(filepath):
     data = f.read()
     cnf = yaml.load(data)
     return cnf
+
+
+def get_unique_container_name(name, salt, number):
+    s = str(name)+str(salt) + str(number)
+    hsh = hashlib.sha256(s).hexdigest()
+    return "{}_{}".format(name, hsh[:8])
+
+
+def add_var_lxc_containers_to_controllers(inventory, containers_config):
+    match = {"groups": "groupovars", "hosts": "hostvars"}
+    for m in match:
+        for group_name in containers_config.get(m, []):
+            container_names = []
+            for container_name, count in containers_config[m][group_name].items():
+                container_names.extend([get_unique_container_name(container_name,
+                                                                  group_name,
+                                                                  i) for i in range(count)])
+            inv_group = inventory['_meta'].get(match[m], {}).get(group_name, {})
+            inv_group["lxc_containers"] = container_names
+            inventory['_meta'][match[m]][group_name] = inv_group
+    return inventory
 
 
 def list_remote_containers(hostvars):
@@ -171,6 +194,7 @@ if __name__ == "__main__":
 
     config = get_config()
     inventory_file = config.get("os", "inventory_file")
+    uniq_containers_file = config.get("os", "unique_containers_file")
     os_vars = {
         'os_rabbit_host': config.get('public', 'address'),
         'os_rabbit_port': config.get('os', 'rabbit_port'),
@@ -183,6 +207,9 @@ if __name__ == "__main__":
     if remote_controllers:
         result = merge_results(result,
                                list_remote_containers(remote_controllers))
+    if uniq_containers_file:
+        unique_containers = get_unique_containers_config(uniq_containers_file)
+        result = add_var_lxc_containers_to_controllers(result, unique_containers)
     if len(sys.argv) == 2 and sys.argv[1] == '--list':
         print(json.dumps(result))
     elif len(sys.argv) == 3 and sys.argv[1] == '--host':
