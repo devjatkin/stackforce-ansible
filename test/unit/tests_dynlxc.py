@@ -1,6 +1,6 @@
 import unittest
 from mock import MagicMock, patch
-from inventory.dynlxc import get_config, read_inventory_file, list_containers, add_extravars, merge_results
+from inventory.dynlxc import *
 
 
 class TestGetConfig(unittest.TestCase):
@@ -112,5 +112,4 @@ class TestMergeResults(unittest.TestCase):
         self.assertEqual(res["all"], ["localhost", "server"])
         self.assertTrue(res["_meta"]["hostvars"]["localhost"]["os_debug"])
         self.assertFalse(res["_meta"]["hostvars"]["server"]["os_debug"])
-
 

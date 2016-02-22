@@ -30,9 +30,6 @@ def get_unique_containers_config(filepath):
     return cnf
 
 
-
-
-
 def list_remote_containers(hostvars):
     """
 
