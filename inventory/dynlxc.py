@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+import yaml
 import lxc
 import re
 import ConfigParser
@@ -20,6 +21,16 @@ def get_config(config_file='/etc/stackforce/parameters.ini'):
 
     cnf.read(config_file)
     return cnf
+
+
+def get_unique_containers_config(filepath):
+    f = open(filepath)
+    data = f.read()
+    cnf = yaml.load(data)
+    return cnf
+
+
+
 
 
 def list_remote_containers(hostvars):
