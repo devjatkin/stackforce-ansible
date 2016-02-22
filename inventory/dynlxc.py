@@ -39,7 +39,7 @@ def get_unique_container_name(name, salt, number):
 
 
 def add_var_lxc_containers_to_controllers(inventory, containers_config):
-    match = {"groups": "groupovars", "hosts": "hostvars"}
+    match = {"groups": "groupvars", "hosts": "hostvars"}
     for m in match:
         for group_name in containers_config.get(m, []):
             container_names = []
