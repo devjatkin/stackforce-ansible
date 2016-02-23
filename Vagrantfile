@@ -81,6 +81,7 @@ Vagrant.configure(2) do |config|
     sudo yum install -y epel-release yum-utils
     sudo yum install -y http://repo.cloudlinux.com/stackforce/x86_64/stackforce-release-1-1.el7.noarch.rpm
     sudo yum-config-manager --enable stackforce-testing
+    sudo yum update -y
     sudo yum install -y python2-lxc ansible
     sudo mkdir -pv /etc/stackforce
     sudo cp /vagrant/playbooks/files/vagrant_parameters.ini /etc/stackforce/parameters.ini
