@@ -1,8 +1,4 @@
 ---
-- name: Install RDO Project release
-  yum: name="{{ rdoproject_release_rpm }}" state=present
-  ignore_errors: true
-
 - name: Update rsyslog config
   template: src=rsyslog.conf.j2 dest=/etc/rsyslog.conf
   notify: Restart rsyslog
