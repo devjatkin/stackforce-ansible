@@ -2,4 +2,4 @@
 - hosts: controller
   tasks:
     - debug: msg="{{ item }}"
-      with_items: lxc_containers
+      with_items: "{{ lxc_containers }}"
