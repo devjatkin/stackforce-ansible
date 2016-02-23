@@ -1,0 +1,101 @@
+BOX_NAME = ENV['VAGRANT_BOX_NAME'] || 'bento/centos-7.2'
+
+$num_instances = 2
+$instance_name_prefix = "stackforce"
+$vm_gui = false
+$vm_memory = 512
+$vm_cpus = 1
+$forwarded_ports = { }
+# Example $forwarded_ports = { 8080 => 8080, 9000 => 9000, 6080 => 6080, 6500 => 8500}
+#Size of attached disk space in GB
+$attached_disk_space = 100
+
+def vm_gui
+  $vb_gui.nil? ? $vm_gui : $vb_gui
+end
+
+def vm_memory
+  $vb_memory.nil? ? $vm_memory : $vb_memory
+end
+
+def vm_cpus
+  $vb_cpus.nil? ? $vm_cpus : $vb_cpus
+end
+
+
+Vagrant.configure(2) do |config|
+  config.vm.box = BOX_NAME
+
+  $num_instances.downto(1) do |i|
+    config.vm.define vm_name = "%s-%02d" % [$instance_name_prefix, i] do |config|
+      config.vm.hostname = vm_name
+
+
+      $forwarded_ports.each do |guest, host|
+        config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
+      end
+
+      config.vm.provider :virtualbox do |vb|
+        vb.gui = vm_gui
+        vb.memory = vm_memory
+        vb.cpus = vm_cpus
+        #vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+      end
+
+      config.ssh.insert_key = false
+      config.ssh.private_key_path = ["keys/insecure_private_key"]
+      config.vm.provision "file", source: "keys/insecure_private_key", destination: "~/.ssh/id_rsa"
+
+      ext_ip = "192.168.33.#{i+10}"
+      config.vm.network :private_network, ip: ext_ip, nic_type: "virtio"
+
+      pub_ip = "192.168.43.#{i+10}"
+      config.vm.network :private_network, ip: pub_ip, nic_type: "virtio"
+
+      mngt_ip = "192.168.53.#{i+10}"
+      config.vm.network :private_network, ip: mngt_ip, nic_type: "virtio"
+
+	    vagrant_root = File.dirname(File.expand_path(__FILE__))
+	      config.vm.provider "virtualbox" do |vb|
+    	    file_to_disk = File.join(vagrant_root, ".vagrant/%s_lvm_containersi.vdi" % vm_name)
+    	    unless File.exist?(file_to_disk)
+          vb.customize ['createhd', '--filename', file_to_disk, '--size', $attached_disk_space * 1024]
+        end
+	    vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', file_to_disk]
+	    file_to_disk_cinder = File.join(vagrant_root, '.vagrant/%s_lvm_cinder.vdi' % vm_name)
+	    unless File.exist?(file_to_disk_cinder)
+	      vb.customize ['createhd', '--filename', file_to_disk_cinder, '--size', $attached_disk_space * 1024]
+	    end
+	      vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', file_to_disk_cinder]
+      end
+        config.vm.provision "shell", inline: <<-SHELL
+          sudo yum install -y bridge-utils
+          cat .ssh/authorized_keys > .ssh/id_rsa.pub
+          cp /vagrant/playbooks/files/dot_ssh/config .ssh/
+          chmod 600 .ssh/id_rsa
+          chmod 600 .ssh/config
+          chown -R vagrant .ssh/
+          yes | cp -rf /vagrant/playbooks/files/ifcfg/* /etc/sysconfig/network-scripts/
+        SHELL
+        config.vm.provision "shell" do |s|
+            s.inline = 'sed -i "s/192.168.53.0/$1/g" /etc/sysconfig/network-scripts/ifcfg-mngt-br'
+            s.args   = mngt_ip
+        end
+        config.vm.provision "shell", inline: <<-SHELL
+            systemctl restart network
+        SHELL
+
+      if i == 1
+        config.vm.provision "shell", inline: <<-SHELL
+          sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+          sudo yum install -y http://repo.cloudlinux.com/stackforce-testing/x86_64/ansible-2.0.0.2-1.el7.noarch.rpm
+          sudo -u vagrant ansible-playbook -i "/vagrant/test/inventory/vagrant.2"  --extra-vars 'lxc_container_user_name=vagrant lxc_disk=/dev/sdb' /vagrant/playbooks/create_lxc_containers.yml
+          # sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/horizon_proxy.yml
+          # sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
+          # ansible-playbook -i "localhost," -c local /vagrant/test/playbooks/install_bats.yml
+          # bats /vagrant/test/integration/default/bats/*.bats
+        SHELL
+      end
+    end
+  end
+end
