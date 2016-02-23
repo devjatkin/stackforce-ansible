@@ -14,13 +14,13 @@
   roles:
     - role: common
   tasks:
-  - lvg: vg=lxc pvs="{{ lxc_disk }}"
-    tags:
-      - lvm
-
   - name: Custom ssh config
     become_user: "{{ lxc_container_user_name }}"
     copy: src="files/dot_ssh/config" dest="~/.ssh/config" mode=600 owner="{{ lxc_container_user_name }}"
+
+  - lvg: vg=lxc pvs="{{ lxc_disk }}"
+    tags:
+      - lvm
 
   - name: EPEL repository
     yum: name="{{ item }}" state=present
@@ -51,6 +51,21 @@
     copy:
       src: "files/lxc_centos.common.conf"
       dest: "/usr/share/lxc/config/centos.common.conf"
+
+  - name: Copy LXC default config
+    copy:
+      src: "files/lxc_default.conf"
+      dest: "/etc/lxc/default.conf"
+
+  - name: Copy DNSmasq config
+    copy:
+      src: "files/dnsmasq.conf"
+      dest: "/etc/dnsmasq.conf"
+    when: inventory_hostname ==  "{{ groups['controller'][0] }}"
+
+  - name: Start dnsmasq
+    service: name=dnsmasq state=restarted
+    when: inventory_hostname ==  "{{ groups['controller'][0] }}"
 
   - name: Restart libvirtd
     service: name=libvirtd state=restarted
@@ -95,6 +110,14 @@
         yum -y update &&
         yum install -y sudo openssh-clients rsync &&
         sed --in-place 's/^#\s*\(%wheel\s\+ALL=(ALL)\s\+NOPASSWD:\s\+ALL\)/\1/' /etc/sudoers
+        cat <<EOT >> /etc/sysconfig/network-scripts/ifcfg-eth1
+        DEVICE=eth1
+        BOOTPROTO=dhcp
+        ONBOOT=yes
+        HOSTNAME=
+        NM_CONTROLLED=no
+        TYPE=Ethernet
+        EOT
     with_items: lxc_base_container
     tags:
       - yum
