@@ -84,11 +84,11 @@ Vagrant.configure(2) do |config|
     sudo yum install -y python2-lxc ansible
     sudo mkdir -pv /etc/stackforce
     sudo cp /vagrant/playbooks/files/vagrant_parameters.ini /etc/stackforce/parameters.ini
+    /vagrant/inventory/dynlxc.py --list
     ansible-playbook -i "/vagrant/inventory/dynlxc.py" -c local --extra-vars 'lxc_container_user_name=vagrant lxc_disk=/dev/sdb' /vagrant/playbooks/create_lxc_containers.yml
+    sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/horizon_proxy.yml
+    sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
+    ansible-playbook -i "localhost," -c local /vagrant/test/playbooks/install_bats.yml
+    bats /vagrant/test/integration/default/bats/*.bats
   SHELL
-  #  sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/horizon_proxy.yml
-  #  sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
-  #  ansible-playbook -i "localhost," -c local /vagrant/test/playbooks/install_bats.yml
-  #  bats /vagrant/test/integration/default/bats/*.bats
-  #SHELL
 end

@@ -4,7 +4,6 @@
   become: yes
   become_method: sudo
   vars:
-    parameters_file: "/etc/stackforce/parameters.ini"
     inventory_filepath: "/vagrant/test/inventory/vagrant"
     unique_containers_file: "/vagrant/test/inventory/allinone_containers"
     lxc_base_container: "stackforce_base_container"
@@ -17,12 +16,6 @@
   - lvg: vg=lxc pvs="{{ lxc_disk }}"
     tags:
       - lvm
-  - file: path=/etc/stackforce state=directory
-    tags:
-      - parameters
-  - template: src=parameters.ini.j2 dest="{{ parameters_file }}"
-    tags:
-      - parameters
 
   - name: Custom ssh config
     become_user: "{{ lxc_container_user_name }}"
