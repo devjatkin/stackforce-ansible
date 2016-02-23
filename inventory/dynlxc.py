@@ -68,7 +68,7 @@ result['_meta'] = {'hostvars': hostvars,
                    'groupvars': groupvars}
 
 if len(sys.argv) == 2 and sys.argv[1] == '--list':
-    print(json.dumps(result))
+    print(json.dumps(result, sort_keys=True, indent=2))
 elif len(sys.argv) == 3 and sys.argv[1] == '--host':
     print("TODO: SSH support")
 else:

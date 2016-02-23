@@ -11,5 +11,5 @@ keepalived_int_shared_iface: eth1
 keepalived_ext_router_id: 1
 keepalived_int_router_id: 10
 keepalived_int_auth_pass: "04U3NL7UW177ina0"
-keepalived_ext_auth_pass: "04U3NL7UW177ina0"
+keepalived_ext_auth_pass: "04U3NL7UW177ina1"
 
