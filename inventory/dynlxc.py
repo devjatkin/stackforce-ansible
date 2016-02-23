@@ -35,7 +35,7 @@ def get_unique_containers_config(filepath):
 def get_unique_container_name(name, salt, number):
     s = str(name)+str(salt) + str(number)
     hsh = hashlib.sha256(s).hexdigest()
-    return "{}_{}".format(name, hsh[:8])
+    return "{}_container-{}".format(name, hsh[:8])
 
 
 def add_var_lxc_containers_to_controllers(inventory, containers_config):
