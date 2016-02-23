@@ -8,11 +8,9 @@ class TestGetConfig(unittest.TestCase):
     def test_config(self, mock_class):
         cnf = get_config()
         cnf.add_section.assert_called_once_with("os")
-
-        # cnf.set.assert_called_with("os", "inventory_file", None)
-        # cnf.set.assert_called_with("os", "unique_containers_file", None)
         calls = [
-            call(('os', 'inventory_file', None)), call(('os', 'unique_containers_file', None))]
+            call('os', 'inventory_file', None),
+            call('os', 'unique_containers_file', None)]
         cnf.set.assert_has_calls(calls)
         cnf.read.assert_called_with("/etc/stackforce/parameters.ini")
 
@@ -136,17 +134,34 @@ class TestAddLxcContainersToInventory(unittest.TestCase):
                u'controller': {'hosts': [u'localhost'], 'vars': {}},
                'ungrouped': {'hosts': [], 'vars': {}}}
         yml_cnf = {'groups': {'controller': {'nova': 2}},
-                   'hosts': {'controller01': {'cinder_api_container': 1,
-                                              'glance_container': 1,
-                                              'horizon_container': 1,
-                                              'keystone_container': 1,
-                                              'mariadb_container': 1,
-                                              'memcached_container': 1,
-                                              'nova_api_container': 1,
-                                              'rabbitmq_container': 1,
-                                              'syslog_container': 1}}}
+                   'hosts': {'controller01': {'cinder_api': 1,
+                                              'glance': 1,
+                                              'horizon': 1,
+                                              'keystone': 1,
+                                              'mariadb': 1,
+                                              'memcached': 1,
+                                              'nova_api': 1,
+                                              'rabbitmq': 1,
+                                              'syslog': 1}}}
+        groupnames = [
+            get_unique_container_name('nova', 'controller', 0),
+            get_unique_container_name('nova', 'controller', 1),
+        ]
+        hostnames = [
+            get_unique_container_name('cinder_api', 'controller01', 0),
+            get_unique_container_name('glance', 'controller01', 0),
+            get_unique_container_name('horizon', 'controller01', 0),
+            get_unique_container_name('keystone', 'controller01', 0),
+            get_unique_container_name('mariadb', 'controller01', 0),
+            get_unique_container_name('memcached', 'controller01', 0),
+            get_unique_container_name('nova_api', 'controller01', 0),
+            get_unique_container_name('rabbitmq', 'controller01', 0),
+            get_unique_container_name('syslog', 'controller01', 0),
+        ]
         res = add_var_lxc_containers_to_controllers(inv, yml_cnf)
-        self.assertEqual(res["all"], ["localhost"])
+        self.assertEqual(res["_meta"]["groupvars"]["controller"]["lxc_containers"], groupnames)
+        self.assertEqual(sorted(res["_meta"]["hostvars"]["controller01"]["lxc_containers"]),
+                         sorted(hostnames))
 
 
 
