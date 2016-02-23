@@ -7,14 +7,13 @@ class TestGetConfig(unittest.TestCase):
     @patch('ConfigParser.ConfigParser')
     def test_config(self, mock_class):
         cnf = get_config()
-        cnf.add_section.assert_called_with("os")
+        cnf.add_section.assert_called_once_with("os")
 
-        cnf.set.assert_called_with("os", "inventory_file", None)
+        # cnf.set.assert_called_with("os", "inventory_file", None)
         # cnf.set.assert_called_with("os", "unique_containers_file", None)
-        cnf.set.assert_has_calls(
-            call(("os", "inventory_file", None)),
-            call(("os", "unique_containers_file", None)),
-        )
+        calls = [
+            call(('os', 'inventory_file', None)), call(('os', 'unique_containers_file', None))]
+        cnf.set.assert_has_calls(calls)
         cnf.read.assert_called_with("/etc/stackforce/parameters.ini")
 
 

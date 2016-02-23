@@ -1,3 +1,3 @@
 [controller]
-first_controller lxc_containers='["rabbitmq_container-0cac5cd9", "mariadb_container-f4e260fa", "syslog_container-c2a56e86", "keystone_container-2dc354cb", "horizon_container-81aca944", "glance_container-95c4da2b", "nova_api_container-47fb1655", "memcached_container-dc167f64", "cinder_api_container-84d3a217"]'
-second_controller lxc_containers='["rabbitmq_container-1b13d502", "mariadb_container-5c5bf8ad", "syslog_container-dac7f463", "keystone_container-29ec9c8c", "horizon_container-977506c3", "glance_container-40b8fe32", "nova_api_container-eb866597", "memcached_container-79f63248", "cinder_api_container-771c2f02"]'
+first_controller
+second_controller

@@ -1,4 +1,4 @@
 [compute]
 localhost ansible_connection=local neutron_physical_interface_mappings="vlan:enp0s8,external:enp0s3" cinder_disk="/dev/sdc"
 [controller]
-localhost ansible_connection=local  lxc_containers='["rabbitmq_container-0cac5cd9", "mariadb_container-f4e260fa", "syslog_container-c2a56e86", "keystone_container-2dc354cb", "horizon_container-81aca944", "glance_container-95c4da2b", "nova_api_container-47fb1655", "memcached_container-dc167f64", "cinder_api_container-84d3a217"]'
+localhost ansible_connection=local

@@ -1,6 +1,6 @@
 cid01-tst ansible_host=192.168.10.5 ansible_user=root
 cid02-tst ansible_host=192.168.10.6 ansible_user=root
-cid03-tst ansible_connection=local lxc_containers='["rabbitmq_container-0cac5cd9", "mariadb_container-f4e260fa", "syslog_container-c2a56e86", "keystone_container-2dc354cb", "horizon_container-81aca944", "glance_container-95c4da2b", "nova_api_container-47fb1655", "memcached_container-dc167f64", "cinder_api_container-84d3a217"]'
+cid03-tst ansible_connection=local
 
 [baremetal]
 cid01-tst
