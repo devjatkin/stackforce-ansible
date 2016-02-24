@@ -66,6 +66,7 @@
       backing_store: lvm
       vg_name: "lxc"
       clone_snapshot: true
+      fs_size: "3G"
       container_config:
         - lxc.kmsg=0
         - lxc.start.auto=1
@@ -148,7 +149,8 @@
       backing_store: lvm
       clone_name: "{{ item }}"
       clone_snapshot: true
-    with_items: "{{ lxc_containers }}"
+      fs_size: "3G"
+    with_items: lxc_containers
     tags:
       - lxc
       - lxc-clone-containers
