@@ -1,6 +1,6 @@
 # vim:ft=ansible:
 ---
-- hosts: all
+- hosts: controller*
   become: yes
   become_method: sudo
   vars:
