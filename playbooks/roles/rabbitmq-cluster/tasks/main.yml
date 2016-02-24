@@ -1,31 +1,31 @@
----    
+---
   - name: Replace rabbitmq cookie with a common value
-    template: 
-        dest=/var/lib/rabbitmq/.erlang.cookie 
+    template:
+        dest=/var/lib/rabbitmq/.erlang.cookie
         src=erlang.cookie.j2
         backup=yes
         group=rabbitmq
         owner=rabbitmq
         mode=u+r
     register: cookie_replaced
-    
+
   - name: Restart rabbitmq service to accept a new cookie
     service: name=rabbitmq-server state=restarted
     when: cookie_replaced.changed
-        
+
   - name: Stop cluster
     shell: rabbitmqctl -n rabbit@$(hostname -f) stop_app
     when: cookie_replaced.changed
-    
+
   - name: Reset cluster
     shell: rabbitmqctl -n rabbit@$(hostname -f) reset
     when: cookie_replaced.changed
-        
+
   - name: Trying to join all available nodes
     shell: rabbitmqctl -n rabbit@$(hostname -f) join_cluster rabbit@{{ hostvars[item]['ansible_hostname'] }} || true
     with_items: groups['rabbitmq']
     when: cookie_replaced.changed
-    
+
   - name: Start cluster
     shell: rabbitmqctl -n rabbit@$(hostname -f) start_app
     when: cookie_replaced.changed
