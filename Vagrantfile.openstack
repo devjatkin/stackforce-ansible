@@ -104,12 +104,13 @@ Vagrant.configure(2) do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
-    sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-    sudo yum install -y http://repo.cloudlinux.com/stackforce-testing/x86_64/ansible-2.0.0.2-1.el7.noarch.rpm
-    sudo yum -y install lvm2 
-    sudo -u centos ansible-playbook -i "localhost," -c local --extra-vars 'lxc_container_user_name=centos lxc_disk=/dev/vdb unique_containers_file=/vagrant/test/inventory/unique_containers inventory_filepath=/vagrant/test/inventory/vagrant.openstack' /vagrant/playbooks/create_lxc_containers.yml
+    sudo yum install -y epel-release
+    sudo yum install -y http://repo.cloudlinux.com/stackforce/x86_64/stackforce-release-1-1.el7.noarch.rpm
+    sudo yum install -y ansible --enablerepo='stackforce-testing'
+    ansible-playbook -i "localhost," -c local /vagrant/playbooks/vagrant_preconfig.yml
+    ansible-playbook -i /vagrant/inventory/dynlxc.py -c local --extra-vars 'lxc_container_user_name=centos lxc_disk=/dev/vdb cinder_disk=/dev/vdc unique_containers_file=/vagrant/test/inventory/unique_containers inventory_filepath=/vagrant/test/inventory/vagrant.openstack' /vagrant/playbooks/create_lxc_containers.yml
     sudo -u centos ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/horizon_proxy.yml
-    sudo -u centos ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
+    sudo -u centos ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo --extra-vars 'cinder_disk=/dev/vdc' /vagrant/playbooks/stackforce.yml
     sudo -u centos ansible-playbook -i "localhost," -c local /vagrant/test/playbooks/install_bats.yml
     #sudo -u centos bats /vagrant/test/integration/default/bats/*.bats
   SHELL
