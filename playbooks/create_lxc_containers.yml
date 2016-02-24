@@ -20,6 +20,12 @@
   - lvg: vg=lxc pvs="{{ lxc_disk }}"
     tags:
       - lvm
+  - file: path=/etc/stackforce state=directory
+    tags:
+      - parameters
+  - template: src=parameters.ini.j2 dest="{{ parameters_file }}"
+    tags:
+      - parameters
 
   - name: EPEL repository
     yum: name="{{ item }}" state=present
