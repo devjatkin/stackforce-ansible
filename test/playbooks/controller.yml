@@ -58,4 +58,4 @@
     - name: Set containers.yml
       copy: src=files/tst_two.yml dest=/etc/stackforce/containers.yml
     - name: Set vagrant inventory
-      copy: src=inventory/tst_two dest=/etc/stackforce/inventory
+      copy: src=tst_two dest=/etc/stackforce/inventory
