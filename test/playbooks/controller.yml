@@ -30,11 +30,11 @@
         group: "{{ username }}"
         mode: "644"
     - yum:
-        name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
-    - yum:
         name: "{{ item }}"
         state: present
       with_items:
+        - epel-release
+        - "http://repo.cloudlinux.com/stackforce-staging/x86_64/python2-lxc-0.1-1.git0553f05.el7.x86_64.rpm"
         - git
         - python-devel
         - gcc
