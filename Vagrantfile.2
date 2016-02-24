@@ -35,13 +35,6 @@ Vagrant.configure(2) do |config|
         config.vm.network "forwarded_port", guest: guest, host: host, auto_correct: true
       end
 
-      config.vm.provider :virtualbox do |vb|
-        vb.gui = vm_gui
-        vb.memory = vm_memory
-        vb.cpus = vm_cpus
-        #vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
-      end
-
       config.ssh.insert_key = false
       config.ssh.private_key_path = ["keys/insecure_private_key"]
       config.vm.provision "file", source: "keys/insecure_private_key", destination: "~/.ssh/id_rsa"
@@ -54,6 +47,16 @@ Vagrant.configure(2) do |config|
 
       mngt_ip = "192.168.53.#{i+10}"
       config.vm.network :private_network, ip: mngt_ip, nic_type: "virtio"
+
+      config.vm.provider :virtualbox do |vb|
+        vb.gui = vm_gui
+        vb.memory = vm_memory
+        vb.cpus = vm_cpus
+        #vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+        vb.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+        vb.customize ["modifyvm", :id, "--nicpromisc3", "allow-all"]
+        vb.customize ["modifyvm", :id, "--nicpromisc4", "allow-all"]
+      end
 
 	    vagrant_root = File.dirname(File.expand_path(__FILE__))
 	      config.vm.provider "virtualbox" do |vb|
@@ -89,7 +92,8 @@ Vagrant.configure(2) do |config|
         config.vm.provision "shell", inline: <<-SHELL
           sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
           sudo yum install -y http://repo.cloudlinux.com/stackforce-testing/x86_64/ansible-2.0.0.2-1.el7.noarch.rpm
-          sudo -u vagrant ansible-playbook -i "/vagrant/test/inventory/vagrant.2"  --extra-vars 'lxc_container_user_name=vagrant lxc_disk=/dev/sdb' /vagrant/playbooks/create_lxc_containers.yml
+          sudo -u vagrant ansible-playbook -i "/vagrant/test/inventory/vagrant.2"  --extra-vars 'lxc_container_user_name=vagrant lxc_disk=/dev/sdb inventory_filepath=/vagrant/test/inventory/vagrant.2' /vagrant/playbooks/create_lxc_containers.yml
+          sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/controller.yml
           # sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/horizon_proxy.yml
           # sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
           # ansible-playbook -i "localhost," -c local /vagrant/test/playbooks/install_bats.yml

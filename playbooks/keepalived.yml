@@ -3,4 +3,5 @@
   become: yes
   become_method: sudo
   roles:
-      - role: haproxy
+    - role: keepalived
+  serial: 1
