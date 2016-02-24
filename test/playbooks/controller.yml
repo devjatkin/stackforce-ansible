@@ -48,3 +48,12 @@
         accept_hostkey: yes
         key_file: "/home/{{ username }}/.ssh/id_rsa"
       become_user: "{{ username }}"
+
+    - name: Create config dir
+      file: path=/etc/stackforce state=directory
+    - name: Set parameters.ini
+      template: src=parameters.ini.j2 dest=/etc/stackforce/parameters.ini
+    - name: Set containers.yml
+      copy: src=files/allinone_containers.yml dest=/etc/stackforce/containers.yml
+    - name: Set vagrant inventory
+      copy: src=inventory/tst_two dest=/etc/stackforce/inventory
