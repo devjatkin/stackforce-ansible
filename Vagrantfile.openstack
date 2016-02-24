@@ -107,7 +107,7 @@ Vagrant.configure(2) do |config|
     sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     sudo yum install -y http://repo.cloudlinux.com/stackforce-testing/x86_64/ansible-2.0.0.2-1.el7.noarch.rpm
     sudo yum -y install lvm2 
-    sudo -u centos ansible-playbook -i "localhost," -c local --extra-vars 'lxc_container_user_name=centos lxc_disk=/dev/vdb inventory_filepath=/vagrant/test/inventory/vagrant.openstack' /vagrant/playbooks/create_lxc_containers.yml
+    sudo -u centos ansible-playbook -i "localhost," -c local --extra-vars 'lxc_container_user_name=centos lxc_disk=/dev/vdb unique_containers_file=/vagrant/test/inventory/unique_containers inventory_filepath=/vagrant/test/inventory/vagrant.openstack' /vagrant/playbooks/create_lxc_containers.yml
     sudo -u centos ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/horizon_proxy.yml
     sudo -u centos ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
     sudo -u centos ansible-playbook -i "localhost," -c local /vagrant/test/playbooks/install_bats.yml

@@ -1,14 +1,17 @@
 import unittest
-from mock import MagicMock, patch
-from inventory.dynlxc import get_config, read_inventory_file, list_containers, add_extravars, merge_results
+from mock import MagicMock, patch, call
+from inventory.dynlxc import *
 
 
 class TestGetConfig(unittest.TestCase):
     @patch('ConfigParser.ConfigParser')
     def test_config(self, mock_class):
         cnf = get_config()
-        cnf.add_section.assert_called_with("os")
-        cnf.set.assert_called_with("os", "inventory_file", None)
+        cnf.add_section.assert_called_once_with("os")
+        calls = [
+            call('os', 'inventory_file', None),
+            call('os', 'unique_containers_file', None)]
+        cnf.set.assert_has_calls(calls)
         cnf.read.assert_called_with("/etc/stackforce/parameters.ini")
 
 
@@ -19,6 +22,7 @@ class TestReadInventoryFile(unittest.TestCase):
             def __init__(self, name):
                 super(MockGroup, self).__init__()
                 self.name = name
+
             hosts = []
             vars = {}
 
@@ -68,6 +72,7 @@ class TestReadInventoryFile(unittest.TestCase):
             res = read_inventory_file(inventory_path)
             mocked_dl._get_file_contents.assert_called_with(inventory_path)
 
+
 class TestListContainers(unittest.TestCase):
     def test_base(self):
         res = list_containers()
@@ -84,13 +89,13 @@ class TestAddExtravars(unittest.TestCase):
                       "local": {"hosts": ["localhost"]},
                       "remote": {"hosts": ["server"]},
                       "_meta": {"hostvars": {
-                                    "localhost": {},
-                                    "server": {}
-                                },
-                                "groupvars:": {
-                                    "local": {},
-                                    "remote": {}
-                                }}}
+                          "localhost": {},
+                          "server": {}
+                      },
+                          "groupvars:": {
+                              "local": {},
+                              "remote": {}
+                          }}}
         res = add_extravars(res_mockup, {"extravar": True})
         for host in res["_meta"]["hostvars"]:
             self.assertTrue(res["_meta"]["hostvars"][host]["extravar"])
@@ -101,8 +106,8 @@ class TestMergeResults(unittest.TestCase):
         res_a = {"all": ["localhost"],
                  "local": {"hosts": ["localhost"],
                            "vars": {"ansible_connection": "local"}},
-                 "_meta":{"groupvars":{"local":[]},
-                          "hostvars":{"localhost": {"os_debug": True}}}}
+                 "_meta": {"groupvars": {"local": []},
+                           "hostvars": {"localhost": {"os_debug": True}}}}
         res_b = {"all": ["server"],
                  "remote": {"hosts": ["server"],
                             "vars": {"ansible_ssh_host": "192.168.254.1"}},
@@ -112,5 +117,52 @@ class TestMergeResults(unittest.TestCase):
         self.assertEqual(res["all"], ["localhost", "server"])
         self.assertTrue(res["_meta"]["hostvars"]["localhost"]["os_debug"])
         self.assertFalse(res["_meta"]["hostvars"]["server"]["os_debug"])
+
+
+class TestAddLxcContainersToInventory(unittest.TestCase):
+    def test_first(self):
+        inv = {'_meta': {'groupvars': {'all': {},
+                                       u'compute': {},
+                                       u'controller': {'lxc_containers': ['nova_01629964', 'nova_83786ee8']},
+                                       'ungrouped': {}},
+                         'hostvars': {'controller01': {},
+                                      u'localhost': {u'ansible_connection': u'local',
+                                                     u'cinder_disk': u'/dev/sdc',
+                                                     u'neutron_physical_interface_mappings': u'vlan:enp0s8,external:enp0s3'}}},
+               'all': [u'localhost'],
+               u'compute': {'hosts': [u'localhost'], 'vars': {}},
+               u'controller': {'hosts': [u'localhost'], 'vars': {}},
+               'ungrouped': {'hosts': [], 'vars': {}}}
+        yml_cnf = {'groups': {'controller': {'nova': 2}},
+                   'hosts': {'controller01': {'cinder_api': 1,
+                                              'glance': 1,
+                                              'horizon': 1,
+                                              'keystone': 1,
+                                              'mariadb': 1,
+                                              'memcached': 1,
+                                              'nova_api': 1,
+                                              'rabbitmq': 1,
+                                              'syslog': 1}}}
+        groupnames = [
+            get_unique_container_name('nova', 'controller', 0),
+            get_unique_container_name('nova', 'controller', 1),
+        ]
+        hostnames = [
+            get_unique_container_name('cinder_api', 'controller01', 0),
+            get_unique_container_name('glance', 'controller01', 0),
+            get_unique_container_name('horizon', 'controller01', 0),
+            get_unique_container_name('keystone', 'controller01', 0),
+            get_unique_container_name('mariadb', 'controller01', 0),
+            get_unique_container_name('memcached', 'controller01', 0),
+            get_unique_container_name('nova_api', 'controller01', 0),
+            get_unique_container_name('rabbitmq', 'controller01', 0),
+            get_unique_container_name('syslog', 'controller01', 0),
+        ]
+        res = add_var_lxc_containers_to_controllers(inv, yml_cnf)
+        self.assertEqual(res["_meta"]["groupvars"]["controller"]["lxc_containers"], groupnames)
+        self.assertEqual(sorted(res["_meta"]["hostvars"]["controller01"]["lxc_containers"]),
+                         sorted(hostnames))
+
+
 
 
