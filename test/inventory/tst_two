@@ -9,8 +9,8 @@ cid03-tst
 [controller]
 cid03-tst
 [compute]
-cid01-tst cinder_disk="/dev/sdb"
-cid02-tst cinder_disk="/dev/sdb"
+cid01-tst cinder_disk="/dev/sdb,/dev/sdc"
+cid02-tst cinder_disk="/dev/sdb,/dev/sdc"
 [compute:vars]
 compute_virt_type="kvm"
 os_rabbit_port=5672
