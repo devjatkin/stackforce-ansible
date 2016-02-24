@@ -1,0 +1,19 @@
+# vim:ft=ansible:
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+  - name: Install packages
+    yum: name="{{ item }}" state=present enablerepo="stackforce-testing"
+    with_items:
+      - python2-lxc
+      - ansible
+  - name: Create config dir
+    file: path=/etc/stackforce state=directory
+  - name: Set parameters.ini
+    copy: src=files/vagrant.2_parameters.ini dest=/etc/stackforce/parameters.ini
+  - name: Set containers.yml
+    copy: src=files/two_controller_containers.yml dest=/etc/stackforce/containers.yml
+  - name: Set vagrant inventory
+    copy: src=../test/inventory/vagrant.2 dest=/etc/stackforce/inventory

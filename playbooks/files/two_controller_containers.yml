@@ -1,0 +1,12 @@
+---
+hosts:
+  localhost:
+    rabbitmq: 2
+    mariadb: 2
+    syslog: 2
+    keystone: 2
+    horizon: 2
+    glance: 2
+    nova_api: 2
+    memcached: 2
+    cinder_api: 2
