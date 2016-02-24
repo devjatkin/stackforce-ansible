@@ -4,6 +4,8 @@
   become_method: sudo
   vars:
     username: "buildbot"
+    inventory_filepath: "/etc/stackforce/inventory"
+    unique_containers_file: "/etc/stackforce/containers.yml"
   tasks:
     - name: add user
       user: name="{{ username }}" shell=/bin/bash groups=wheel
@@ -54,6 +56,6 @@
     - name: Set parameters.ini
       template: src=parameters.ini.j2 dest=/etc/stackforce/parameters.ini
     - name: Set containers.yml
-      copy: src=files/allinone_containers.yml dest=/etc/stackforce/containers.yml
+      copy: src=files/tst_two.yml dest=/etc/stackforce/containers.yml
     - name: Set vagrant inventory
       copy: src=inventory/tst_two dest=/etc/stackforce/inventory
