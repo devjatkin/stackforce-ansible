@@ -78,16 +78,10 @@ Vagrant.configure(2) do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision "shell", inline: <<-SHELL
-    sudo yum install -y epel-release yum-utils
+    sudo yum install -y epel-release
     sudo yum install -y http://repo.cloudlinux.com/stackforce/x86_64/stackforce-release-1-1.el7.noarch.rpm
-    sudo yum-config-manager --enable stackforce-testing
-    sudo yum update -y
-    sudo yum install -y python2-lxc ansible
-    sudo mkdir -pv /etc/stackforce
-    sudo cp /vagrant/playbooks/files/vagrant_parameters.ini /etc/stackforce/parameters.ini
-    sudo cp /vagrant/playbooks/files/allinone_containers.yml /etc/stackforce/containers.yml
-    sudo cp /vagrant/test/inventory/vagrant /etc/stackforce/inventory
-    /vagrant/inventory/dynlxc.py --list
+    sudo yum install -y ansible --enablerepo='stackforce-testing'
+    ansible-playbook -i "localhost,"    -c local /vagrant/playbooks/vagrant_preconfig.yml
     ansible-playbook -i "/vagrant/inventory/dynlxc.py" -c local --extra-vars 'lxc_container_user_name=vagrant lxc_disk=/dev/sdb' /vagrant/playbooks/create_lxc_containers.yml
     sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/horizon_proxy.yml
     sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
