@@ -1,5 +1,5 @@
 stackforce-01 ansible_connection=local
-stackforce-02 ansible_host=192.168.53.12 ansible_user=vagrant
+stackforce-02 ansible_host=192.168.53.12 ansible_user=vagrant ansible_ssh_private_key_file=/home/vagrant/.ssh/id_rsa
 
 [compute]
 localhost ansible_connection=local neutron_physical_interface_mappings="vlan:enp0s8,external:enp0s3" cinder_disk="/dev/sdc"
