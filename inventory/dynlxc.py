@@ -202,7 +202,6 @@ if __name__ == "__main__":
         'os_debug': config.get('os_logs', 'debug')}
     result = merge_results(list_containers(),
                            read_inventory_file(inventory_file))
-    result = add_extravars(result, os_vars)
     remote_controllers = get_remote_controllers(result)
     if remote_controllers:
         result = merge_results(result,
@@ -210,6 +209,7 @@ if __name__ == "__main__":
     if uniq_containers_file:
         unique_containers = get_unique_containers_config(uniq_containers_file)
         result = add_var_lxc_containers_to_controllers(result, unique_containers)
+    result = add_extravars(result, os_vars)
     if len(sys.argv) == 2 and sys.argv[1] == '--list':
         print(json.dumps(result))
     elif len(sys.argv) == 3 and sys.argv[1] == '--host':

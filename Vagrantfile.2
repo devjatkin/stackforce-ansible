@@ -27,7 +27,7 @@ Vagrant.configure(2) do |config|
   config.vm.box = BOX_NAME
 
   $num_instances.downto(1) do |i|
-    config.vm.define vm_name = "%s-%02d" % [$instance_name_prefix, i] do |config|
+    config.vm.define vm_name = "%s%02d" % [$instance_name_prefix, i] do |config|
       config.vm.hostname = vm_name
 
 
