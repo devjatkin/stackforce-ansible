@@ -13,6 +13,8 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.group import Group
 from ansible.inventory.ini import InventoryParser
 
+ANSIBLE_SSH_HOST_INEDX = -1
+
 
 def get_config(config_file='/etc/stackforce/parameters.ini'):
     cnf = ConfigParser.ConfigParser()
@@ -87,7 +89,7 @@ def list_remote_containers(hostvars):
                 command="sudo lxc-info -i --name {}".format(container_name)
             )
             srv = re.split('_container', container_name)
-            group = "{}".format(srv[0])
+            group = srv[0]
             if group not in res:
                 res[group] = {}
                 res[group]['hosts'] = []
@@ -151,7 +153,7 @@ def list_containers():
         if container.get_interfaces():
             ips = container.get_ips()
             if len(ips):
-                hostvars[container_name] = dict(ansible_ssh_host=ips[0])
+                hostvars[container_name] = dict(ansible_ssh_host=ips[ANSIBLE_SSH_HOST_INEDX])
     res["_meta"] = {"hostvars": hostvars}
     res['all'] = list(containers)
     return res
@@ -169,7 +171,7 @@ def merge_results(a, b):
         if grp == "_meta":
             if "groupvars" in b["_meta"]:
                 if "groupvars" not in res["_meta"]:
-                    res["_meta"]["groupvars"] = {}
+                    res["_meta"]["groupvars"] = b["_meta"]["groupvars"]
                 for group in b["_meta"]["groupvars"]:
                     res["_meta"]["groupvars"][group] = b["_meta"]["groupvars"][group]
             if "hostvars" in b["_meta"]:
@@ -178,7 +180,10 @@ def merge_results(a, b):
                 for host in b["_meta"]["hostvars"]:
                     res["_meta"]["hostvars"][host] = b["_meta"]["hostvars"][host]
         else:
-            res[grp] = b[grp]
+            if grp not in res:
+                res[grp] = b[grp]
+            else:
+                res[grp]['hosts'].extend(b[grp]['hosts'])
     return res
 
 
