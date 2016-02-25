@@ -5,8 +5,6 @@
   become_method: sudo
   vars:
     remote_rsyslog: false
-    inventory_filepath: "/vagrant/test/inventory/vagrant"
-    unique_containers_file: "/vagrant/test/inventory/allinone_containers"
     lxc_base_container: "stackforce_base_container"
     lxc_container_user_name: "sdeviatkin"
     lxc_container_template_options: >
@@ -21,12 +19,7 @@
   - lvg: vg=lxc pvs="{{ lxc_disk }}"
     tags:
       - lvm
-  - file: path=/etc/stackforce state=directory
-    tags:
-      - parameters
-  - template: src=parameters.ini.j2 dest="{{ parameters_file }}"
-    tags:
-      - parameters
+
 
   - name: EPEL repository
     yum: name="{{ item }}" state=present
@@ -180,7 +173,7 @@
       clone_name: "{{ item }}"
       clone_snapshot: true
       fs_size: "3G"
-    with_items: lxc_containers
+    with_items: "{{ lxc_containers }}"
     tags:
       - lxc
       - lxc-clone-containers
@@ -194,7 +187,7 @@
     until: lvm_container_info.lxc_container.ips.0 is defined
     retries: 10
     delay: 30
-    with_items: lxc_containers
+    with_items: "{{ lxc_containers }}"
     tags:
       - ping
 

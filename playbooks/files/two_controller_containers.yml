@@ -1,6 +1,6 @@
 ---
 hosts:
-  localhost:
+  stackforce01:
     rabbitmq: 2
     mariadb: 2
     syslog: 2
