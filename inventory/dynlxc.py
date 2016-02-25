@@ -78,24 +78,24 @@ def list_remote_containers(hostvars):
         )
         cmd_run_containers = run_command(cmd_list_containers)
         containers = cmd_run_containers.split()
-        for name in containers:
+        for container_name in containers:
             cmd_get_container_ip = tmpl_ssh_command.format(
                 host=ssh_host,
                 user=ssh_user,
                 port=ssh_port,
                 key_filename=ssh_key_filename,
-                command="sudo lxc-info -i --name {}".format(name)
+                command="sudo lxc-info -i --name {}".format(container_name)
             )
-            srv = re.split('_container', name)
-            group = "{}_container".format(srv[0])
+            srv = re.split('_container', container_name)
+            group = "{}".format(srv[0])
             if group not in res:
                 res[group] = {}
                 res[group]['hosts'] = []
             if isinstance(res[group], dict):
-                res[group]['hosts'].append(srv)
+                res[group]['hosts'].append(container_name)
             cmd_run_container_ip = run_command(cmd_get_container_ip).split()
             if len(cmd_run_container_ip):
-                res["_meta"]['hostvars'][name] = {"ansible_host": cmd_run_container_ip[-1]}
+                res["_meta"]['hostvars'][container_name] = {"ansible_host": cmd_run_container_ip[-1]}
         res["all"] = list(res['_meta']['hostvars'].keys())
         return res
 
@@ -141,7 +141,7 @@ def list_containers():
     containers = lxc.list_containers(active=True, defined=False)
     for container_name in containers:
         srv = re.split('_container', container_name)
-        group = "{}_container".format(srv[0])
+        group = "{}".format(srv[0])
         if group not in res:
             res[group] = {}
             res[group]['hosts'] = []
