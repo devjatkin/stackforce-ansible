@@ -13,7 +13,7 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.group import Group
 from ansible.inventory.ini import InventoryParser
 
-ANSIBLE_SSH_HOST_INEDX = -1
+ANSIBLE_SSH_HOST_INDEX = -1
 
 
 def get_config(config_file='/etc/stackforce/parameters.ini'):
@@ -98,6 +98,7 @@ def list_remote_containers(hostvars):
             cmd_run_container_ip = run_command(cmd_get_container_ip).split()
             if len(cmd_run_container_ip):
                 res["_meta"]['hostvars'][container_name] = {"ansible_host": cmd_run_container_ip[-1]}
+                res["_meta"]['hostvars'][container_name] = {"ansible_ssh_host": cmd_run_container_ip[-1]}
         res["all"] = list(res['_meta']['hostvars'].keys())
         return res
 
@@ -153,7 +154,8 @@ def list_containers():
         if container.get_interfaces():
             ips = container.get_ips()
             if len(ips):
-                hostvars[container_name] = dict(ansible_ssh_host=ips[ANSIBLE_SSH_HOST_INEDX])
+                hostvars[container_name] = dict(ansible_ssh_host=ips[ANSIBLE_SSH_HOST_INDEX])
+                hostvars[container_name] = dict(ansible_host=ips[ANSIBLE_SSH_HOST_INDEX])
     res["_meta"] = {"hostvars": hostvars}
     res['all'] = list(containers)
     return res
