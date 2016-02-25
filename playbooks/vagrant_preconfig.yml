@@ -3,6 +3,9 @@
 - hosts: all
   become: yes
   become_method: sudo
+  vars:
+    inventory_filepath: "/etc/stackforce/inventory"
+    unique_containers_file: "/etc/stackforce/containers.yml"
   tasks:
   - name: Install packages
     yum: name="{{ item }}" state=present enablerepo="stackforce-testing"
@@ -12,7 +15,7 @@
   - name: Create config dir
     file: path=/etc/stackforce state=directory
   - name: Set parameters.ini
-    copy: src=files/vagrant_parameters.ini dest=/etc/stackforce/parameters.ini
+    template: src=parameters.ini.j2 dest=/etc/stackforce/parameters.ini
   - name: Set containers.yml
     copy: src=files/allinone_containers.yml dest=/etc/stackforce/containers.yml
   - name: Set vagrant inventory
