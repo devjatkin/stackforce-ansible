@@ -86,8 +86,8 @@ def list_remote_containers(hostvars):
                 key_filename=ssh_key_filename,
                 command="sudo lxc-info -i --name {}".format(name)
             )
-            srv = re.split('_', name)
-            group = srv[0]
+            srv = re.split('_container', name)
+            group = "{}_container".format(srv[0])
             if group not in res:
                 res[group] = {}
                 res[group]['hosts'] = []
@@ -140,8 +140,8 @@ def list_containers():
     hostvars = {}
     containers = lxc.list_containers(active=True, defined=False)
     for container_name in containers:
-        srv = re.split('_', container_name)
-        group = srv[0]
+        srv = re.split('_container', container_name)
+        group = "{}_container".format(srv[0])
         if group not in res:
             res[group] = {}
             res[group]['hosts'] = []
