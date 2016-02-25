@@ -4,6 +4,7 @@
   become: yes
   become_method: sudo
   vars:
+    remote_rsyslog: false
     inventory_filepath: "/vagrant/test/inventory/vagrant"
     unique_containers_file: "/vagrant/test/inventory/allinone_containers"
     lxc_base_container: "stackforce_base_container"

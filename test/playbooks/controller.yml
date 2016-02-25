@@ -4,6 +4,8 @@
   become_method: sudo
   vars:
     username: "buildbot"
+    inventory_filepath: "/etc/stackforce/inventory"
+    unique_containers_file: "/etc/stackforce/containers.yml"
   tasks:
     - name: add user
       user: name="{{ username }}" shell=/bin/bash groups=wheel
@@ -30,11 +32,11 @@
         group: "{{ username }}"
         mode: "644"
     - yum:
-        name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
-    - yum:
         name: "{{ item }}"
         state: present
       with_items:
+        - epel-release
+        - "http://repo.cloudlinux.com/stackforce-staging/x86_64/python2-lxc-0.1-1.git0553f05.el7.x86_64.rpm"
         - git
         - python-devel
         - gcc
@@ -48,3 +50,12 @@
         accept_hostkey: yes
         key_file: "/home/{{ username }}/.ssh/id_rsa"
       become_user: "{{ username }}"
+
+    - name: Create config dir
+      file: path=/etc/stackforce state=directory
+    - name: Set parameters.ini
+      template: src=parameters.ini.j2 dest=/etc/stackforce/parameters.ini
+    - name: Set containers.yml
+      copy: src=files/tst_two.yml dest=/etc/stackforce/containers.yml
+    - name: Set vagrant inventory
+      copy: src=tst_two dest=/etc/stackforce/inventory
