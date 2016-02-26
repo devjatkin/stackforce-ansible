@@ -5,3 +5,4 @@
     - openstack-cinder
     - python-cinderclient
     - python-oslo-policy
+    - python-memcached
