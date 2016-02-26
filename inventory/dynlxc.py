@@ -89,7 +89,7 @@ def list_remote_containers(hostvars):
                 command="sudo lxc-info -i --name {}".format(container_name)
             )
             srv = re.split('_container', container_name)
-            group = srv[0]
+            group = re.split('_', srv[0])[0]
             if group not in res:
                 res[group] = {}
                 res[group]['hosts'] = []
@@ -143,7 +143,7 @@ def list_containers():
     containers = lxc.list_containers(active=True, defined=False)
     for container_name in containers:
         srv = re.split('_container', container_name)
-        group = "{}".format(srv[0])
+        group = "{}".format(re.split('_', srv[0])[0])
         if group not in res:
             res[group] = {}
             res[group]['hosts'] = []
