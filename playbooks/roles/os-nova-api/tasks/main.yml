@@ -1,9 +1,12 @@
 ---
 - include: install_packages.yml
 - include: rabbitmq.yml
+  when: inventory_hostname ==  "{{ groups['nova'][0] }}"
 - include: configure_services.yml
 - include: services.yml
+  when: inventory_hostname ==  "{{ groups['nova'][0] }}"
 - include: db_sync.yml
+  when: inventory_hostname ==  "{{ groups['nova'][0] }}"
 
 - name: Start Nova services
   service: name="{{ item }}" state=started enabled=yes

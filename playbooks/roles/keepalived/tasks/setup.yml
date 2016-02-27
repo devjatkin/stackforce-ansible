@@ -14,7 +14,6 @@
   consul_kv:
     key: keepalived/priority_counter
     value: "{{ keepalived_master_priority }}"
-  when: inventory_hostname == keepalived_master_server
 
 - name: Get vrrp priority from consul
   set_fact:

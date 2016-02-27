@@ -5,3 +5,4 @@
 
 # Default erlang_cookie
 erlang_cookie: WCFBLPYIJEUAFOHOPJFY
+num_rabbits: "{{ groups['rabbitmq'] | length }}"

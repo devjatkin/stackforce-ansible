@@ -2,7 +2,9 @@
 - include: install_glance.yml
 - include: configure_glance.yml
 - include: service.yml
+  when: inventory_hostname ==  "{{ groups['glance'][0] }}"
 - include: db_sync.yml
+  when: inventory_hostname ==  "{{ groups['glance'][0] }}"
 
 - name: Start Glance API service
   service: name=openstack-glance-api state=started enabled=yes

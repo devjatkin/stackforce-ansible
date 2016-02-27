@@ -1,9 +1,12 @@
 ---
 - include: install_packages.yml
 - include: services.yml
+  when: inventory_hostname ==  "{{ groups['controller'][0] }}"
 - include: rabbitmq.yml
+  when: inventory_hostname ==  "{{ groups['controller'][0] }}"
 - include: configure_services.yml
 - include: db_sync.yml
+  when: inventory_hostname ==  "{{ groups['controller'][0] }}"
 
 - name: Patch ip_lib.py
   copy: src=ip_lib.py  dest=/usr/lib/python2.7/site-packages/neutron/agent/linux/ip_lib.py

@@ -5,7 +5,7 @@ cinder_service_password: "arie2eeJ9jiphoh7"
 cinder_service_tenant_name: "service"
 cinder_database_connection: "mysql://cinder:{{ cinder_db_password }}@{{ public_address }}/cinder"
 keystone_service_publicurl: "http://{{ public_address }}:5000/v3"
-keystone_service_internalurl: "http://{{ hostvars[groups.keystone.0]['ansible_ssh_host'] }}:5000/v3"
+keystone_service_internalurl: "http://{{ public_address }}:5000/v3"
 keystone_service_adminurl: "http://{{ public_address }}:35357/v3"
 keystone_auth_admin_token: "Gee4soopohsusaki"
 keystone_service_adminuri_insecure: true
