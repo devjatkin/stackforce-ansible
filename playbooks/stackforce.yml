@@ -12,8 +12,6 @@
   serial: 3
 
 - include: rabbitmq.yml
-  tags:
-    - qwecde
 - include: percona-cluster.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
