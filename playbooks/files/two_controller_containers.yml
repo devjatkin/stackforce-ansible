@@ -1,12 +1,22 @@
 ---
 hosts:
-  stackforce01:
-    rabbitmq: 2
-    mariadb: 2
-    syslog: 2
-    keystone: 2
-    horizon: 2
-    glance: 2
-    nova_api: 2
-    memcached: 2
-    cinder_api: 2
+ stackforce01:
+   rabbitmq: 1
+   mariadb: 1
+   syslog: 1
+   keystone: 1
+   horizon: 1
+   glance: 1
+   nova_api: 1
+   memcached: 1
+   cinder_api: 1
+ stackforce02:
+   rabbitmq: 1
+   mariadb: 1
+   syslog: 1
+   keystone: 1
+   horizon: 1
+   glance: 1
+   nova_api: 1
+   memcached: 1
+   cinder_api: 1

@@ -21,3 +21,8 @@
   when:
     - inventory_hostname == percona_server_bootstrap_node
 
+- name: Restart mysql
+  service:
+    name: mysql
+    state: restarted
+  when: inventory_hostname != percona_server_bootstrap_node

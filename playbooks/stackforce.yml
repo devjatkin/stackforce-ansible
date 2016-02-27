@@ -12,6 +12,8 @@
   serial: 3
 
 - include: rabbitmq.yml
+  tags:
+    - qwecde
 - include: percona-cluster.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
@@ -27,6 +29,8 @@
 
 - include: rsyslog.yml
 - include: os-horizon.yml
+  vars:
+    public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
 - include: os-glance.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
@@ -66,10 +70,15 @@
     neutron_service_adminurl: "http://{{ public_address }}:9696"
     neutron_service_internalurl: "http://{{ public_address }}:9696"
     neutron_nova_metadata_ip: "{{ public_address }}"
+  tags:
+    - last
 - include: os-neutronAgent.yml
+  tags:
+    - last
 - include: os-cinder-storage.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
   tags:
     - install_cinder
+    - last
