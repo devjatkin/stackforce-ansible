@@ -9,6 +9,7 @@
     lxc_container_user_name: "sdeviatkin"
     lxc_container_template_options: >
       --user {{ lxc_container_user_name }}
+    num_controllers:  "{{ groups['controller'] | length }}"
   roles:
     - role: common
   tasks:
@@ -54,16 +55,17 @@
     copy:
       src: "files/lxc_default.conf"
       dest: "/etc/lxc/default.conf"
+    when: num_controllers | int > 1
 
   - name: Copy DNSmasq config
     copy:
       src: "files/dnsmasq.conf"
       dest: "/etc/dnsmasq.conf"
-    when: inventory_hostname ==  "{{ groups['controller'][0] }}"
+    when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" and num_controllers | int > 1)
 
   - name: Start dnsmasq
     service: name=dnsmasq state=restarted
-    when: inventory_hostname ==  "{{ groups['controller'][0] }}"
+    when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" and num_controllers | int > 1)
 
   - name: Restart libvirtd
     service: name=libvirtd state=restarted
