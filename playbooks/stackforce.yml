@@ -71,6 +71,8 @@
   tags:
     - last
 - include: os-neutronAgent.yml
+  vars:
+    public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
   tags:
     - last
 - include: os-cinder-storage.yml
