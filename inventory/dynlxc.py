@@ -13,6 +13,8 @@ from ansible.parsing.dataloader import DataLoader
 from ansible.inventory.group import Group
 from ansible.inventory.ini import InventoryParser
 
+ANSIBLE_SSH_HOST_INDEX = -1
+
 
 def get_config(config_file='/etc/stackforce/parameters.ini'):
     cnf = ConfigParser.ConfigParser()
@@ -78,24 +80,24 @@ def list_remote_containers(hostvars):
         )
         cmd_run_containers = run_command(cmd_list_containers)
         containers = cmd_run_containers.split()
-        for name in containers:
+        for container_name in containers:
             cmd_get_container_ip = tmpl_ssh_command.format(
                 host=ssh_host,
                 user=ssh_user,
                 port=ssh_port,
                 key_filename=ssh_key_filename,
-                command="sudo lxc-info -i --name {}".format(name)
+                command="sudo lxc-info -i --name {}".format(container_name)
             )
-            srv = re.split('_container-', name)
-            group = "{}_container".format(srv[0])
+            srv = re.split('_container', container_name)
+            group = re.split('_', srv[0])[0]
             if group not in res:
                 res[group] = {}
                 res[group]['hosts'] = []
             if isinstance(res[group], dict):
-                res[group]['hosts'].append(srv)
+                res[group]['hosts'].append(container_name)
             cmd_run_container_ip = run_command(cmd_get_container_ip).split()
             if len(cmd_run_container_ip):
-                res["_meta"]['hostvars'][name] = {"ansible_host": cmd_run_container_ip[-1]}
+                res["_meta"]['hostvars'][container_name] = {"ansible_ssh_host": cmd_run_container_ip[-1]}
         res["all"] = list(res['_meta']['hostvars'].keys())
         return res
 
@@ -140,8 +142,8 @@ def list_containers():
     hostvars = {}
     containers = lxc.list_containers(active=True, defined=False)
     for container_name in containers:
-        srv = re.split('_container-', container_name)
-        group = "{}_container".format(srv[0])
+        srv = re.split('_container', container_name)
+        group = "{}".format(re.split('_', srv[0])[0])
         if group not in res:
             res[group] = {}
             res[group]['hosts'] = []
@@ -151,7 +153,7 @@ def list_containers():
         if container.get_interfaces():
             ips = container.get_ips()
             if len(ips):
-                hostvars[container_name] = dict(ansible_ssh_host=ips[0])
+                hostvars[container_name] = dict(ansible_ssh_host=ips[ANSIBLE_SSH_HOST_INDEX])
     res["_meta"] = {"hostvars": hostvars}
     res['all'] = list(containers)
     return res
@@ -169,7 +171,7 @@ def merge_results(a, b):
         if grp == "_meta":
             if "groupvars" in b["_meta"]:
                 if "groupvars" not in res["_meta"]:
-                    res["_meta"]["groupvars"] = {}
+                    res["_meta"]["groupvars"] = b["_meta"]["groupvars"]
                 for group in b["_meta"]["groupvars"]:
                     res["_meta"]["groupvars"][group] = b["_meta"]["groupvars"][group]
             if "hostvars" in b["_meta"]:
@@ -178,7 +180,10 @@ def merge_results(a, b):
                 for host in b["_meta"]["hostvars"]:
                     res["_meta"]["hostvars"][host] = b["_meta"]["hostvars"][host]
         else:
-            res[grp] = b[grp]
+            if grp not in res:
+                res[grp] = b[grp]
+            else:
+                res[grp]['hosts'].extend(b[grp]['hosts'])
     return res
 
 

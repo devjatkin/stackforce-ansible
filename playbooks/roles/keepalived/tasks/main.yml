@@ -1,5 +1,3 @@
 ---
-- debug: msg="{{ num_controllers }}"
 - include: setup.yml
   when: num_controllers | int > 1
-
