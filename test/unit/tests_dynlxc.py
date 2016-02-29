@@ -16,6 +16,19 @@ class TestGetConfig(unittest.TestCase):
 
 
 class TestReadInventoryFile(unittest.TestCase):
+    def test_first(self):
+        res = read_inventory_file('test/unit/files/inventory_vagrant')
+        self.assertEqual(res, {
+            'ungrouped': {'hosts': [], 'vars': {}},
+            'all': [u'localhost'],
+            u'compute': {'hosts': [u'localhost'], 'vars': {}},
+            u'controller': {'hosts': [u'localhost'], 'vars': {}},
+            '_meta': {
+                'groupvars': {'ungrouped': {}, 'all': {}, u'compute': {}, u'controller': {}},
+                'hostvars': {u'localhost': {u'cinder_disk': u'/dev/sdc',
+                                            u'neutron_physical_interface_mappings': u'vlan:enp0s8,external:enp0s3',
+                                            u'ansible_connection': u'local'}}}})
+
     @unittest.skip("non working mockups")
     def test_base(self):
         class MockGroup(MagicMock):
@@ -67,7 +80,6 @@ class TestReadInventoryFile(unittest.TestCase):
         mocked_dl = MagicMock()
         mocked_dl._get_file_contents = MagicMock(return_value=("None", True))
         inventory_path = "inventory_test_path"
-        # with patch.multiple('inventory.dynlxc', DataLoader=mocked_dl):
         with patch('inventory.dynlxc.DataLoader', mocked_dl):
             res = read_inventory_file(inventory_path)
             mocked_dl._get_file_contents.assert_called_with(inventory_path)
@@ -164,5 +176,6 @@ class TestAddLxcContainersToInventory(unittest.TestCase):
                          sorted(hostnames))
 
 
-
-
+class TestListRemoteContainers(unittest.TestCase):
+    def test_first(self):
+        pass

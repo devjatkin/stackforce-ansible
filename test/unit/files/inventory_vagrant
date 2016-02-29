@@ -1,0 +1,4 @@
+[compute]
+localhost ansible_connection=local neutron_physical_interface_mappings="vlan:enp0s8,external:enp0s3" cinder_disk="/dev/sdc"
+[controller]
+localhost ansible_connection=local
