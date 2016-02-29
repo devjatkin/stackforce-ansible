@@ -1,4 +1,5 @@
 ---
+- include: baremetal.yml
 - include: controller.yml
 - include: keepalived.yml
   vars:
