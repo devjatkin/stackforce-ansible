@@ -13,8 +13,10 @@
   notify: Restart Keystone
 
 - include: db_sync.yml
+  when: inventory_hostname ==  "{{ groups['keystone'][0] }}"
 
 - include: rabbitmq.yml
+  when: inventory_hostname ==  "{{ groups['keystone'][0] }}"
 
 - name: Ensure owner for log files
   file: path="{{ item }}" recurse=yes owner=keystone group=keystone state=directory
@@ -28,6 +30,7 @@
 - include: admin_openrc.yml
 
 - include: service.yml
+  when: inventory_hostname ==  "{{ groups['keystone'][0] }}"
 
 - name: Install opanstack-client
   yum: name=python-openstackclient state=present

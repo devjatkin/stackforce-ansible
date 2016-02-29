@@ -1,0 +1,14 @@
+---
+keepalived_ip_nonlocal_bind: 1
+keepalived_master_priority: "255"
+Keepalived_counter_step: 10
+keepalived_master_server: "{{ groups['controller'][0] }}"
+keepalived_notification_email: {}
+keepalived_notification_email_from: "root@localhost"
+keepalived_smtp_server: "localhost"
+keepalived_ext_shared_iface: eth0
+keepalived_int_shared_iface: eth1
+keepalived_ext_router_id: 1
+keepalived_int_router_id: 10
+keepalived_int_auth_pass: "04U3NL7UW177ina0"
+keepalived_ext_auth_pass: "04U3NL7UW177ina1"

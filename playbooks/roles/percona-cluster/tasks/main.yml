@@ -8,5 +8,3 @@
   meta: flush_handlers
 - include: percona_setup.yml
   when: inventory_hostname == percona_server_bootstrap_node
-  tags:
-    - test

@@ -1,5 +1,11 @@
 ---
 - include: controller.yml
+- include: keepalived.yml
+  vars:
+    keepalived_ext_vip: "{{ lookup('ini', 'ext_address section=public file=/etc/stackforce/parameters.ini') }}"
+    keepalived_int_vip: "{{ lookup('ini', 'int_address section=public file=/etc/stackforce/parameters.ini') }}"
+    num_controllers: "{{ groups['controller'] | length }}"
+- include: horizon_proxy.yml
 - hosts: all:!controller*
   roles:
     - role: consul-agent
@@ -21,6 +27,8 @@
 
 - include: rsyslog.yml
 - include: os-horizon.yml
+  vars:
+    public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
 - include: os-glance.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
@@ -60,10 +68,17 @@
     neutron_service_adminurl: "http://{{ public_address }}:9696"
     neutron_service_internalurl: "http://{{ public_address }}:9696"
     neutron_nova_metadata_ip: "{{ public_address }}"
+  tags:
+    - last
 - include: os-neutronAgent.yml
+  vars:
+    public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
+  tags:
+    - last
 - include: os-cinder-storage.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
   tags:
     - install_cinder
+    - last

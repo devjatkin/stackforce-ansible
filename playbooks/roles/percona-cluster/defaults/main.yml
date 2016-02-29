@@ -74,7 +74,7 @@ percona_wsrep_slave_threads: "{{ ansible_processor_vcpus | default(2) }}"
 percona_wsrep_retry_autocommit: 3
 percona_wsrep_debug: 0
 percona_wsrep_sst_method_orig: xtrabackup-v2
-percona_wsrep_sst_method: xtrabackup-v2
+percona_wsrep_sst_method: rsync
 percona_wsrep_sst_auth_user: "{{ percona_sst_user }}"
 percona_wsrep_sst_auth_password: "{{ percona_sst_user_password }}"
 # xtrabackup parallel/compression/sync threads

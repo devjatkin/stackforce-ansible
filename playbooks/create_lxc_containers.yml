@@ -5,22 +5,21 @@
   become_method: sudo
   vars:
     remote_rsyslog: false
-    inventory_filepath: "/vagrant/test/inventory/vagrant"
-    unique_containers_file: "/vagrant/test/inventory/allinone_containers"
     lxc_base_container: "stackforce_base_container"
     lxc_container_user_name: "sdeviatkin"
     lxc_container_template_options: >
       --user {{ lxc_container_user_name }}
+    num_controllers:  "{{ groups['controller'] | length }}"
   roles:
     - role: common
   tasks:
-  - lvg: vg=lxc pvs="{{ lxc_disk }}"
-    tags:
-      - lvm
-
   - name: Custom ssh config
     become_user: "{{ lxc_container_user_name }}"
     copy: src="files/dot_ssh/config" dest="~/.ssh/config" mode=600 owner="{{ lxc_container_user_name }}"
+
+  - lvg: vg=lxc pvs="{{ lxc_disk }}"
+    tags:
+      - lvm
 
   - name: EPEL repository
     yum: name="{{ item }}" state=present
@@ -51,6 +50,22 @@
     copy:
       src: "files/lxc_centos.common.conf"
       dest: "/usr/share/lxc/config/centos.common.conf"
+
+  - name: Copy LXC default config
+    copy:
+      src: "files/lxc_default.conf"
+      dest: "/etc/lxc/default.conf"
+    when: num_controllers | int > 1
+
+  - name: Copy DNSmasq config
+    copy:
+      src: "files/dnsmasq.conf"
+      dest: "/etc/dnsmasq.conf"
+    when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" and num_controllers | int > 1)
+
+  - name: Start dnsmasq
+    service: name=dnsmasq state=restarted
+    when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" and num_controllers | int > 1)
 
   - name: Restart libvirtd
     service: name=libvirtd state=restarted
@@ -95,6 +110,14 @@
         yum -y update &&
         yum install -y sudo openssh-clients rsync &&
         sed --in-place 's/^#\s*\(%wheel\s\+ALL=(ALL)\s\+NOPASSWD:\s\+ALL\)/\1/' /etc/sudoers
+        cat <<EOT >> /etc/sysconfig/network-scripts/ifcfg-eth1
+        DEVICE=eth1
+        BOOTPROTO=dhcp
+        ONBOOT=yes
+        HOSTNAME=
+        NM_CONTROLLED=no
+        TYPE=Ethernet
+        EOT
     with_items: lxc_base_container
     tags:
       - yum
@@ -151,7 +174,7 @@
       clone_name: "{{ item }}"
       clone_snapshot: true
       fs_size: "3G"
-    with_items: lxc_containers
+    with_items: "{{ lxc_containers }}"
     tags:
       - lxc
       - lxc-clone-containers
@@ -165,7 +188,7 @@
     until: lvm_container_info.lxc_container.ips.0 is defined
     retries: 10
     delay: 30
-    with_items: lxc_containers
+    with_items: "{{ lxc_containers }}"
     tags:
       - ping
 
