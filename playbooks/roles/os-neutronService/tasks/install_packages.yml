@@ -1,5 +1,7 @@
 ---
 - name: Install Neutron packages
+  vars:
+      yum_retries: 3
   yum: name="{{ item }}" state=present
   with_items:
     - openstack-neutron
@@ -8,3 +10,6 @@
     - python-neutronclient
     - ebtables
     - ipset
+  register: yum_result
+  until: yum_result.msg == "All items completed"
+  retries: "{{ yum_retries }}"
