@@ -5,3 +5,4 @@ test:
 	ansible-lint --version
 	ansible-lint playbooks/*yml --exclude playbooks/roles/mysql/
 	nose2
+	pylint inventory/dynlxc.py
