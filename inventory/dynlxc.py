@@ -3,10 +3,10 @@
 import os
 import sys
 import json
-import yaml
 import lxc
 import re
 import ConfigParser
+import yaml
 import subprocess
 import hashlib
 from ansible.parsing.dataloader import DataLoader
@@ -58,11 +58,12 @@ def add_var_lxc_containers_to_controllers(inventory, containers_config):
 def list_remote_containers(hostvars):
     """
 
-    @param hosts: ansible hostvars, uri:key, ex.: "root@192.168.10.6":"/home/vagrant/id_rsa"
+    @param hostvars: ansible hostvars, uri:key, ex.: "root@192.168.10.6":"/home/vagrant/id_rsa"
     @return: inventory result
     """
     res = {"_meta": {"hostvars": {}}}
-    tmpl_ssh_command = "ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no {host} -l {user} -p {port} -i {key_filename} {command}"
+    tmpl_ssh_command = "ssh -o UserKnownHostsFile=/dev/null " \
+                       "-o StrictHostKeyChecking=no {host} -l {user} -p {port} -i {key_filename} {command}"
     for host, data in hostvars.iteritems():
         is_local = data.get("ansible_connection") == "local"
         ssh_host = data.get("ansible_ssh_host", data.get("ansible_host"))
@@ -107,7 +108,7 @@ def get_remote_controllers(inventory):
     controllers = inventory.get("controller", {})
     for host in controllers.get("hosts", []):
         if inventory["_meta"]["hostvars"][host].get("ansible_connection", "remote") != "local":
-            res_hostvars[host]=inventory["_meta"]["hostvars"][host]
+            res_hostvars[host] = inventory["_meta"]["hostvars"][host]
     return res_hostvars
 
 
