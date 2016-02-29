@@ -15,8 +15,6 @@ class TestGetConfig(unittest.TestCase):
         cnf.read.assert_called_with("/etc/stackforce/parameters.ini")
 
 
-
-
 class TestReadInventoryFile(unittest.TestCase):
     def test_first(self):
         res = read_inventory_file('test/unit/files/inventory_vagrant')
