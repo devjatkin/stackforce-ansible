@@ -1,6 +1,6 @@
 ---
 hosts:
-  cid03-tst:
+  controller01:
     rabbitmq: 1
     mariadb: 1
     syslog: 1
