@@ -31,11 +31,17 @@
         owner: "{{ username }}"
         group: "{{ username }}"
         mode: "644"
-    - yum:
-        name: "{{ item }}"
-        state: present
+    - name: Install repos
+      yum: name: "{{ item }}" state: present
       with_items:
         - epel-release
+    - name: Upgrade all packages
+      yum: name=* state=latest
+    - name: Install necessary packages
+      yum:
+        name: "{{ item }}"
+        state: latest
+      with_items:
         - "http://repo.cloudlinux.com/stackforce-staging/x86_64/python2-lxc-0.1-1.git0553f05.el7.x86_64.rpm"
         - git
         - python-devel
