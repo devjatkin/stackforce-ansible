@@ -32,7 +32,7 @@
         group: "{{ username }}"
         mode: "644"
     - name: Install repos
-      yum: name: "{{ item }}" state: present
+      yum: name="{{ item }}" state=present
       with_items:
         - epel-release
     - name: Upgrade all packages
