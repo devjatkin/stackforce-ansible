@@ -40,7 +40,7 @@
     - name: Install necessary packages
       yum:
         name: "{{ item }}"
-        state: latest
+        state: installed
       with_items:
         - "http://repo.cloudlinux.com/stackforce-staging/x86_64/python2-lxc-0.1-1.git0553f05.el7.x86_64.rpm"
         - git
