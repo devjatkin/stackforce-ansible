@@ -15,18 +15,9 @@ Openstack dev-environment over Openstack installation procedure:
 
 ```
 #!shell
-$ vagrant plugin install vagrant-openstack-provider
-```
-- A "centos7" image
-- Edit Vagrantfile.openstack, populating it with your tenant account
-- Get your local PC username: $ echo $USER
-- Create 2 100GB volumes, called "$USER-lxc" and "$USER-cinder"
-- Edit the "default" security group, permitting all ingress traffic(the simpliest case)
-```
-#!shell
-- $ export VAGRANT_OPENSTACK_LOG=debug
-- $ VAGRANT_VAGRANTFILE=Vagrantfile.openstack vagrant up --provider=openstack
-- $ VAGRANT_VAGRANTFILE=Vagrantfile.openstack vagrant ssh
-- $ VAGRANT_VAGRANTFILE=Vagrantfile.openstack vagrant destroy
-- $ rm -rf .vagrant
+- $ source .venv/bin/activate
+- $ pip install -r requirements.txt
+- $ ansible-playbook -i "localhost ansible_python_interpreter=python," -c local test/playbooks/up.yml
+- $ LANG=C ansible-playbook -i /tmp/inventory --extra-vars 'username=centos inventory=/tmp/inventory containers=/tmp/containers.yml' test/playbooks/controller.yml
+- $ LANG=C ssh -t centos@192.168.10.103 "ansible-playbook -i stackforce-ansible/inventory/dynlxc.py --sudo stackforce-ansible/playbooks/create_lxc_containers.yml"
 ```
