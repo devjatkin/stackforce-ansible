@@ -1,0 +1,114 @@
+---
+- hosts: localhost
+  vars:
+    username: "sdeviatkin"
+    cloud: "stackforce"
+    test_cloud: "tripleo"
+    controllers:
+      - controller01
+    computes:
+      - compute01
+  tasks:
+  - os_image:
+      cloud: "{{ cloud }}"
+      name: centos7
+      state: present
+      is_public: yes
+      filename: "http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud-1601.qcow2"
+  - os_project:
+      cloud: "{{ cloud }}"
+      state: present
+      name: "{{ username }}"
+      domain: default
+      description: "Test environment for {{ username }}"
+  - os_user:
+      cloud: "{{ cloud }}"
+      state: present
+      name: "{{ username }}"
+      default_project: "{{ username }}"
+      domain: default
+      password: secret
+  - command: "openstack --os-cloud stackforce role add --project {{ username }} --user {{ username }} admin"
+  - command: "openstack --os-cloud stackforce role add --project {{ username }} --user {{ username }} _member_"
+
+  - os_keypair:
+      cloud: "{{ test_cloud }}"
+      state: present
+      name: "{{ username }}_key"
+      public_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+  - shell: openstack --os-cloud tripleo security group list | grep default | awk '{print $2}'
+    register: secgroup
+
+  - os_security_group_rule:
+      cloud: "{{ test_cloud }}"
+      security_group: "{{ secgroup.stdout }}"
+      protocol: tcp
+      port_range_min: 22
+      port_range_max: 5000
+      remote_ip_prefix: 0.0.0.0/0
+
+  - os_security_group_rule:
+      cloud: "{{ test_cloud }}"
+      security_group: "{{ secgroup.stdout }}"
+      protocol: icmp
+      remote_ip_prefix: 0.0.0.0/0
+
+  - os_network:
+      cloud: "{{ test_cloud }}"
+      state: present
+      name: mngt
+  - os_subnet:
+      cloud: "{{ test_cloud }}"
+      state: present
+      name: mngt_subnet
+      network_name: mngt
+      cidr: 192.168.0.0/24
+      dns_nameservers:
+          - 8.8.8.8
+          - 8.8.4.4
+  - os_router:
+      cloud: "{{ test_cloud }}"
+      state: present
+      name: router1
+      network: ext-net
+      interfaces:
+        - mngt_subnet
+
+  # controllers
+  - os_volume:
+      cloud: "{{ test_cloud }}"
+      display_name: "{{ item }}-lxc"
+      size: 50
+    with_items:
+      - "{{ controllers }}"
+  - os_server:
+      cloud: "{{ test_cloud }}"
+      name: "{{ item }}"
+      flavor: m1.small
+      key_name: "{{ username }}_key"
+      image: centos7
+      network: mngt
+      volumes:
+        - "{{ item }}-lxc"
+    with_items:
+      - "{{ controllers }}"
+
+  # computes
+  - os_volume:
+      cloud: "{{ test_cloud }}"
+      display_name: "{{ item }}-lxc"
+      size: 50
+    with_items:
+      - "{{ computes }}"
+  - os_server:
+      cloud: "{{ test_cloud }}"
+      name: "{{ item }}"
+      flavor: m1.small
+      key_name: "{{ username }}_key"
+      image: centos7
+      network: mngt
+      volumes:
+        - "{{ item }}-lxc"
+    with_items:
+      - "{{ computes }}"
