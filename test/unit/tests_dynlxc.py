@@ -86,13 +86,18 @@ class TestReadInventoryFile(unittest.TestCase):
 
 
 class TestListContainers(unittest.TestCase):
-    def test_base(self):
-        res = list_containers()
-        self.assertIn("all", res)
-        self.assertIn("_meta", res)
-        self.assertIn("hostvars", res["_meta"])
-        self.assertNotIn("groupvars", res["_meta"])
-        self.assertNotIn("localhost", res["all"])
+    def test_getting_list_of_containers(self):
+        mocked_lxc_list_containers = MagicMock()
+        mocked_lxc_list_containers.return_value = ["nova_api_container-2f22c87b", "stackforce_base_container"]
+        mocked_lxc_container = MagicMock()
+        get_interfaces = MagicMock()
+        get_interfaces.side_effect = [("eth0", "lo"), False]
+        mocked_lxc_container.get_interfaces = get_interfaces
+        with patch("lxc.list_containers", mocked_lxc_list_containers):
+            with patch("lxc.Container", mocked_lxc_container):
+                res = list_containers()
+                self.assertDictEqual(res["nova"], {'hosts': ['nova_api_container-2f22c87b']})
+                self.assertEqual(res["all"], ['nova_api_container-2f22c87b', 'stackforce_base_container'])
 
 
 class TestAddExtravars(unittest.TestCase):
