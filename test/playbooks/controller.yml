@@ -4,6 +4,8 @@
   become_method: sudo
   vars:
     username: "buildbot"
+    inventory: "tst_two"
+    containers: "files/tst_two.yml"
     inventory_filepath: "/etc/stackforce/inventory"
     unique_containers_file: "/etc/stackforce/containers.yml"
   tasks:
@@ -35,6 +37,7 @@
       yum: name="{{ item }}" state=present
       with_items:
         - epel-release
+        - http://repo.cloudlinux.com/stackforce/x86_64/stackforce-release-1-1.el7.noarch.rpm
     - name: Upgrade all packages
       yum: name=* state=latest
     - name: Install necessary packages
@@ -42,12 +45,13 @@
         name: "{{ item }}"
         state: installed
       with_items:
-        - "http://repo.cloudlinux.com/stackforce-staging/x86_64/python2-lxc-0.1-1.git0553f05.el7.x86_64.rpm"
+        - python2-lxc
+        - ansible
         - git
         - python-devel
         - gcc
         - python-pip
-    - pip: name=ansible
+        - lvm2
 
     - git:
         repo: "git@bitbucket.org:stackforce/stackforce-ansible.git"
@@ -62,6 +66,10 @@
     - name: Set parameters.ini
       template: src=parameters.ini.j2 dest=/etc/stackforce/parameters.ini
     - name: Set containers.yml
-      copy: src=files/tst_two.yml dest=/etc/stackforce/containers.yml
-    - name: Set vagrant inventory
-      copy: src=tst_two dest=/etc/stackforce/inventory
+      copy: src={{ containers }} dest=/etc/stackforce/containers.yml
+      tags:
+        - config
+    - name: Copy base inventory
+      copy: src={{ inventory }} dest=/etc/stackforce/inventory
+      tags:
+        - config

@@ -1,0 +1,14 @@
+---
+hosts:
+{% for node in controllers %}
+  {{ node }}:
+    rabbitmq: 1
+    mariadb: 1
+    syslog: 1
+    keystone: 1
+    horizon: 1
+    glance: 1
+    nova_api: 1
+    memcached: 1
+    cinder_api: 1
+{% endfor %}
