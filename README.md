@@ -21,7 +21,7 @@ Openstack dev-environment over Openstack installation procedure:
 - $ LANG=C ansible-playbook -i /tmp/inventory --extra-vars 'username=centos inventory=/tmp/inventory containers=/tmp/containers.yml' test/playbooks/controller.yml
 - $ LANG=C ssh -t centos@192.168.10.103 "ansible-playbook -i stackforce-ansible/inventory/dynlxc.py --sudo stackforce-ansible/playbooks/create_lxc_containers.yml"
 ```
-
+IMPORTANT: s/USERNAME/your_username/
 example /etc/openstack/clouds.yaml:
 
 ```
@@ -41,7 +41,7 @@ clouds:
   tripleo:
     auth:
       auth_url: "http://192.168.10.7:35357/v3"
-      project_name: "sdeviatkin"
+      project_name: "USERNAME"
       project_domain_name: default
       user_domain_name: default
       username: "USERNAME"
