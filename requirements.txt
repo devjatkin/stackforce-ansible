@@ -1,3 +1,4 @@
 ansible
 python-novaclient==3.2.0
 shade
+funcsigs
