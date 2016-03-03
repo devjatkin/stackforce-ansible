@@ -1,0 +1,32 @@
+{% for node in controller_nodes.results %}
+{{ node.openstack.name }} ansible_host={{ node.openstack.public_v4 }} ansible_user=centos
+{% endfor %}
+{% for node in compute_nodes.results %}
+{{ node.openstack.name }} ansible_host={{ node.openstack.public_v4 }} ansible_user=centos
+{% endfor %}
+
+[baremetal]
+{% for node in controllers %}
+{{ node }}
+{% endfor %}
+{% for node in computes %}
+{{ node }}
+{% endfor %}
+
+[controller]
+{% for node in controllers %}
+{{ node }} lxc_container_user_name="centos" lxc_disk="/dev/vdb"
+{% endfor %}
+
+[controller:vars]
+lxc_container_user_name="centos"
+lxc_disk="/dev/vdb"
+
+[compute]
+{% for node in computes %}
+{{ node }}
+{% endfor %}
+
+[compute:vars]
+compute_virt_type="lxc"
+cinder_disk="/dev/vdb"

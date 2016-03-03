@@ -15,18 +15,39 @@ Openstack dev-environment over Openstack installation procedure:
 
 ```
 #!shell
-$ vagrant plugin install vagrant-openstack-provider
+- $ source .venv/bin/activate
+- $ pip install -r requirements.txt
+- $ ansible-playbook -i "localhost ansible_python_interpreter=python," --extra-vars 'username=USERNAME' -c local test/playbooks/up.yml
+- $ LANG=C ansible-playbook -i /tmp/inventory --extra-vars 'username=centos inventory=/tmp/inventory containers=/tmp/containers.yml' test/playbooks/controller.yml
+- $ export CONTROLLER01=`openstack --os-cloud tripleo server show controller01 -c addresses -f value | cut -d ' ' -f 2`
+- $ LANG=C ssh -t centos@$CONTROLLER01 "ansible-playbook -i stackforce-ansible/inventory/dynlxc.py --sudo stackforce-ansible/playbooks/create_lxc_containers.yml"
 ```
-- A "centos7" image
-- Edit Vagrantfile.openstack, populating it with your tenant account
-- Get your local PC username: $ echo $USER
-- Create 2 100GB volumes, called "$USER-lxc" and "$USER-cinder"
-- Edit the "default" security group, permitting all ingress traffic(the simpliest case)
+IMPORTANT: s/USERNAME/your_username/
+example /etc/openstack/clouds.yaml:
+
 ```
-#!shell
-- $ export VAGRANT_OPENSTACK_LOG=debug
-- $ VAGRANT_VAGRANTFILE=Vagrantfile.openstack vagrant up --provider=openstack
-- $ VAGRANT_VAGRANTFILE=Vagrantfile.openstack vagrant ssh
-- $ VAGRANT_VAGRANTFILE=Vagrantfile.openstack vagrant destroy
-- $ rm -rf .vagrant
+#!yaml
+---
+clouds:
+  stackforce:
+    auth:
+      auth_url: "http://192.168.10.7:35357/v3"
+      project_name: "admin"
+      project_domain_name: default
+      user_domain_name: default
+      username: "admin"
+      password: "PPPGee4soopohsusaki"
+    identity_api_version: "3"
+    region_name: "RegionOne"
+  tripleo:
+    auth:
+      auth_url: "http://192.168.10.7:35357/v3"
+      project_name: "USERNAME"
+      project_domain_name: default
+      user_domain_name: default
+      username: "USERNAME"
+      password: "guj3OhV8ub5hauCh"
+    identity_api_version: "3"
+    region_name: "RegionOne"
+
 ```

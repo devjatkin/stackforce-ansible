@@ -1,0 +1,129 @@
+---
+- hosts: localhost
+  vars:
+    password: "guj3OhV8ub5hauCh"
+    cloud: "stackforce"
+    test_cloud: "tripleo"
+    controllers:
+      - controller01
+      - controller02
+      - controller03
+    computes:
+      - compute01
+  tasks:
+  - name: Check username
+    debug: msg="Please use extra-vars for username"
+    when: not username is defined
+
+  - name: Create project
+    os_project:
+      cloud: "{{ cloud }}"
+      state: present
+      name: "{{ username }}"
+      domain: default
+      description: "Test environment for {{ username }}"
+  - name: Create user
+    os_user:
+      cloud: "{{ cloud }}"
+      state: present
+      name: "{{ username }}"
+      default_project: "{{ username }}"
+      domain: default
+      password: "{{ password }}"
+  - name: Add role admin
+    command: "openstack --os-cloud stackforce role add --project {{ username }} --user {{ username }} admin"
+  - name: Add role _member_
+    command: "openstack --os-cloud stackforce role add --project {{ username }} --user {{ username }} _member_"
+
+  - name: Create keypair
+    os_keypair:
+      cloud: "{{ test_cloud }}"
+      state: present
+      name: "{{ username }}_key"
+      public_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+  - name: Get id of default security group
+    shell: openstack --os-cloud tripleo security group list | grep default | awk '{print $2}'
+    register: secgroup
+
+  - name: Update security group TCP
+    os_security_group_rule:
+      cloud: "{{ test_cloud }}"
+      security_group: "{{ secgroup.stdout }}"
+      protocol: tcp
+      port_range_min: 22
+      port_range_max: 5000
+      remote_ip_prefix: 0.0.0.0/0
+
+  - name: Update security group ICMP
+    os_security_group_rule:
+      cloud: "{{ test_cloud }}"
+      security_group: "{{ secgroup.stdout }}"
+      protocol: icmp
+      remote_ip_prefix: 0.0.0.0/0
+
+  - os_network:
+      cloud: "{{ test_cloud }}"
+      state: present
+      name: "{{ username }}_mngt"
+  - os_subnet:
+      cloud: "{{ test_cloud }}"
+      state: present
+      name: "{{ username }}_mngt_subnet"
+      network_name: "{{ username }}_mngt"
+      cidr: 192.168.0.0/24
+      dns_nameservers:
+          - 8.8.8.8
+          - 8.8.4.4
+  - os_router:
+      cloud: "{{ test_cloud }}"
+      state: present
+      name: "{{ username }}_router"
+      network: ext-net
+      interfaces:
+        - "{{ username }}_mngt_subnet"
+
+  # controllers
+  - os_volume:
+      cloud: "{{ test_cloud }}"
+      display_name: "{{ item }}-lxc"
+      size: 50
+    with_items:
+      - "{{ controllers }}"
+  - os_server:
+      cloud: "{{ test_cloud }}"
+      name: "{{ item }}"
+      flavor: m1.small
+      key_name: "{{ username }}_key"
+      image: centos7
+      network: "{{ username }}_mngt"
+      volumes:
+        - "{{ item }}-lxc"
+    with_items:
+      - "{{ controllers }}"
+    register: controller_nodes
+
+  # computes
+  - os_volume:
+      cloud: "{{ test_cloud }}"
+      display_name: "{{ item }}-lxc"
+      size: 50
+    with_items:
+      - "{{ computes }}"
+  - os_server:
+      cloud: "{{ test_cloud }}"
+      name: "{{ item }}"
+      flavor: m1.small
+      key_name: "{{ username }}_key"
+      image: centos7
+      network: mngt
+      volumes:
+        - "{{ item }}-lxc"
+    with_items:
+      - "{{ computes }}"
+    register: compute_nodes
+
+  - name: Generate containers.yml
+    template: src=containers.yml.j2 dest=/tmp/containers.yml
+  - name: Generate inventory
+    template: src=inventory.j2 dest=/tmp/inventory
