@@ -6,7 +6,6 @@
   vars:
     remote_rsyslog: false
     lxc_base_container: "stackforce_base_container"
-    lxc_container_user_name: "sdeviatkin"
     num_controllers:  "{{ groups['controller'] | length }}"
   roles:
     - role: common

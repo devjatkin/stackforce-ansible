@@ -1,8 +1,7 @@
 ---
 - hosts: localhost
   vars:
-    username: "sdeviatkin"
-    password: "secret"
+    password: "guj3OhV8ub5hauCh"
     cloud: "stackforce"
     test_cloud: "tripleo"
     controllers:
