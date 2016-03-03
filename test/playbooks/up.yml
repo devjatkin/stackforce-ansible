@@ -65,12 +65,12 @@
   - os_network:
       cloud: "{{ test_cloud }}"
       state: present
-      name: mngt
+      name: "{{ username }}_mngt"
   - os_subnet:
       cloud: "{{ test_cloud }}"
       state: present
-      name: mngt_subnet
-      network_name: mngt
+      name: "{{ username }}_mngt_subnet"
+      network_name: "{{ username }}_mngt"
       cidr: 192.168.0.0/24
       dns_nameservers:
           - 8.8.8.8
@@ -78,10 +78,10 @@
   - os_router:
       cloud: "{{ test_cloud }}"
       state: present
-      name: router1
+      name: "{{ username }}_router"
       network: ext-net
       interfaces:
-        - mngt_subnet
+        - "{{ username }}_mngt_subnet"
 
   # controllers
   - os_volume:
@@ -96,7 +96,7 @@
       flavor: m1.small
       key_name: "{{ username }}_key"
       image: centos7
-      network: mngt
+      network: "{{ username }}_mngt"
       volumes:
         - "{{ item }}-lxc"
     with_items:
