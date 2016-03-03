@@ -3,3 +3,4 @@ python-novaclient==3.2.0
 shade
 funcsigs
 functools32
+python-systemd
