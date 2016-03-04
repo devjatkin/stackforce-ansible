@@ -56,7 +56,7 @@ def add_var_lxc_containers_to_controllers(inventory, containers_config):
 
 
 def list_containers_on_host(hostname, ansible_vars):
-    res = {"_meta": {"hostvars": {}}}
+    res = {"_meta": {"hostvars": {}}, "all": []}
     tmpl_ssh_command = "ssh -t -o UserKnownHostsFile=/dev/null " \
                        "-o StrictHostKeyChecking=no {host} -l {user} -p {port} -i {key_filename} {command}"
     is_local = ansible_vars.get("ansible_connection") == "local"
