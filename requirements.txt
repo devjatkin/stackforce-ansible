@@ -1,6 +1,8 @@
 ansible
 python-novaclient==3.2.0
 python-cinderclient==1.5.0
+python-openstackclient==2.1.0
+python-neutronclient==4.0.0
 shade
 funcsigs
 functools32
