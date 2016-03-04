@@ -38,12 +38,14 @@
       with_items:
         - epel-release
         - http://repo.cloudlinux.com/stackforce/x86_64/stackforce-release-1-1.el7.noarch.rpm
+
     - name: Upgrade all packages
       yum: name=* state=latest
     - name: Install necessary packages
       yum:
         name: "{{ item }}"
         state: installed
+        enablerepo: "stackforce-testing"
       with_items:
         - python2-lxc
         - ansible
