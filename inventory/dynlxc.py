@@ -55,52 +55,58 @@ def add_var_lxc_containers_to_controllers(inventory, containers_config):
     return inventory
 
 
-def list_remote_containers(hostvars):
-    """
-
-    @param hostvars: ansible hostvars, uri:key, ex.: "root@192.168.10.6":"/home/vagrant/id_rsa"
-    @return: inventory result
-    """
+def list_containers_on_host(hostname, ansible_vars):
     res = {"_meta": {"hostvars": {}}}
-    tmpl_ssh_command = "ssh -o UserKnownHostsFile=/dev/null " \
+    tmpl_ssh_command = "ssh -t -o UserKnownHostsFile=/dev/null " \
                        "-o StrictHostKeyChecking=no {host} -l {user} -p {port} -i {key_filename} {command}"
-    for host, data in hostvars.iteritems():
-        is_local = data.get("ansible_connection") == "local"
-        ssh_host = data.get("ansible_ssh_host", data.get("ansible_host"))
-        if is_local:
-            ssh_host = "localhost"
-        ssh_user = data.get("ansible_ssh_user", data.get("ansible_user", "root"))
-        ssh_port = data.get("ansible_ssh_port", data.get("ansible_port", 22))
-        ssh_key_filename = data.get("ansible_ssh_private_key_file", "~/.ssh/id_rsa")
-        cmd_list_containers = tmpl_ssh_command.format(
+    is_local = ansible_vars.get("ansible_connection") == "local"
+    ssh_host = ansible_vars.get("ansible_ssh_host", ansible_vars.get("ansible_host", hostname))
+    if is_local:
+        ssh_host = "localhost"
+    ssh_user = ansible_vars.get("ansible_ssh_user", ansible_vars.get("ansible_user", "root"))
+    ssh_port = ansible_vars.get("ansible_ssh_port", ansible_vars.get("ansible_port", 22))
+    ssh_key_filename = ansible_vars.get("ansible_ssh_private_key_file", "~/.ssh/id_rsa")
+    cmd_list_containers = tmpl_ssh_command.format(
+        host=ssh_host,
+        user=ssh_user,
+        port=ssh_port,
+        key_filename=ssh_key_filename,
+        command="sudo lxc-ls --active"
+    )
+    cmd_run_containers = run_command(cmd_list_containers)
+    containers = cmd_run_containers.split()
+    for container_name in containers:
+        cmd_get_container_ip = tmpl_ssh_command.format(
             host=ssh_host,
             user=ssh_user,
             port=ssh_port,
             key_filename=ssh_key_filename,
-            command="sudo lxc-ls --active"
+            command="sudo lxc-info -i --name {}".format(container_name)
         )
-        cmd_run_containers = run_command(cmd_list_containers)
-        containers = cmd_run_containers.split()
-        for container_name in containers:
-            cmd_get_container_ip = tmpl_ssh_command.format(
-                host=ssh_host,
-                user=ssh_user,
-                port=ssh_port,
-                key_filename=ssh_key_filename,
-                command="sudo lxc-info -i --name {}".format(container_name)
-            )
-            srv = re.split('_container', container_name)
-            group = re.split('_', srv[0])[0]
-            if group not in res:
-                res[group] = {}
-                res[group]['hosts'] = []
-            if isinstance(res[group], dict):
-                res[group]['hosts'].append(container_name)
-            cmd_run_container_ip = run_command(cmd_get_container_ip).split()
-            if len(cmd_run_container_ip):
-                res["_meta"]['hostvars'][container_name] = {"ansible_ssh_host": cmd_run_container_ip[-1]}
-        res["all"] = list(res['_meta']['hostvars'].keys())
-        return res
+        srv = re.split('_container', container_name)
+        group = re.split('_', srv[0])[0]
+        if group not in res:
+            res[group] = {}
+            res[group]['hosts'] = []
+        if isinstance(res[group], dict):
+            res[group]['hosts'].append(container_name)
+        cmd_run_container_ip = run_command(cmd_get_container_ip).split()
+        if len(cmd_run_container_ip):
+            res["_meta"]['hostvars'][container_name] = {"ansible_ssh_host": cmd_run_container_ip[-1]}
+    res["all"] = list(res['_meta']['hostvars'].keys())
+    return res
+
+
+def list_remote_containers(hostvars):
+    """
+
+    @param hostvars: ansible hostvars,like "hostname":{"ansible_*":".."}
+    @return: inventory result
+    """
+    res = {"_meta": {"hostvars": {}}}
+    for host, data in hostvars.iteritems():
+        res = merge_results(res, list_containers_on_host(host, data))
+    return res
 
 
 def get_remote_controllers(inventory):
@@ -138,13 +144,18 @@ def read_inventory_file(inventory_filepath):
     return res
 
 
+def get_group_name_from_container(container_name):
+    srv = re.split('_container', container_name)
+    group = "{}".format(re.split('_', srv[0])[0])
+    return group
+
+
 def list_containers():
     res = dict()
     hostvars = {}
     containers = lxc.list_containers(active=True, defined=False)
     for container_name in containers:
-        srv = re.split('_container', container_name)
-        group = "{}".format(re.split('_', srv[0])[0])
+        group = get_group_name_from_container(container_name)
         if group not in res:
             res[group] = {}
             res[group]['hosts'] = []
