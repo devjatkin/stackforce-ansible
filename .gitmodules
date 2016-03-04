@@ -10,6 +10,3 @@
 [submodule "playbooks/roles/mysql"]
 	path = playbooks/roles/mysql
 	url = https://github.com/geerlingguy/ansible-role-mysql.git
-[submodule "playbooks/roles/collectd"]
-	path = playbooks/roles/collectd
-	url = https://github.com/megastallman/collectd.git
