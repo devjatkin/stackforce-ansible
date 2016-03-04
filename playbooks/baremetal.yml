@@ -4,6 +4,9 @@
     - ntp_server: "ntp.lucky.net"
   roles:
        - { role: collectd,
+             collectd_packages_RedHat:
+             [{ package: "collectd" },
+              { package: "collectd-lvm" }],
              collectd_plugins:
              [{ plugin: "load" },
               { plugin: "cpu" },
