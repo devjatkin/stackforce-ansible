@@ -155,7 +155,7 @@
     tags:
       - ssh_key
 
-  - name: Tune resolv conf 
+  - name: Tune resolv conf
     lxc_container:
       name: "{{ item }}"
       container_command: |
