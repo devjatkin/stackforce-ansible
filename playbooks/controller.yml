@@ -1,7 +1,14 @@
 ---
 - hosts: controller*
+  become: yes
+  become_method: sudo
   vars:
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
+    inventory: "../test/inventory/vagrant"
+    containers: "files/allinone_containers.yml"
+    parameters: "../test/playbooks/templates/parameters.ini.j2"
+    inventory_filepath: "/etc/stackforce/inventory"
+    unique_containers_file: "/etc/stackforce/containers.yml"
   tasks:
   - name: Install consul-ui
     yum: name="{{ item }}" state=present
@@ -16,3 +23,25 @@
   - name: Enable consul
     service: name=consul state=restarted enabled=yes
     when: consul_cfg|changed
+
+  - name: Install necessary packages
+    yum:
+      name: "{{ item }}"
+      state: installed
+      enablerepo: "stackforce-testing"
+    with_items:
+      - python2-lxc
+      - ansible
+
+  - name: Create config dir
+    file: path=/etc/stackforce state=directory
+  - name: Set parameters.ini
+    template: src={{ parameters }} dest=/etc/stackforce/parameters.ini
+  - name: Set containers.yml
+    copy: src={{ containers }} dest=/etc/stackforce/containers.yml
+    tags:
+      - config
+  - name: Copy base inventory
+    copy: src={{ inventory }} dest=/etc/stackforce/inventory
+    tags:
+      - config
