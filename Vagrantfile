@@ -81,7 +81,7 @@ Vagrant.configure(2) do |config|
     sudo yum install -y epel-release
     sudo yum install -y http://repo.cloudlinux.com/stackforce/x86_64/stackforce-release-1-1.el7.noarch.rpm
     sudo yum install -y ansible --enablerepo='stackforce-testing'
-    ansible-playbook -i "localhost,"    -c local /vagrant/playbooks/vagrant_preconfig.yml
+    ansible-playbook -i "controller01 ansible_connection=local," -c local --extra-vars 'inventory=/vagrant/test/inventory/vagrant containers=/vagrant/playbooks/files/allinone_containers.yml' /vagrant/playbooks/controller.yml
     ansible-playbook -i "/vagrant/inventory/dynlxc.py" -c local --extra-vars 'lxc_container_user_name=vagrant lxc_disk=/dev/sdb' /vagrant/playbooks/create_lxc_containers.yml
     sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/horizon_proxy.yml
     sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
