@@ -18,3 +18,37 @@
 
   - name: Start ntpd
     service: name=ntpd state=started enabled=yes
+
+  roles:
+       - { role: collectd,
+             collectd_plugins:
+             [{ plugin: "load" },
+              { plugin: "cpu" },
+              { plugin: "contextswitch" },
+              { plugin: "df" },
+              { plugin: "disk" },
+              { plugin: "ethstat" },
+              { plugin: "interface" },
+              { plugin: "network" },
+              { plugin: "processes" },
+              { plugin: "swap" },
+              { plugin: "tcpconns" },
+              { plugin: "uptime" },
+              { plugin: "memory" }],
+             collectd_plugins_multi:
+             { write_graphite: "  <Node \"baremetal\">\n
+                                   Host \"localhost\"\n
+                                   Port \"2003\"\n
+                                   Protocol \"tcp\"\n
+                                   LogSendErrors true\n
+                                   Prefix \"collectd\"\n
+                                   Postfix \"collectd\"\n
+                                   StoreRates true\n
+                                   AlwaysAppendDS false\n
+                                   EscapeCharacter \"_\"\n
+                                  </Node>\n"},
+              tags: ["collectd"] }
+
+  tasks:
+  - name: Ensure Collectd service is enabled and restarted
+    service: name=collectd enabled=yes state=restarted
