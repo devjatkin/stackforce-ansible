@@ -4,3 +4,4 @@ lxc-python2
 nose2
 mock
 pylint
+python-consul

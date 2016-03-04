@@ -3,8 +3,7 @@
 - include: controller.yml
 - include: keepalived.yml
   vars:
-    keepalived_ext_vip: "{{ lookup('ini', 'ext_address section=public file=/etc/stackforce/parameters.ini') }}"
-    keepalived_int_vip: "{{ lookup('ini', 'int_address section=public file=/etc/stackforce/parameters.ini') }}"
+    keepalived_ext_vip: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
     num_controllers: "{{ groups['controller'] | length }}"
 - include: horizon_proxy.yml
 - hosts: all:!controller*

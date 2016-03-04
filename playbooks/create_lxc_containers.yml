@@ -54,16 +54,6 @@
       dest: "/etc/lxc/default.conf"
     when: num_controllers | int > 1
 
-  - name: Copy DNSmasq config
-    copy:
-      src: "files/dnsmasq.conf"
-      dest: "/etc/dnsmasq.conf"
-    when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" and num_controllers | int > 1)
-
-  - name: Start dnsmasq
-    service: name=dnsmasq state=restarted
-    when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" and num_controllers | int > 1)
-
   - name: Restart libvirtd
     service: name=libvirtd state=restarted
 
@@ -114,6 +104,7 @@
         HOSTNAME=
         NM_CONTROLLED=no
         TYPE=Ethernet
+        DHCP_HOSTNAME=\`hostname\`
         EOT
     with_items: lxc_base_container
     tags:
@@ -163,6 +154,17 @@
     with_items: lxc_base_container
     tags:
       - ssh_key
+
+  - name: Tune resolv conf
+    lxc_container:
+      name: "{{ item }}"
+      container_command: |
+        cat <<EOT >> /etc/resolv.conf
+        nameserver 192.168.53.254
+        nameserver 192.168.122.1
+        EOT
+    with_items: lxc_base_container
+    when: num_controllers | int > 1
 
   - name: Clone containers
     lxc_container:

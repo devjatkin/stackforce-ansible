@@ -38,14 +38,13 @@
       with_items:
         - epel-release
         - http://repo.cloudlinux.com/stackforce/x86_64/stackforce-release-1-1.el7.noarch.rpm
-
     - name: Upgrade all packages
       yum: name=* state=latest
     - name: Install necessary packages
       yum:
         name: "{{ item }}"
         state: installed
-        enablerepo: "stackforce-testing"
+        enablerepo: stackforce-testing
       with_items:
         - python2-lxc
         - ansible
@@ -54,6 +53,10 @@
         - gcc
         - python-pip
         - lvm2
+    - name: Install python requirements
+      pip: name="{{ item }}"
+      with_items:
+        - python-consul
 
     - git:
         repo: "git@bitbucket.org:stackforce/stackforce-ansible.git"
@@ -75,3 +78,39 @@
       copy: src={{ inventory }} dest=/etc/stackforce/inventory
       tags:
         - config
+- hosts: all
+  become: yes
+  become_method: sudo
+  vars:
+    num_controllers:  "{{ groups['controller'] | length }}"
+  tasks:
+    - name: Install requirements
+      yum: name="{{ item }}" state=present
+      with_items:
+        - bridge-utils
+        - dnsmasq
+
+    - name: copy interface Vlan10 config
+      template: src=ifcfg-eth0.10.j2 dest=/etc/sysconfig/network-scripts/ifcfg-eth0.10
+
+    - name: copy interface mngt-br config
+      template: src=ifcfg-mngt-br.j2 dest=/etc/sysconfig/network-scripts/ifcfg-mngt-br
+
+    - name: Copy DNSmasq config
+      copy:
+        src: "files/dnsmasq.conf"
+        dest: "/etc/dnsmasq.conf"
+      when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" and num_controllers | int > 1)
+
+    - name: Restart networking
+      service: name=network state=restarted
+      when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" and num_controllers | int > 1)
+    - name: Start dnsmasq
+      service: name=dnsmasq state=restarted
+      when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" and num_controllers | int > 1)
+
+    - name: Restart networking
+      service: name=network state=restarted
+      when: ( inventory_hostname !=  "{{ groups['controller'][0] }}" and num_controllers | int > 1)
+    - name: Add local DNSservers
+      lineinfile: dest=/etc/resolv.conf insertbefore=BOF line="nameserver 192.168.53.254"
