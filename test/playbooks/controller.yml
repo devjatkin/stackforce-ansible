@@ -55,7 +55,7 @@
         - lvm2
     - name: Install python requirements
       pip: name="{{ item }}"
-      with_items: 
+      with_items:
         - python-consul
 
     - git:
@@ -112,5 +112,5 @@
     - name: Restart networking
       service: name=network state=restarted
       when: ( inventory_hostname !=  "{{ groups['controller'][0] }}" and num_controllers | int > 1)
-    - name: Add local DNSservers 
+    - name: Add local DNSservers
       lineinfile: dest=/etc/resolv.conf insertbefore=BOF line="nameserver 192.168.53.254"
