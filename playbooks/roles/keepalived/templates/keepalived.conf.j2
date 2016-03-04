@@ -25,6 +25,7 @@ vrrp_instance KEEPALIVED-EXT-VIP-{{ keepalived_ext_vip }}{
         {{ keepalived_ext_vip }} dev {{ keepalived_ext_shared_iface }} label {{ keepalived_ext_shared_iface }}:0
     }
 }
+{% if keepalived_ext_vip != keepalived_int_vip %}
 vrrp_instance KEEPALIVED-INT-VIP-{{ keepalived_int_vip }}{
 	{% if inventory_hostname == keepalived_master_server %}
     state MASTER
@@ -43,3 +44,4 @@ vrrp_instance KEEPALIVED-INT-VIP-{{ keepalived_int_vip }}{
         {{ keepalived_int_vip }} dev {{ keepalived_int_shared_iface }} label {{ keepalived_int_shared_iface }}:0
     }
 }
+{% endif %}
