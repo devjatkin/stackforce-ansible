@@ -32,7 +32,7 @@ LOG = logging.getLogger(__name__)
 OPTS = [
     cfg.BoolOpt('ip_lib_force_root',
                 default=False,
-                help=_('Force ip_lib calls to use the root helper')),
+                help=('Force ip_lib calls to use the root helper')),
 ]
 
 
@@ -56,8 +56,8 @@ def remove_interface_suffix(interface):
 
 
 class AddressNotReady(exceptions.NeutronException):
-    message = _("Failure waiting for address %(address)s to "
-                "become ready: %(reason)s")
+    message = ("Failure waiting for address %(address)s to "
+               "become ready: %(reason)s")
 
 
 class SubProcessBase(object):
@@ -242,8 +242,8 @@ class IPDevice(SubProcessBase):
         self.neigh = IpNeighCommand(self)
 
     def __eq__(self, other):
-        return (other is not None and self.name == other.name
-                and self.namespace == other.namespace)
+        return (other is not None and self.name == other.name and
+                self.namespace == other.namespace)
 
     def __str__(self):
         return self.name
