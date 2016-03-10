@@ -1,4 +1,4 @@
 [compute]
 localhost ansible_connection=local neutron_physical_interface_mappings="vlan:eth1,external:eth0" cinder_disk="/dev/sdc"
 [controller]
-controller01 ansible_connection=local cinder_disk="/dev/sdc" container=playbooks/files/allinone_containers.yml
+controller01 ansible_connection=local cinder_disk="/dev/sdc" container=test/playbooks/files/allinone_containers.yml

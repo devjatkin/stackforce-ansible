@@ -1,7 +1,11 @@
 .PHONY: all test clean
-test:
-	./bin/check_venv.sh
-	ansible-playbook --syntax-check --list-tasks -i inventory/localhost playbooks/*.yml
-	ansible-lint --version
-	ansible-lint playbooks/*yml --exclude playbooks/roles/mysql/
-	nose2
+test: pep8 ansible-lint unittest
+
+pep8:
+	tox -e pep8 -r
+
+ansible-lint:
+	tox -e ansible-lint -r
+
+unittest:
+	tox -e unittest -r
