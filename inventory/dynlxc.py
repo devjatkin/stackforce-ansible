@@ -45,7 +45,7 @@ def add_var_lxc_containers_to_controllers(inventory, containers_config):
     for m in match:
         for group_name in containers_config.get(m, []):
             container_names = []
-            group =  containers_config[m][group_name]
+            group = containers_config[m][group_name]
             for container_name, count in group.items():
                 container_names.extend(
                     [get_unique_container_name(
@@ -59,20 +59,18 @@ def add_var_lxc_containers_to_controllers(inventory, containers_config):
 
 def list_containers_on_host(hostname, ansible_vars):
     res = {"_meta": {"hostvars": {}}}
-    tmpl_ssh_command = "ssh -t -o UserKnownHostsFile=/dev/null " \
-                       "-o StrictHostKeyChecking=no {host} -l {user} " \
-                       "-p {port} -i {key_filename} {command}"
+    tmpl_ssh_command = "ssh -t -o BatchMode=yes -o UserKnownHostsFile=/dev/null " \
+                       "-o StrictHostKeyChecking=no {host} -l {user} -p {port} -i {key_filename} " \
+                       "{command}"
     is_local = ansible_vars.get("ansible_connection") == "local"
     ssh_host = ansible_vars.get("ansible_ssh_host",
                                 ansible_vars.get("ansible_host", hostname))
     if is_local:
         ssh_host = "localhost"
-    ssh_user = ansible_vars.get("ansible_ssh_user",
-                                ansible_vars.get("ansible_user", "root"))
-    ssh_port = ansible_vars.get("ansible_ssh_port",
-                                ansible_vars.get("ansible_port", 22))
+    ssh_user = ansible_vars.get("ansible_ssh_user", ansible_vars.get("ansible_user", os.getlogin()))
+    ssh_port = ansible_vars.get("ansible_ssh_port", ansible_vars.get("ansible_port", 22))
     ssh_key_filename = ansible_vars.get("ansible_ssh_private_key_file",
-                                        "~/.ssh/id_rsa")
+                                        os.path.expanduser("~/.ssh/id_rsa"))
     cmd_list_containers = tmpl_ssh_command.format(
         host=ssh_host,
         user=ssh_user,
