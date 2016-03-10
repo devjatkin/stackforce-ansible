@@ -71,7 +71,6 @@
       copy:
         src: "{{ lookup('env','PWD') }}/"
         dest: "/home/{{ username }}/stackforce-ansible"
-        directory_mode: yes
         owner: "{{ username }}"
 
     - name: Create config dir
