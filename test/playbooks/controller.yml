@@ -72,6 +72,11 @@
         src: "{{ lookup('env','PWD') }}/"
         dest: "/home/{{ username }}/stackforce-ansible"
         owner: "{{ username }}"
+    - name: Update mode for dynlxc.py
+      file:
+        path: "/home/{{username}}/stackforce-ansible/inventory/dynlxc.py"
+        state: file
+        mode: "755"
 
     - name: Create config dir
       file: path=/etc/stackforce state=directory
