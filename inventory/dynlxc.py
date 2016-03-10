@@ -45,8 +45,8 @@ def add_var_lxc_containers_to_controllers(inventory, containers_config):
     for m in match:
         for group_name in containers_config.get(m, []):
             container_names = []
-            for container_name, count in containers_config[
-                    m][group_name].items():
+            group =  containers_config[m][group_name]
+            for container_name, count in group.items():
                 container_names.extend(
                     [get_unique_container_name(
                         container_name, group_name, i) for i in range(count)])
