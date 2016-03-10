@@ -51,8 +51,8 @@
       cloud: "{{ test_cloud }}"
       security_group: "{{ secgroup.stdout }}"
       protocol: tcp
-      port_range_min: 22
-      port_range_max: 5000
+      port_range_min: -1
+      port_range_max: -1
       remote_ip_prefix: 0.0.0.0/0
 
   - name: Update security group ICMP
