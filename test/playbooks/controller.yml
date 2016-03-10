@@ -69,7 +69,7 @@
         owner: "{{ username }}"
     - name: Copy source code
       copy:
-        src: "{{ lookup('env','PWD') }}"
+        src: "{{ lookup('env','PWD') }}/"
         dest: "/home/{{ username }}/stackforce-ansible"
         directory_mode: yes
         owner: "{{ username }}"
