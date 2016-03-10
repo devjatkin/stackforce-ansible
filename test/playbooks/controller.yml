@@ -58,13 +58,21 @@
       with_items:
         - python-consul
 
-    - git:
-        repo: "git@bitbucket.org:stackforce/stackforce-ansible.git"
+    - name: Wipe remote directory
+      file:
+        path: "/home/{{ username }}/stackforce-ansible"
+        state: absent
+    - name: Create empty directory
+      file:
+        path: "/home/{{ username }}/stackforce-ansible"
+        state: directory
+        owner: "{{ username }}"
+    - name: Copy source code
+      copy:
+        src: "../"
         dest: "/home/{{ username }}/stackforce-ansible"
-        recursive: yes
-        accept_hostkey: yes
-        key_file: "/home/{{ username }}/.ssh/id_rsa"
-      become_user: "{{ username }}"
+        directory_mode: yes
+        owner: "{{ username }}"
 
     - name: Create config dir
       file: path=/etc/stackforce state=directory
