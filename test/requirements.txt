@@ -1,7 +1,8 @@
 ansible-lint>=2.2
 python-openstackclient
 lxc-python2
-nose2
 mock
 pylint
 python-consul
+pytest
+pytest-cov

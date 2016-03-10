@@ -35,7 +35,7 @@ def get_unique_containers_config(filepath):
 
 
 def get_unique_container_name(name, salt, number):
-    s = str(name)+str(salt) + str(number)
+    s = str(name) + str(salt) + str(number)
     hsh = hashlib.sha256(s).hexdigest()
     return "{}_container-{}".format(name, hsh[:8])
 
@@ -45,11 +45,13 @@ def add_var_lxc_containers_to_controllers(inventory, containers_config):
     for m in match:
         for group_name in containers_config.get(m, []):
             container_names = []
-            for container_name, count in containers_config[m][group_name].items():
-                container_names.extend([get_unique_container_name(container_name,
-                                                                  group_name,
-                                                                  i) for i in range(count)])
-            inv_group = inventory['_meta'].get(match[m], {}).get(group_name, {})
+            group =  containers_config[m][group_name]
+            for container_name, count in group.items():
+                container_names.extend(
+                    [get_unique_container_name(
+                        container_name, group_name, i) for i in range(count)])
+            inv_group = inventory['_meta'].get(match[m], {}).get(group_name,
+                                                                 {})
             inv_group["lxc_containers"] = container_names
             inventory['_meta'][match[m]][group_name] = inv_group
     return inventory
@@ -58,14 +60,19 @@ def add_var_lxc_containers_to_controllers(inventory, containers_config):
 def list_containers_on_host(hostname, ansible_vars):
     res = {"_meta": {"hostvars": {}}}
     tmpl_ssh_command = "ssh -t -o UserKnownHostsFile=/dev/null " \
-                       "-o StrictHostKeyChecking=no {host} -l {user} -p {port} -i {key_filename} {command}"
+                       "-o StrictHostKeyChecking=no {host} -l {user} " \
+                       "-p {port} -i {key_filename} {command}"
     is_local = ansible_vars.get("ansible_connection") == "local"
-    ssh_host = ansible_vars.get("ansible_ssh_host", ansible_vars.get("ansible_host", hostname))
+    ssh_host = ansible_vars.get("ansible_ssh_host",
+                                ansible_vars.get("ansible_host", hostname))
     if is_local:
         ssh_host = "localhost"
-    ssh_user = ansible_vars.get("ansible_ssh_user", ansible_vars.get("ansible_user", "root"))
-    ssh_port = ansible_vars.get("ansible_ssh_port", ansible_vars.get("ansible_port", 22))
-    ssh_key_filename = ansible_vars.get("ansible_ssh_private_key_file", "~/.ssh/id_rsa")
+    ssh_user = ansible_vars.get("ansible_ssh_user",
+                                ansible_vars.get("ansible_user", "root"))
+    ssh_port = ansible_vars.get("ansible_ssh_port",
+                                ansible_vars.get("ansible_port", 22))
+    ssh_key_filename = ansible_vars.get("ansible_ssh_private_key_file",
+                                        "~/.ssh/id_rsa")
     cmd_list_containers = tmpl_ssh_command.format(
         host=ssh_host,
         user=ssh_user,
@@ -92,7 +99,8 @@ def list_containers_on_host(hostname, ansible_vars):
             res[group]['hosts'].append(container_name)
         cmd_run_container_ip = run_command(cmd_get_container_ip).split()
         if len(cmd_run_container_ip):
-            res["_meta"]['hostvars'][container_name] = {"ansible_ssh_host": cmd_run_container_ip[-1]}
+            res["_meta"]['hostvars'][container_name] = \
+                {"ansible_ssh_host": cmd_run_container_ip[-1]}
     res["all"] = list(res['_meta']['hostvars'].keys())
     return res
 
@@ -113,13 +121,16 @@ def get_remote_controllers(inventory):
     res_hostvars = {}
     controllers = inventory.get("controller", {})
     for host in controllers.get("hosts", []):
-        if inventory["_meta"]["hostvars"][host].get("ansible_connection", "remote") != "local":
+        if inventory["_meta"]["hostvars"][host].get(
+                "ansible_connection", "remote") != "local":
             res_hostvars[host] = inventory["_meta"]["hostvars"][host]
     return res_hostvars
 
 
 def run_command(command):
-    return subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
+    return subprocess.Popen(
+        command, shell=True,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
 
 
 def read_inventory_file(inventory_filepath):
@@ -165,7 +176,8 @@ def list_containers():
         if container.get_interfaces():
             ips = container.get_ips()
             if len(ips):
-                hostvars[container_name] = dict(ansible_ssh_host=ips[ANSIBLE_SSH_HOST_INDEX])
+                hostvars[container_name] = \
+                    dict(ansible_ssh_host=ips[ANSIBLE_SSH_HOST_INDEX])
     res["_meta"] = {"hostvars": hostvars}
     res['all'] = list(containers)
     return res
@@ -185,12 +197,14 @@ def merge_results(a, b):
                 if "groupvars" not in res["_meta"]:
                     res["_meta"]["groupvars"] = b["_meta"]["groupvars"]
                 for group in b["_meta"]["groupvars"]:
-                    res["_meta"]["groupvars"][group] = b["_meta"]["groupvars"][group]
+                    res["_meta"]["groupvars"][group] = \
+                        b["_meta"]["groupvars"][group]
             if "hostvars" in b["_meta"]:
                 if "hostvars" not in res["_meta"]:
                     res["_meta"]["hostvars"] = []
                 for host in b["_meta"]["hostvars"]:
-                    res["_meta"]["hostvars"][host] = b["_meta"]["hostvars"][host]
+                    res["_meta"]["hostvars"][host] = \
+                        b["_meta"]["hostvars"][host]
         else:
             if grp not in res:
                 res[grp] = b[grp]
@@ -204,6 +218,7 @@ def add_extravars(res, extra_vars):
         for var in extra_vars:
             res["_meta"]["hostvars"][host][var] = extra_vars[var]
     return res
+
 
 if __name__ == "__main__":
     if os.geteuid() != 0:
@@ -225,7 +240,8 @@ if __name__ == "__main__":
                                list_remote_containers(remote_controllers))
     if uniq_containers_file:
         unique_containers = get_unique_containers_config(uniq_containers_file)
-        result = add_var_lxc_containers_to_controllers(result, unique_containers)
+        result = add_var_lxc_containers_to_controllers(result,
+                                                       unique_containers)
     result = add_extravars(result, os_vars)
     if len(sys.argv) == 2 and sys.argv[1] == '--list':
         print(json.dumps(result))
