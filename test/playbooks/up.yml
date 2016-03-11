@@ -116,7 +116,7 @@
       flavor: m1.small
       key_name: "{{ username }}_key"
       image: centos7
-      network: mngt
+      network: "{{ username }}_mngt"
       volumes:
         - "{{ item }}-lxc"
     with_items:
