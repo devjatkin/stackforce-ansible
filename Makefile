@@ -9,3 +9,6 @@ ansible-lint:
 
 unittest:
 	tox -e unittest -r
+
+clean:
+	rm -rf .tox
