@@ -53,6 +53,7 @@
         - gcc
         - python-pip
         - lvm2
+        - yajl
     - name: Install python requirements
       pip: name="{{ item }}"
       with_items:
