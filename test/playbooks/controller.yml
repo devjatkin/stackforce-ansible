@@ -68,10 +68,12 @@
         state: directory
         owner: "{{ username }}"
     - name: Copy source code
-      copy:
+      synchronize:
         src: "{{ lookup('env','PWD') }}/"
         dest: "/home/{{ username }}/stackforce-ansible"
-        owner: "{{ username }}"
+        recursive: yes
+        rsync_opts: "--exclude='.git/' --exclude='.venv/' --exclude='.tox/'"
+      become: no
     - name: Update mode for dynlxc.py
       file:
         path: "/home/{{username}}/stackforce-ansible/inventory/dynlxc.py"
