@@ -105,10 +105,15 @@ SECRET_KEY='240f6017840c8ffa27ba'
 # We recommend you use memcached for development; otherwise after every reload
 # of the django development server, you will have to login again. To use
 # memcached set CACHES to something like
+'{{ hostvars[groups.memcached.0]['ansible_ssh_host'] }}:11211',
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '{{ hostvars[groups.memcached.0]['ansible_ssh_host'] }}:11211',
+            'LOCATION': [
+                {% for server in groups.memcached %}
+                    ( {{ hostvars[server]['ansible_ssh_host'] }}:11211, {{ loop.index }}),
+                {% endfor %}
+            ]
     }
 }
 
