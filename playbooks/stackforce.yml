@@ -5,7 +5,7 @@
   vars:
     keepalived_ext_vip: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
     num_controllers: "{{ groups['controller'] | length }}"
-- include: horizon_proxy.yml
+- include: haproxy.yml
 - hosts: all:!controller*
   roles:
     - role: consul-agent
