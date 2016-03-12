@@ -11,6 +11,7 @@
     - role: consul-agent
   serial: 3
 
+- include: graphite.yml
 - include: rabbitmq.yml
 - include: percona-cluster.yml
   vars:

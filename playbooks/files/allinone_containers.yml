@@ -10,3 +10,4 @@ hosts:
     nova_api: 1
     memcached: 1
     cinder_api: 1
+    graphite: 1
