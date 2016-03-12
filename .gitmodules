@@ -13,3 +13,6 @@
 [submodule "playbooks/roles/collectd"]
 	path = playbooks/roles/collectd
 	url = https://github.com/megastallman/collectd.git
+[submodule "playbooks/roles/graphite"]
+	path = playbooks/roles/graphite
+	url = https://github.com/megastallman/ansible-graphite.git

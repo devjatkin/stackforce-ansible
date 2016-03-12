@@ -10,6 +10,7 @@ hosts:
    nova_api: 1
    memcached: 1
    cinder_api: 1
+   graphite: 1
  stackforce02:
    rabbitmq: 1
    mariadb: 1
@@ -20,3 +21,4 @@ hosts:
    nova_api: 1
    memcached: 1
    cinder_api: 1
+   graphite: 1
