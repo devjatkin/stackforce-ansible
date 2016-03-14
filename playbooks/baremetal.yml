@@ -23,7 +23,7 @@
               { plugin: "memory" }],
              collectd_plugins_multi:
              { write_graphite: "  <Node \"{{ ansible_hostname }}\">\n
-                                   Host \"{{ hostvars[groups.graphite.0]['ansible_ssh_host'] }}\"\n
+                                   Host \"{{ hostvars[groups.graphite.0]['ansible_host'] }}\"\n
                                    Port \"2003\"\n
                                    Protocol \"tcp\"\n
                                    LogSendErrors true\n
