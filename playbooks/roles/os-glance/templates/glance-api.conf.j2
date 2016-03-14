@@ -1036,7 +1036,7 @@ password = {{ glance_service_password }}
 # If left undefined, tokens will instead be cached in-process. (list
 # value)
 # Deprecated group/name - [DEFAULT]/memcache_servers
-memcached_servers={% for node in groups.memcached %}{{ hostvars[node].ansible_ssh_host }}:11211{% if not loop.last %},{% endif %}{% endfor %}
+memcached_servers={% for node in groups.memcached %}{{ hostvars[node].ansible_host }}:11211{% if not loop.last %},{% endif %}{% endfor %}
 
 # In order to prevent excessive effort spent validating tokens, the
 # middleware caches previously-seen tokens for a configurable duration
