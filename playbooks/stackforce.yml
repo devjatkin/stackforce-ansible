@@ -44,8 +44,8 @@
     nova_service_publicurl: "http://{{ public_address }}:8774/v2/%(tenant_id)s"
     nova_service_adminurl: "http://{{ public_address }}:8774/v2/%(tenant_id)s"
     nova_neutron_url: "http://{{ public_address }}:9696"
-    cpu_allocation_ratio: "7.0"
-    ram_allocation_ratio: "1.1"
+    nova_cpu_allocation_ratio: "7.0"
+    nova_ram_allocation_ratio: "1.1"
 - include: os-cinder-api.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
@@ -60,8 +60,8 @@
   vars:
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
     neutron_service_publicurl: "http://{{ public_address }}:9696"
-    cpu_allocation_ratio: "7.0"
-    ram_allocation_ratio: "1.1"
+    nova_cpu_allocation_ratio: "7.0"
+    nova_ram_allocation_ratio: "1.1"
 
 - include: os-neutronService.yml
   vars:
