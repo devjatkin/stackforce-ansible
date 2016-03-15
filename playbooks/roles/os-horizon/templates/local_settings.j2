@@ -108,7 +108,11 @@ SECRET_KEY='240f6017840c8ffa27ba'
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '{{ hostvars[groups.memcached.0]['ansible_host'] }}:11211',
+            'LOCATION': [
+                {% for server in groups.memcached %}
+                    ( {{ hostvars[server]['ansible_host'] }}:11211, {{ loop.index }}),
+                {% endfor %}
+            ]
     }
 }
 
