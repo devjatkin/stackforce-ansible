@@ -1,4 +1,7 @@
 ---
+- name: Remove firewalld
+  yum: name=firewalld state=absent
+
 - name: Update rsyslog config
   template: src=rsyslog.conf.j2 dest=/etc/rsyslog.conf
   notify: Restart rsyslog
