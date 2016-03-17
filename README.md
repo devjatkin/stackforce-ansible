@@ -17,8 +17,9 @@ Openstack dev-environment over Openstack installation procedure:
 #!shell
 - $ source .venv/bin/activate
 - $ pip install -r requirements.txt
-- $ ansible-playbook -i "localhost ansible_python_interpreter=python," --extra-vars 'username=$USER' -c local test/playbooks/up.yml
-- $ LANG=C ansible-playbook -i /tmp/inventory --extra-vars 'username=centos inventory=/tmp/inventory containers=/tmp/containers.yml' test/playbooks/controller.yml
+- $ export LOCAL_TMP_DIR="/tmp"
+- $ ansible-playbook -i "localhost ansible_python_interpreter=python," --extra-vars "username=$USER local_tmp_dir=$LOCAL_TMP_DIR" -c local test/playbooks/up.yml
+- $ LANG=C ansible-playbook -i $LOCAL_TMP_DIR/inventory --extra-vars "username=centos inventory=$LOCAL_TMP_DIR/inventory containers=$LOCAL_TMP_DIR/containers.yml" test/playbooks/controller.yml
 - $ LANG=C ssh -t centos@$(openstack --os-cloud tripleo server show controller01 -c addresses -f value | cut -d ' ' -f 2) "ansible-playbook -i stackforce-ansible/inventory/dynlxc.py --sudo stackforce-ansible/playbooks/create_lxc_containers.yml"
 ```
 IMPORTANT: s/USERNAME/your_username/
