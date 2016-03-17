@@ -10,6 +10,10 @@
   roles:
     - role: common
   tasks:
+
+  - name: Remove firewalld
+    yum: name=firewalld state=absent
+
   - name: Custom ssh config
     become_user: "{{ lxc_container_user_name }}"
     copy: src="files/dot_ssh/config" dest="~/.ssh/config" mode=600 owner="{{ lxc_container_user_name }}"
