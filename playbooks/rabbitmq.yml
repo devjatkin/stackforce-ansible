@@ -1,5 +1,8 @@
 ---
 - hosts: rabbitmq*
+  vars:
+    rabbitmq_admin_user: "admin"
+    rabbitmq_admin_password: "34DFSDFdddfdT79dfn"
   roles:
     - role: rabbitmq
       rabbitmq_ssl: false
@@ -7,3 +10,15 @@
       rabbitmq_plugins: [ 'rabbitmq_management' ]
       rabbitmq_conf_tcp_listeners_address: "{{ ansible_host }}"
     - role: rabbitmq-cluster
+  tasks:
+    - name: Add rabbit WEB-UI user
+      rabbitmq_user:
+               user="{{ rabbitmq_admin_user }}"
+               password="{{ rabbitmq_admin_password }}"
+               vhost=/
+               configure_priv=.*
+               read_priv=.*
+               write_priv=.*
+               state=present
+               tags=administrator
+               #force=yes

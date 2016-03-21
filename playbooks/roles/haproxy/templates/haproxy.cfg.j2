@@ -187,6 +187,18 @@ listen rabbitmq 0.0.0.0:5672
 {% endfor %}
 
 #---------------------------------------------------------------------
+# rabbitmq_management
+#---------------------------------------------------------------------
+listen rabbitmq 0.0.0.0:7600
+        balance source
+        mode tcp
+        option tcpka
+        maxconn 10000
+{% for host in groups['rabbitmq'] %}
+        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:15672 check inter 2000 rise 2 fall 5
+{% endfor %}
+
+#---------------------------------------------------------------------
 # graphite
 #---------------------------------------------------------------------
 listen graphite 0.0.0.0:7500
