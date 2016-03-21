@@ -1,2 +1,3 @@
 ---
 horizon_timezone: "UTC"
+openstack_deshboard_url: "openstack.cloudlinux.com"
