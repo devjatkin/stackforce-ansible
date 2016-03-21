@@ -8,6 +8,7 @@
     containers: "files/tst_two.yml"
     inventory_filepath: "/etc/stackforce/inventory"
     unique_containers_file: "/etc/stackforce/containers.yml"
+    public_address: "{{ ansible_default_ipv4.address }}"
   tasks:
     - name: add user
       user: name="{{ username }}" shell=/bin/bash groups=wheel
@@ -101,7 +102,6 @@
     self_signed_cert: "true"
     horizon_ssl_self_signed_subject: "/C=UA/ST=Kiev/L=Kiev/O=IT"
     mgnt_phys_dev: "eth0"
-    public_address: "{{ ansible_default_ipv4.address }}"
   tasks:
     - name: Install requirements
       yum: name="{{ item }}" state=present
