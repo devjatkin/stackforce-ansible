@@ -13,7 +13,7 @@
 
 - include: self_signet_cert.yml
   when: self_signed_cert == "true"
- 
+
 - name: Configure haproxy
   template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
   tags:
