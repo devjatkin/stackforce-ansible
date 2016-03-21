@@ -35,9 +35,10 @@ global
     # turn on stats unix socket
     stats socket /var/lib/haproxy/stats
     tune.ssl.default-dh-param 2048
+    {% if elf_signed_cert == "true"}
     ca-base /etc/haproxy/haproxy_cert
     crt-base /etc/haproxy/haproxy_cert
-
+    {% endif %}
 
 #---------------------------------------------------------------------
 # common defaults that all the 'listen' and 'backend' sections will
