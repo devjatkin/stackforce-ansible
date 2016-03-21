@@ -139,22 +139,20 @@ def run_command(command):
 def read_inventory_file(inventory_filepath):
     res = dict()
     hostvars = {}
-    groupvars = {}
     dl = DataLoader()
     inv = InventoryParser(dl, {"ungrouped": Group("ungrouped"),
                                "all": Group("all")},
                           inventory_filepath)
     for grp in inv.groups:
         res[grp] = {'hosts': [], 'vars': {}}
-        groupvars[grp] = inv.groups[grp].vars
+        res[grp]['vars'] = inv.groups[grp].vars
         for host in inv.groups[grp].hosts:
             res[grp]['hosts'].append(host.name)
             hostvars[host.name] = host.vars
     res["_meta"] = {
         "hostvars": hostvars,
-        "groupvars": groupvars
     }
-    res["all"] = hostvars.keys()
+    res["all"] = sorted(hostvars.keys())
     return res
 
 
