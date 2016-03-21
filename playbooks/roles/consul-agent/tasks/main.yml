@@ -13,4 +13,5 @@
   template: src=consul.json.j2 dest=/etc/consul/consul.json owner=root group=consul
 
 - name: Enable consul
-  service: name=consul state=restarted enabled=yes
+  service: name=consul state=started enabled=yes
+  notify: Restart consul
