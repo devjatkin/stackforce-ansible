@@ -5,10 +5,9 @@
   vars:
     keepalived_ext_vip: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
     num_controllers: "{{ groups['controller'] | length }}"
-- include: haproxy.yml
   tags:
     - keepalived
-- include: horizon_proxy.yml
+- include: haproxy.yml
   vars:
     openstack_deshboard_url: "{{ lookup('ini', 'openstack_deshboard_url section=public file=/etc/stackforce/parameters.ini') }}"
     horizon_ssl_self_signed_subject: "{{ lookup('ini', 'horizon_ssl_self_signed_subject section=public file=/etc/stackforce/parameters.ini') }}"
