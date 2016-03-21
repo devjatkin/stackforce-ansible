@@ -6,6 +6,15 @@
     keepalived_ext_vip: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
     num_controllers: "{{ groups['controller'] | length }}"
 - include: haproxy.yml
+  tags:
+    - keepalived
+- include: horizon_proxy.yml
+  vars:
+    openstack_deshboard_url: "{{ lookup('ini', 'openstack_deshboard_url section=public file=/etc/stackforce/parameters.ini') }}"
+    horizon_ssl_self_signed_subject: "{{ lookup('ini', 'horizon_ssl_self_signed_subject section=public file=/etc/stackforce/parameters.ini') }}"
+    self_signed_cert: "{{ lookup('ini', 'self_signed_cert section=public file=/etc/stackforce/parameters.ini') }}"
+  tags:
+    - haproxy
 - hosts: all:!controller*
   roles:
     - role: consul-agent
@@ -27,9 +36,11 @@
     keystone_service_adminurl: "http://{{ public_address }}:35357/v3"
 
 - include: rsyslog.yml
+  tags: syslog
 - include: os-horizon.yml
   vars:
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
+  tags: horizon
 - include: os-glance.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'

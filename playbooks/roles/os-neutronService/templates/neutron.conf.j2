@@ -256,7 +256,7 @@ auth_strategy = keystone
 
 # =========== items for l3 extension ==============
 # Enable high availability for virtual routers.
-# l3_ha = False
+l3_ha = {{ neutron_l3_ha }}
 #
 # Maximum number of l3 agents which a HA router will be scheduled on. If it
 # is set to 0 the router will be scheduled on every agent.

@@ -24,6 +24,12 @@
     service: name=consul state=restarted enabled=yes
     when: consul_cfg|changed
 
+  - debug: msg="{{ hostvars[groups.controller.0]['ansible_mngt_br']['ipv4']['address'] }}"
+
+  - name: join consule to cluster
+    shell: "consul join {{ hostvars[groups.controller.0]['ansible_mngt_br']['ipv4']['address'] }}"
+    when: inventory_hostname !=  "{{ groups['controller'][0] }}"
+
   - name: Install necessary packages
     yum:
       name: "{{ item }}"
@@ -33,15 +39,3 @@
       - python2-lxc
       - ansible
 
-  - name: Create config dir
-    file: path=/etc/stackforce state=directory
-  - name: Set parameters.ini
-    template: src={{ parameters }} dest=/etc/stackforce/parameters.ini
-  - name: Set containers.yml
-    copy: src={{ containers }} dest=/etc/stackforce/containers.yml
-    tags:
-      - config
-  - name: Copy base inventory
-    copy: src={{ inventory }} dest=/etc/stackforce/inventory
-    tags:
-      - config
