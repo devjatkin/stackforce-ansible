@@ -1,0 +1,15 @@
+---
+- name: Get Grafana package
+  get_url: url=https://grafanarel.s3.amazonaws.com/builds/grafana-2.6.0-1.x86_64.rpm dest=/opt/grafana.rpm
+
+- name: Install fontconfig
+  yum: name=fontconfig
+
+- name: Install initscripts
+  yum: name=initscripts
+
+- name: Install Grafana package
+  yum: name=/opt/grafana.rpm
+
+- name: Enable Grafana service
+  service: name=grafana-server state=restarted enabled=yes
