@@ -11,3 +11,5 @@
   with_items:
     - openstack-cinder-api
     - openstack-cinder-scheduler
+
+- include: consul.yml

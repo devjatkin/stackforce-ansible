@@ -16,3 +16,5 @@
 
 - name: Start HTTPD
   service: name=httpd state=restarted enabled=yes
+
+- include: consul.yml

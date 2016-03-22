@@ -20,8 +20,8 @@ $IMJournalStateFile imjournal.state
 #### RULES ####
 #$template TmplAuth, "/var/log/%HOSTNAME%/%PROGRAMNAME%.log"
 
-authpriv.*   ?TmplAuth
-*.info,mail.none,authpriv.none,cron.none                ?TmplMsg
+#authpriv.*   ?TmplAuth
+#*.info,mail.none,authpriv.none,cron.none                ?TmplMsg
 
 *.info;mail.none;authpriv.none;cron.none                /var/log/messages
 authpriv.*                                              /var/log/secure
@@ -36,7 +36,7 @@ local7.*                                                /var/log/boot.log
 {% if loop.first %}
 $ActionExecOnlyWhenPreviousIsSuspended on
 {% endif %}
-& @ {{ hostvars[host]['ansible_ssh_host'] }}
+& @{{ hostvars[host]['ansible_ssh_host'] }}
 {% endfor %}
 
 
