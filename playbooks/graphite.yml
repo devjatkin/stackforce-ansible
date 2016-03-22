@@ -3,7 +3,7 @@
   become: yes
   become_method: sudo
   vars:
-    grafana_package_url: "https://grafanarel.s3.amazonaws.com/builds/grafana-2.6.0-1.x86_64.rpm dest=/opt/grafana.rpm"
+    grafana_package_url: "https://grafanarel.s3.amazonaws.com/builds/grafana-2.6.0-1.x86_64.rpm
   roles:
   - role: graphite
   - role: grafana
