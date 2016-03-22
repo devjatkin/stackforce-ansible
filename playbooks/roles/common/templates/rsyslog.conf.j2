@@ -18,7 +18,7 @@ $OmitLocalLogging on
 $IMJournalStateFile imjournal.state
 
 #### RULES ####
-$template TmplAuth, "/var/log/%HOSTNAME%/%PROGRAMNAME%.log" 
+$template TmplAuth, "/var/log/%HOSTNAME%/%PROGRAMNAME%.log"
 
 authpriv.*   ?TmplAuth
 *.info,mail.none,authpriv.none,cron.none                ?TmplMsg

@@ -62,6 +62,9 @@
 # properties. Revealing storage location can be a security risk, so
 # use this setting with caution! (boolean value)
 #show_image_direct_url=false
+{% if cinder_disk == "ceph"%}
+show_image_direct_url=true
+{% endif %}
 
 # Whether to include the backend image locations in image properties.
 # For example, if using the file system store a URL of
@@ -634,9 +637,18 @@ connection={{ glance_database_connection}}
 #
 # From glance.store
 #
+{% if cinder_disk == "ceph" %}
+stores = rbd
+rbd_store_pool = {{ glance_rbd_pool }}
+rbd_store_user = {{ glance_ceph_user }}
+rbd_store_ceph_conf = /etc/ceph/ceph.conf
+rbd_store_chunk_size = 8
+default_store=rbd
+show_image_direct_url = True
+{% else %}
 default_store = {{ glance_default_store }}
 filesystem_store_datadir = {{ glance_filesystem_store_datadir }}
-
+{% endif %}
 # List of stores enabled (list value)
 #stores=file,http
 

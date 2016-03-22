@@ -1,8 +1,9 @@
 {
     "server": false,
-    "bind_addr": "{{ ansible_default_ipv4.address }}",
-    "retry_join": ["{{ public_address }}"],
+    "bind_addr": "{{ ansible_ssh_host }}",
+    "retry_join": [{% for host in groups['controller'] %}"{{ hostvars[host]['ansible_mngt_br']['ipv4']['address'] }}",{% endfor %}""],
     "data_dir": "/var/lib/consul",
     "enable_syslog": true,
-    "log_level": "INFO"
+    "log_level": "DEBUG",
+    "start_join": [{% for host in groups['controller'] %}"{{ hostvars[host]['ansible_mngt_br']['ipv4']['address'] }}",{% endfor %}""]
 }

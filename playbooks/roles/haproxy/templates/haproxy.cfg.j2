@@ -34,6 +34,11 @@ global
 
     # turn on stats unix socket
     stats socket /var/lib/haproxy/stats
+    tune.ssl.default-dh-param 2048
+    {% if self_signed_cert == "true" %}
+    ca-base /etc/haproxy/haproxy_cert
+    crt-base /etc/haproxy/haproxy_cert
+    {% endif %}
 
 #---------------------------------------------------------------------
 # common defaults that all the 'listen' and 'backend' sections will
@@ -165,11 +170,19 @@ listen cinder_api 0.0.0.0:8776
 #---------------------------------------------------------------------
 # horizon
 #---------------------------------------------------------------------
-listen horizon_api 0.0.0.0:8080
+frontend horizon_public
+  bind :80
+  bind :443 ssl crt server.pem
+    redirect scheme https if !{ ssl_fc }
+    mode http
+    default_backend nodes
+  default_backend horizon
+
+
+backend horizon
         balance source
         option tcpka
         option httpchk
-        maxconn 10000
 {% for host in groups['horizon'] %}
         server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:80 check inter 2000 rise 2 fall 5
 {% endfor %}

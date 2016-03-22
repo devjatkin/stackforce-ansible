@@ -540,7 +540,11 @@ auth_strategy = keystone
 # A list of backend names to use. These backend names should be backed by a
 # unique [CONFIG] group with its options (list value)
 #enabled_backends = <None>
+{% if cinder_disk == "ceph" %}
+enabled_backends = ceph
+{% else %}
 enabled_backends = lvm
+{% endif %}
 
 # Whether snapshots count against gigabyte quota (boolean value)
 #no_snapshot_gb_quota = false
@@ -1449,7 +1453,9 @@ iscsi_protocol = iscsi
 #glance_core_properties = checksum,container_format,disk_format,image_name,image_id,min_disk,min_ram,name,size
 
 # Name for the VG that will contain exported volumes (string value)
+{% if cinder_disk != "ceph" %}
 volume_group = cinder-volumes
+{% endif %}
 
 # If >0, create LVs with multiple mirrors. Note that this requires lvm_mirrors
 # + 2 PVs with available space (integer value)
@@ -1458,7 +1464,9 @@ volume_group = cinder-volumes
 # Type of LVM volumes to deploy; (default, thin, or auto). Auto defaults to
 # thin if thin is supported. (string value)
 # Allowed values: default, thin, auto
+{% if cinder_disk != "ceph" %}
 lvm_type = default
+{% endif %}
 
 # LVM conf file to use for the LVM driver in Cinder; this setting is ignored if
 # the specified file does not exist (You can also specify 'None' to not use a
@@ -1981,7 +1989,7 @@ lvm_type = default
 #hitachi_auth_password = HBSD-CHAP-password
 
 # Driver to use for volume creation (string value)
-volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
+
 
 # Timeout for creating the volume to migrate to when performing volume
 # migration (seconds) (integer value)
@@ -3425,8 +3433,22 @@ rabbit_virtual_host = {{ keystone_rabbitmq_vhost_name }}
 
 # If False doesn't trace SQL requests. (boolean value)
 #trace_sqlalchemy = false
+{% if cinder_disk == "ceph" %}
+[ceph]
+volume_driver = cinder.volume.drivers.rbd.RBDDriver
+rbd_pool = {{ cinder_rbd_pool }}
+rbd_ceph_conf = /etc/ceph/ceph.conf
+rbd_flatten_volume_from_snapshot = false
+rbd_max_clone_depth = 5
+rbd_store_chunk_size = 4
+rados_connect_timeout = -1
+glance_api_version = 2
+rbd_user = {{ cinder_ceph_user }}
+rbd_secret_uuid = {{ cinder_ceph_rbd_secret_uuid  }}
+{% else %}
 [lvm]
 volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
 volume_group = cinder-volumes
 iscsi_protocol = iscsi
 iscsi_helper = lioadm
+{% endif %}
