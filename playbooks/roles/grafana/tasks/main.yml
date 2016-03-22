@@ -10,5 +10,5 @@
 
 - name: Install Grafana package
   yum: name=/opt/grafana.rpm
-  notify: 
+  notify:
   - restart grafana
