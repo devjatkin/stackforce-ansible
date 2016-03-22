@@ -1,5 +1,7 @@
+import os
 import pytest
 from mock import MagicMock, patch, call
+import tempfile
 
 from inventory import dynlxc
 
@@ -66,7 +68,7 @@ class TestGetConfig(object):
 
     @patch('ConfigParser.ConfigParser')
     def test_config(self, mock_class):
-        cnf = dynlxc.get_config()
+        cnf = dynlxc.get_config(dynlxc.DEFAULT_CONF)
         cnf.add_section.assert_called_once_with("os")
         calls = [
             call('os', 'inventory_file', None),
@@ -75,11 +77,39 @@ class TestGetConfig(object):
         cnf.read.assert_called_with("/etc/stackforce/parameters.ini")
 
 
+def attach_file_from_docstring(clbl):
+
+    def wrpper(*args):
+
+        with tempfile.NamedTemporaryFile() as fh:
+            for l in clbl.__doc__:
+                if l.startswith('>>>'):
+                    fh.write(l[4:])
+            args += (fh.name, )
+            clbl(*args)
+
+
 class TestReadInventoryFile(object):
 
     def test_first(self, inventory_file):
         res = dynlxc.read_inventory_file(inventory_file['file_name'])
         assert res == inventory_file['expect_result']
+
+    @attach_file_from_docstring
+    def test_group_vars(self, inventory_file):
+        ''' Ansible does not read groupvars from _meta. They should be in
+        vars into group. via @dtyzhnenko
+        For this:
+
+        >>> cid01-tst ansible_host=192.168.10.5 ansible_user=root
+        >>> [compute]
+        >>> cid01-tst cinder_disk="/dev/sdb,/dev/sdc"
+        >>> [compute:vars]
+        >>> compute_virt_type="kvm"
+
+        '''
+        res = dynlxc.read_inventory_file(inventory_file)
+        assert res['compute']['vars']['compute_virt_type'] == 'kvm'
 
     @pytest.mark.skip(reason="non working mockups")
     def test_base(self):

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
+import argparse
 import os
+import pwd
 import sys
 import json
 import lxc
@@ -14,9 +16,10 @@ from ansible.inventory.group import Group
 from ansible.inventory.ini import InventoryParser
 
 ANSIBLE_SSH_HOST_INDEX = -1
+DEFAULT_CONF = '/etc/stackforce/parameters.ini'
 
 
-def get_config(config_file='/etc/stackforce/parameters.ini'):
+def get_config(config_file):
     cnf = ConfigParser.ConfigParser()
     # setting defaults
     cnf.add_section("os")
@@ -57,6 +60,10 @@ def add_var_lxc_containers_to_controllers(inventory, containers_config):
     return inventory
 
 
+def getlogin():
+    return pwd.getpwuid(os.getuid()).pw_name
+
+
 def list_containers_on_host(hostname, ansible_vars):
     res = {"_meta": {"hostvars": {}}}
     tmpl_ssh_command = "ssh -t -o BatchMode=yes " \
@@ -69,9 +76,9 @@ def list_containers_on_host(hostname, ansible_vars):
                                 ansible_vars.get("ansible_host", hostname))
     if is_local:
         ssh_host = "localhost"
+
     ssh_user = ansible_vars.get("ansible_ssh_user",
-                                ansible_vars.get("ansible_user",
-                                                 os.getlogin()))
+                                ansible_vars.get("ansible_user", getlogin()))
     ssh_port = ansible_vars.get("ansible_ssh_port",
                                 ansible_vars.get("ansible_port", 22))
     ssh_key_filename = ansible_vars.get("ansible_ssh_private_key_file",
@@ -221,18 +228,7 @@ def add_extravars(res, extra_vars):
     return res
 
 
-if __name__ == "__main__":
-    if os.geteuid() != 0:
-        os.execvp("sudo", ["sudo"] + sys.argv)
-
-    config = get_config()
-    inventory_file = config.get("os", "inventory_file")
-    uniq_containers_file = config.get("os", "unique_containers_file")
-    os_vars = {
-        'os_rabbit_host': config.get('public', 'address'),
-        'os_rabbit_port': config.get('os', 'rabbit_port'),
-        'os_verbose': config.get('os_logs', 'verbose'),
-        'os_debug': config.get('os_logs', 'debug')}
+def main(inventory_file, uniq_containers_file, **extra_vars):
     result = merge_results(list_containers(),
                            read_inventory_file(inventory_file))
     remote_controllers = get_remote_controllers(result)
@@ -243,10 +239,36 @@ if __name__ == "__main__":
         unique_containers = get_unique_containers_config(uniq_containers_file)
         result = add_var_lxc_containers_to_controllers(result,
                                                        unique_containers)
-    result = add_extravars(result, os_vars)
-    if len(sys.argv) == 2 and sys.argv[1] == '--list':
-        print(json.dumps(result))
-    elif len(sys.argv) == 3 and sys.argv[1] == '--host':
-        print("TODO: SSH support")
-    else:
-        print("Need an argument, either --list or --host <host>")
+    result = add_extravars(result, extra_vars)
+
+
+def parse_args(args):
+    parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-l', '--list', action='store_true')
+    group.add_argument('-s', '--host', action='store_true')
+
+    parser.add_argument('-c', '--conf', default=DEFAULT_CONF, dest='conf')
+    return parser.parse_args(args)
+
+
+if __name__ == "__main__":
+
+    if os.geteuid() != 0:
+        os.execvp("sudo", ["sudo"] + sys.argv)
+
+    args = parse_args(sys.argv[1:])
+    if args.host:
+        raise NotImplementedError("TODO: SSH support")
+    config = get_config(args.conf)
+
+    inventory_file = config.get("os", "inventory_file")
+    uniq_containers_file = config.get("os", "unique_containers_file")
+    os_vars = {
+        'os_rabbit_host': config.get('public', 'address'),
+        'os_rabbit_port': config.get('os', 'rabbit_port'),
+        'os_verbose': config.get('os_logs', 'verbose'),
+        'os_debug': config.get('os_logs', 'debug')}
+
+    result = main(inventory_file, uniq_containers_file, **os_vars)
+    print(json.dumps(result))
