@@ -10,8 +10,6 @@
 - name: create self-signed SSL cert
   command: openssl req -new -nodes -x509 -subj "{{ horizon_ssl_self_signed_subject }}/CN={{openstack_deshboard_url}}" -days 3650 -keyout /etc/haproxy/haproxy_cert/server.key -out /etc/haproxy/haproxy_cert/server.crt -extensions v3_ca creates=/etc/haproxy/haproxy_cert/server.crt
 
-- debug: msg="{{ horizon_ssl_self_signed_subject }}/CN={{openstack_deshboard_url}}"
-
 - name: Create .pem file from .key and .crt
   shell: sudo cat /etc/haproxy/haproxy_cert/server.crt /etc/haproxy/haproxy_cert/server.key > /etc/haproxy/haproxy_cert/server.pem
 

@@ -24,8 +24,6 @@
     service: name=consul state=restarted enabled=yes
     when: consul_cfg|changed
 
-  - debug: msg="{{ hostvars[groups.controller.0]['ansible_mngt_br']['ipv4']['address'] }}"
-
   - name: join consule to cluster
     shell: "consul join {{ hostvars[groups.controller.0]['ansible_mngt_br']['ipv4']['address'] }}"
     when: inventory_hostname !=  "{{ groups['controller'][0] }}"

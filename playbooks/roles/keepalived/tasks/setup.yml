@@ -19,8 +19,6 @@
   set_fact:
     keepalived_vrrp_priority: "{{ lookup('consul_kv', 'keepalived/priority_counter') }}"
 
-- debug: msg="{{ keepalived_vrrp_priority }}"
-
 - name: Setkeepalived conf
   template:
     src: keepalived.conf.j2
