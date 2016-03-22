@@ -176,7 +176,7 @@
       backing_store: lvm
       clone_name: "{{ item }}"
       clone_snapshot: true
-      fs_size: "5G"
+      fs_size: "3G"
     with_items: "{{ lxc_containers }}"
     tags:
       - lxc
