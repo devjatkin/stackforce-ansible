@@ -1,8 +1,9 @@
+import functools
+import tempfile
+
 import pytest
-from mock import MagicMock, patch, call
-
 from inventory import dynlxc
-
+from mock import MagicMock, call, patch
 
 inventories = [
     {
@@ -66,7 +67,7 @@ class TestGetConfig(object):
 
     @patch('ConfigParser.ConfigParser')
     def test_config(self, mock_class):
-        cnf = dynlxc.get_config()
+        cnf = dynlxc.get_config(dynlxc.DEFAULT_CONF)
         cnf.add_section.assert_called_once_with("os")
         calls = [
             call('os', 'inventory_file', None),
@@ -75,11 +76,48 @@ class TestGetConfig(object):
         cnf.read.assert_called_with("/etc/stackforce/parameters.ini")
 
 
+def attach_file_from_docstring(clbl):
+    """ Adds filename which consits of lines from docstring
+    which starts with '>>>' to arguments.
+    """
+
+    @functools.wraps(clbl)
+    def wrapper(*args, **kwargs):
+
+        with tempfile.NamedTemporaryFile() as fh:
+            for l in clbl.__doc__.split('\n'):
+                line = l.lstrip()
+                if line.startswith('>>>'):
+                    fh.write(line[4:] + '\n')
+            fh.flush()
+            result = clbl(*(args + (fh.name, )), **kwargs)
+
+        return result
+
+    return wrapper
+
+
 class TestReadInventoryFile(object):
 
     def test_first(self, inventory_file):
         res = dynlxc.read_inventory_file(inventory_file['file_name'])
         assert res == inventory_file['expect_result']
+
+    @attach_file_from_docstring
+    def test_group_vars(self, inventory_file):
+        ''' Ansible does not read groupvars from _meta. They should be in
+        vars into group. via @dtyzhnenko
+        For this:
+
+        >>> cid01-tst ansible_host=192.168.10.5 ansible_user=root
+        >>> [compute]
+        >>> cid01-tst cinder_disk="/dev/sdb,/dev/sdc"
+        >>> [compute:vars]
+        >>> compute_virt_type="kvm"
+
+        '''
+        res = dynlxc.read_inventory_file(inventory_file)
+        assert res['compute']['vars']['compute_virt_type'] == 'kvm'
 
     @pytest.mark.skip(reason="non working mockups")
     def test_base(self):
