@@ -2,7 +2,7 @@
 - name: Update rsyslog config
   template: src=rsyslog.conf.j2 dest=/etc/rsyslog.conf
   notify: Restart rsyslog
-  when: groups.syslog is defined and remote_rsyslog
+  when: groups.syslog is defined and remote_rsyslog and inventory_hostname not in groups['syslog']
 
 - name: create .repo files
   template: src=yumrepos.j2 dest="/etc/yum.repos.d/{{ item.name }}.repo"
