@@ -2,7 +2,7 @@
 - name: Add cinder service
   template: src="{{ item }}.json.j2" dest="/etc/consul/{{ item }}.json" owner=root group=consul
   with_items:
-    - consul_cinden
+    - consul_cinder
   register: consul_cfg
 
 - name: Enable consul
