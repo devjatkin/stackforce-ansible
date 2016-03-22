@@ -1,5 +1,8 @@
 [public]
-address={{ ansible_default_ipv4.address }}
+address={{ public_address }}
+openstack_deshboard_url={{ openstack_deshboard_url }}
+self_signed_cert={{ self_signed_cert }}
+horizon_ssl_self_signed_subject={{ horizon_ssl_self_signed_subject }}
 [os]
 rabbit_port=5672
 inventory_file={{ inventory_filepath }}

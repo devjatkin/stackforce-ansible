@@ -8,6 +8,10 @@
     containers: "files/tst_two.yml"
     inventory_filepath: "/etc/stackforce/inventory"
     unique_containers_file: "/etc/stackforce/containers.yml"
+    public_address: "{{ ansible_default_ipv4.address }}"
+    openstack_deshboard_url: "openstack.cloudlinux.com"
+    self_signed_cert: "true"
+    horizon_ssl_self_signed_subject: "/C=UA/ST=Kiev/L=Kiev/O=IT"
   tasks:
     - name: add user
       user: name="{{ username }}" shell=/bin/bash groups=wheel
@@ -98,6 +102,7 @@
   become_method: sudo
   vars:
     num_controllers:  "{{ groups['controller'] | length }}"
+    mgnt_phys_dev: "eth0"
   tasks:
     - name: Install requirements
       yum: name="{{ item }}" state=present
@@ -115,14 +120,14 @@
       copy:
         src: "files/dnsmasq.conf"
         dest: "/etc/dnsmasq.conf"
-      when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" and num_controllers | int > 1)
+      when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" )
 
     - name: Restart networking
       service: name=network state=restarted
-      when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" and num_controllers | int > 1)
+      when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" )
     - name: Start dnsmasq
       service: name=dnsmasq state=restarted
-      when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" and num_controllers | int > 1)
+      when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" )
 
     - name: Restart networking
       service: name=network state=restarted

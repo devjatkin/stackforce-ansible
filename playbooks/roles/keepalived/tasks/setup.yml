@@ -8,7 +8,6 @@
 - name: Install python consul
   easy_install: name=python-consul
 
-- debug: msg="{{ keepalived_master_priority }}"
 
 - name: Add vrrp priority counter
   consul_kv:
@@ -20,18 +19,16 @@
   set_fact:
     keepalived_vrrp_priority: "{{ lookup('consul_kv', 'keepalived/priority_counter') }}"
 
-- debug: msg="{{ keepalived_vrrp_priority }}"
-
-- name: Update vrrp counter
-  consul_kv:
-    key: keepalived/priority_counter
-    value: "{{ keepalived_master_priority | int - 10 }}"
-
 - name: Setkeepalived conf
   template:
     src: keepalived.conf.j2
     dest: /etc/keepalived/keepalived.conf
   notify: Restart keepalived
+
+- name: Update vrrp counter
+  consul_kv:
+    key: keepalived/priority_counter
+    value: "{{ keepalived_vrrp_priority | int - 10 }}"
 
 - name: allow binding non-local IP
   sysctl:
@@ -42,5 +39,5 @@
   when: keepalived_ip_nonlocal_bind != false
 
 - name: Start keepalived
-  service: name=keepalived state=started enabled=yes
+  service: name=keepalived state=restarted enabled=yes
 

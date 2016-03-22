@@ -1,5 +1,6 @@
 ---
 - lvg: vg=cinder-volumes pvs="{{ cinder_disk }}"
+  when: ("{{ cinder_disk }}" != "ceph")
 - include: install_packages.yml
 - include: configure_services.yml
 
@@ -8,3 +9,6 @@
   with_items:
     - openstack-cinder-volume
     - target
+- name: create openstack ceph key
+  shell: "sudo ceph auth get-or-create client.openstack | sudo tee /etc/ceph/ceph.client.openstack.keyring"
+  when: cinder_disk == "ceph"
