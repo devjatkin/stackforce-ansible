@@ -19,3 +19,5 @@
     - neutron-dhcp-agent
     - neutron-metadata-agent
     - neutron-l3-agent
+
+- include: consul.yml

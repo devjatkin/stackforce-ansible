@@ -15,3 +15,5 @@
 - name: create openstack ceph key
   shell: "sudo ceph auth get-or-create client.openstack | sudo tee /etc/ceph/ceph.client.openstack.keyring"
   when:  cinder_disk  == "ceph"
+
+- include: consul.yml

@@ -1,0 +1,12 @@
+---
+- name: Add cinder service
+  template: src="{{ item }}.json.j2" dest="/etc/consul/{{ item }}.json" owner=root group=consul
+  with_items:
+    - consul_cinden
+  register: consul_cfg
+
+- name: Enable consul
+  service: name=consul state=restarted enabled=yes
+  when: consul_cfg|changed
+  tags:
+    - consul-config
