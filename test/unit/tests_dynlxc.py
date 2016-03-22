@@ -13,15 +13,45 @@ inventories = [
             u'compute': {'hosts': [u'localhost'], 'vars': {}},
             u'controller': {'hosts': [u'localhost'], 'vars': {}},
             '_meta': {
-                'groupvars': {'ungrouped': {},
-                              'all': {},
-                              u'compute': {},
-                              u'controller': {}},
                 'hostvars': {u'localhost': {
                     u'cinder_disk': u'/dev/sdc',
                     u'neutron_physical_interface_mappings':
                         u'vlan:enp0s8,external:enp0s3',
                     u'ansible_connection': u'local'}}}}
+    },
+    {
+        "file_name": "test/unit/files/tst_two",
+        "expect_result": {
+            'all': [u'cid01-tst', u'cid02-tst', u'cid03-tst'],
+            'ungrouped': {
+                'hosts': [u'cid01-tst', u'cid02-tst', u'cid03-tst'],
+                'vars': {}},
+            u'baremetal': {
+                'hosts': [u'cid01-tst', u'cid02-tst', u'cid03-tst'],
+                'vars': {}},
+            u'compute': {
+                'hosts': [u'cid01-tst', u'cid02-tst'],
+                'vars': {
+                    u'compute_virt_type': u"kvm",
+                    u'os_rabbit_port': 5672,
+                    u'cinder_disk': u"/dev/sdb"}},
+            u'controller': {
+                'hosts': [u'cid03-tst'], 'vars': {}},
+            '_meta': {
+                'hostvars': {
+                    u'cid01-tst': {
+                        u'cinder_disk': u'/dev/sdb,/dev/sdc',
+                        u'ansible_host': u'192.168.10.5',
+                        u'ansible_user': u'root'},
+                    u'cid02-tst': {
+                        u'cinder_disk': u'/dev/sdb,/dev/sdc',
+                        u'ansible_host': u'192.168.10.6',
+                        u'ansible_user': u'root'},
+                    u'cid03-tst': {
+                        u'ansible_connection': u'local'}
+                }
+            }
+        }
     }
 ]
 
