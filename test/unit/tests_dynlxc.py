@@ -1,11 +1,10 @@
-import os
 import functools
-import pytest
-from mock import MagicMock, patch, call
+import os
 import tempfile
 
+import pytest
 from inventory import dynlxc
-
+from mock import MagicMock, call, patch
 
 inventories = [
     {
@@ -90,7 +89,7 @@ def attach_file_from_docstring(clbl):
             for l in clbl.__doc__.split('\n'):
                 line = l.lstrip()
                 if line.startswith('>>>'):
-                    fh.write(line[4:]+'\n')
+                    fh.write(line[4:] + '\n')
             fh.flush()
             result = clbl(*(args + (fh.name, )), **kwargs)
 

@@ -1,20 +1,23 @@
 #!/usr/bin/env python
 
 import argparse
+import ConfigParser
+import hashlib
+import json
 import os
 import pwd
-import sys
-import json
-import lxc
 import re
-import ConfigParser
-import yaml
 import subprocess
-import hashlib
-from ansible.parsing.dataloader import DataLoader
+import sys
+
+import lxc
+
+import yaml
 from ansible.inventory.group import Group
 from ansible.inventory.ini import InventoryParser
+from ansible.parsing.dataloader import DataLoader
 
+OS_VARIABLE_NAME = 'DYNLXC_CONF'
 ANSIBLE_SSH_HOST_INDEX = -1
 DEFAULT_CONF = '/etc/stackforce/parameters.ini'
 
@@ -240,13 +243,14 @@ def main(inventory_file, uniq_containers_file, **extra_vars):
         result = add_var_lxc_containers_to_controllers(result,
                                                        unique_containers)
     result = add_extravars(result, extra_vars)
+    return result
 
 
 def parse_args(args):
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-l', '--list', action='store_true')
-    group.add_argument('-s', '--host', action='store_true')
+    group.add_argument('--list', action='store_true')
+    group.add_argument('--host')
 
     parser.add_argument('-c', '--conf', default=DEFAULT_CONF, dest='conf')
     return parser.parse_args(args)
@@ -255,12 +259,14 @@ def parse_args(args):
 if __name__ == "__main__":
 
     if os.geteuid() != 0:
-        os.execvp("sudo", ["sudo"] + sys.argv)
+        os.execlpe('sudo', *['sudo', sys.executable] + sys.argv + [os.environ])
 
     args = parse_args(sys.argv[1:])
     if args.host:
         raise NotImplementedError("TODO: SSH support")
-    config = get_config(args.conf)
+
+    config_path = os.environ.get(OS_VARIABLE_NAME, args.conf)
+    config = get_config(config_path)
 
     inventory_file = config.get("os", "inventory_file")
     uniq_containers_file = config.get("os", "unique_containers_file")
