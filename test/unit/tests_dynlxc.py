@@ -1,4 +1,5 @@
 import os
+import functools
 import pytest
 from mock import MagicMock, patch, call
 import tempfile
@@ -78,15 +79,24 @@ class TestGetConfig(object):
 
 
 def attach_file_from_docstring(clbl):
+    """ Adds filename which consits of lines from docstring
+    which starts with '>>>' to arguments.
+    """
 
-    def wrpper(*args):
+    @functools.wraps(clbl)
+    def wrapper(*args, **kwargs):
 
         with tempfile.NamedTemporaryFile() as fh:
-            for l in clbl.__doc__:
-                if l.startswith('>>>'):
-                    fh.write(l[4:])
-            args += (fh.name, )
-            clbl(*args)
+            for l in clbl.__doc__.split('\n'):
+                line = l.lstrip()
+                if line.startswith('>>>'):
+                    fh.write(line[4:]+'\n')
+            fh.flush()
+            result = clbl(*(args + (fh.name, )), **kwargs)
+
+        return result
+
+    return wrapper
 
 
 class TestReadInventoryFile(object):
