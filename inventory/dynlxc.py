@@ -239,7 +239,7 @@ def main(inventory_file, uniq_containers_file, **extra_vars):
                                list_remote_containers(remote_controllers))
     if uniq_containers_file:
         with open(uniq_containers_file) as fh:
-            unique_containers = yaml.read(fh)
+            unique_containers = yaml.load(fh)
         result = add_var_lxc_containers_to_controllers(result,
                                                        unique_containers)
     result = add_extravars(result, extra_vars)
