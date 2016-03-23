@@ -8,7 +8,7 @@ if [ -z "$STACKFORCE_USERNAME" ]; then
 fi
 source .venv/bin/activate
 pip install -r requirements.txt
-export LOCAL_TMP_DIR=${LOCAL_TMP_DIR:=/tmp}
+export LOCAL_TMP_DIR=${LOCAL_TMP_DIR:=-/tmp}
 export ANSIBLE_HOST_KEY_CHECKING=False
 ansible-playbook -i "localhost ansible_python_interpreter=python," --extra-vars username=$STACKFORCE_USERNAME -c local test/playbooks/up.yml
 LANG=C ansible-playbook -i $LOCAL_TMP_DIR/inventory --extra-vars "username=centos inventory=$LOCAL_TMP_DIR/inventory containers=$LOCAL_TMP_DIR/containers.yml" test/playbooks/controller.yml
