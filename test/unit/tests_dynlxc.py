@@ -3,7 +3,7 @@ import tempfile
 
 import pytest
 from inventory import dynlxc
-from mock import MagicMock, call, patch
+from mock import MagicMock, call, patch, Mock
 
 inventories = [
     {
@@ -258,8 +258,7 @@ class TestAddLxcContainersToInventory(object):
                                        'glance': 1,
                                        'horizon': 1,
                                        'keystone': 1,
-                                       'mariadb': 1,
-                                       'memcached': 1,
+                                       'mariadb': 1, 'memcached': 1,
                                        'nova_api': 1,
                                        'rabbitmq': 1,
                                        'syslog': 1}}}
@@ -284,3 +283,76 @@ class TestAddLxcContainersToInventory(object):
         assert sorted(
             res["_meta"]["hostvars"]["controller01"]["lxc_containers"]) == \
             sorted(hostnames)
+
+
+class TestListContainersOnHost(object):
+
+    @pytest.mark.skip(reason="It turns out that it is the way it should work")
+    def test_call_with_not_existing_host(self):
+        with pytest.raises(dynlxc.DynLxcConnectionError):
+            dynlxc.list_containers_on_host('notexistsinghost', {})
+
+    @patch('inventory.dynlxc.get_containers_list')
+    @patch('inventory.dynlxc.get_container_ip')
+    def test_call_for_localhost(self, mock_get_ip, mock_get_list):
+        containers = ['container1', 'container2']
+        mock_get_list.return_value = containers
+        mock_get_ip.return_value = ['127.0.0.1', '10.0.0.1', ]
+        result = dynlxc.list_containers_on_host('localhost', 'root', 22, 'nop')
+        assert set(result['all']) == set(containers)
+        assert 'container1' in result
+        assert 'container2' in result
+        hostvars = result['_meta']['hostvars']
+        assert hostvars['container1']['ansible_host'] == '10.0.0.1'
+        assert hostvars['container2']['ansible_host'] == '10.0.0.1'
+
+
+class TestGetRemoteControllers(object):
+
+    def test_empty(self):
+        assert dynlxc.get_remote_controllers({}) == {}
+        assert dynlxc.get_remote_controllers(
+            {'controller': {}}) == {}
+        assert dynlxc.get_remote_controllers({
+            'controller': {'hosts': []}}) == {}
+
+    def test_base(self):
+        hosts = ['host1', 'host2', 'host3']
+        hostvars = {
+            'host1': {'ansible_connection': 'remote'},
+            'host2': {'ansible_connection': 'local'},
+            'host3': {}
+        }
+        inventory = {
+            'controller': {'hosts': hosts},
+            '_meta': {'hostvars': hostvars}
+        }
+        remote = dynlxc.get_remote_controllers(inventory)
+        assert 'host1' in remote
+        assert 'host2' not in remote
+        assert 'host3' in remote
+
+
+def test_parse_args():
+    assert dynlxc.parse_args(["--list", ])
+    assert dynlxc.parse_args(["--list", '-c', 'test_conf.ini'])
+
+
+def test_get_containers_list():
+    with patch('inventory.dynlxc.subprocess.Popen') as mock_popen:
+        mock_rv = Mock()
+        mock_rv.stdout.read.return_value = 'test1\ntest2'
+        mock_popen.return_value = mock_rv
+        result = dynlxc.get_containers_list('localhost', 'root', 22, 'nop')
+        assert result == ['test1', 'test2']
+        assert mock_popen.call_count == 1
+
+
+def test_get_container_ip():
+    with patch('inventory.dynlxc.subprocess.Popen') as mock_popen:
+        mock_rv = Mock()
+        mock_rv.stdout.read.return_value = '10.0.0.1\n10.0.0.2'
+        mock_popen.return_value = mock_rv
+        result = dynlxc.get_container_ip('c1', 'localhost', 'root', 22, 'nop')
+        assert result == ['10.0.0.1', '10.0.0.2']
+        assert mock_popen.call_count == 1

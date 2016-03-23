@@ -22,6 +22,10 @@ ANSIBLE_SSH_HOST_INDEX = -1
 DEFAULT_CONF = '/etc/stackforce/parameters.ini'
 
 
+class DynLxcConnectionError(Exception):
+    pass
+
+
 def get_config(config_file):
     cnf = ConfigParser.ConfigParser()
     # setting defaults
@@ -30,13 +34,6 @@ def get_config(config_file):
     cnf.set("os", "unique_containers_file", None)
 
     cnf.read(config_file)
-    return cnf
-
-
-def get_unique_containers_config(filepath):
-    f = open(filepath)
-    data = f.read()
-    cnf = yaml.load(data)
     return cnf
 
 
@@ -67,41 +64,38 @@ def getlogin():
     return pwd.getpwuid(os.getuid()).pw_name
 
 
-def list_containers_on_host(hostname, ansible_vars):
-    res = {"_meta": {"hostvars": {}}}
-    tmpl_ssh_command = "ssh -t -o BatchMode=yes " \
-                       "-o UserKnownHostsFile=/dev/null " \
-                       "-o StrictHostKeyChecking=no {host} " \
-                       "-l {user} -p {port} -i {key_filename} " \
-                       "{command}"
-    is_local = ansible_vars.get("ansible_connection") == "local"
-    ssh_host = ansible_vars.get("ansible_host", hostname)
-    if is_local:
-        ssh_host = "localhost"
+def run_ssh_command(host, user, port, key, command):
+    tmpl = ("ssh -t -o BatchMode=yes "
+            "-o UserKnownHostsFile=/dev/null "
+            "-o StrictHostKeyChecking=no {host} "
+            "-l {user} -p {port} -i {key_filename} "
+            "{command}")
+    return subprocess.Popen(tmpl.format(
+        host=host,
+        user=user,
+        port=port,
+        key_filename=key,
+        command=command), shell=True,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
 
-    ssh_user = ansible_vars.get("ansible_ssh_user",
-                                ansible_vars.get("ansible_user",
-                                                 os.getlogin()))
-    ssh_port = ansible_vars.get("ansible_port", 22)
-    ssh_key_filename = ansible_vars.get("ansible_ssh_private_key_file",
-                                        os.path.expanduser("~/.ssh/id_rsa"))
-    cmd_list_containers = tmpl_ssh_command.format(
-        host=ssh_host,
-        user=ssh_user,
-        port=ssh_port,
-        key_filename=ssh_key_filename,
-        command="sudo lxc-ls --active"
-    )
-    cmd_run_containers = run_command(cmd_list_containers)
-    containers = cmd_run_containers.split()
+
+def get_containers_list(host, user, port, key_filename):
+    cmd_run_containers = run_ssh_command(
+        "sudo lxc-ls --active", host, user, port, key_filename)
+    return cmd_run_containers.split()
+
+
+def get_container_ip(container, host, user, port, key_filename):
+    result = run_ssh_command(
+        "sudo lxc-info -i --name " + container, host, user, port,
+        key_filename)
+    return result.split()
+
+
+def list_containers_on_host(host, user, port, key_filename):
+    res = {"_meta": {"hostvars": {}}}
+    containers = get_containers_list(host, user, port, key_filename)
     for container_name in containers:
-        cmd_get_container_ip = tmpl_ssh_command.format(
-            host=ssh_host,
-            user=ssh_user,
-            port=ssh_port,
-            key_filename=ssh_key_filename,
-            command="sudo lxc-info -i --name {}".format(container_name)
-        )
         srv = re.split('_container', container_name)
         group = re.split('_', srv[0])[0]
         if group not in res:
@@ -109,7 +103,8 @@ def list_containers_on_host(hostname, ansible_vars):
             res[group]['hosts'] = []
         if isinstance(res[group], dict):
             res[group]['hosts'].append(container_name)
-        cmd_run_container_ip = run_command(cmd_get_container_ip).split()
+        cmd_run_container_ip = get_container_ip(
+            container_name, host, user, port, key_filename)
         if len(cmd_run_container_ip):
             res["_meta"]['hostvars'][container_name] = \
                 {"ansible_host": cmd_run_container_ip[-1]}
@@ -125,7 +120,18 @@ def list_remote_containers(hostvars):
     """
     res = {"_meta": {"hostvars": {}}, "all": []}
     for host, data in hostvars.iteritems():
-        res = merge_results(res, list_containers_on_host(host, data))
+        ssh_host = "local" if (
+            data.get("ansible_connection") == "local") else (
+                data.get("ansible_host", host)
+        )
+        ssh_user = data.get("ansible_ssh_user",
+                            data.get("ansible_user", getlogin()))
+        ssh_port = data.get("ansible_port", 22)
+        ssh_key_filename = data.get("ansible_ssh_private_key_file",
+                                    os.path.expanduser("~/.ssh/id_rsa"))
+        containers = list_containers_on_host(ssh_host, ssh_user, ssh_port,
+                                             ssh_key_filename)
+        res = merge_results(res, containers)
     return res
 
 
@@ -137,12 +143,6 @@ def get_remote_controllers(inventory):
                 "ansible_connection", "remote") != "local":
             res_hostvars[host] = inventory["_meta"]["hostvars"][host]
     return res_hostvars
-
-
-def run_command(command):
-    return subprocess.Popen(
-        command, shell=True,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
 
 
 def read_inventory_file(inventory_filepath):
@@ -238,7 +238,8 @@ def main(inventory_file, uniq_containers_file, **extra_vars):
         result = merge_results(result,
                                list_remote_containers(remote_controllers))
     if uniq_containers_file:
-        unique_containers = get_unique_containers_config(uniq_containers_file)
+        with open(uniq_containers_file) as fh:
+            unique_containers = yaml.read(fh)
         result = add_var_lxc_containers_to_controllers(result,
                                                        unique_containers)
     result = add_extravars(result, extra_vars)
