@@ -111,7 +111,7 @@
         - dnsmasq
 
     - name: copy interface Vlan10 config
-      template: src=ifcfg-eth0.10.j2 dest=/etc/sysconfig/network-scripts/ifcfg-eth0.10
+      template: src=ifcfg-mngt-vlan.j2 dest=/etc/sysconfig/network-scripts/ifcfg-mngt-vlan
 
     - name: copy interface mngt-br config
       template: src=ifcfg-mngt-br.j2 dest=/etc/sysconfig/network-scripts/ifcfg-mngt-br
