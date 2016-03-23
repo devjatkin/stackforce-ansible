@@ -15,12 +15,13 @@
 
 [controller]
 {% for node in controllers %}
-{{ node }} lxc_container_user_name="centos" lxc_disk="/dev/vdb"
+{{ node }}
 {% endfor %}
 
 [controller:vars]
 lxc_container_user_name="centos"
 lxc_disk="/dev/vdb"
+mgnt_vlan_id=10
 
 [compute]
 {% for node in computes %}
@@ -30,3 +31,4 @@ lxc_disk="/dev/vdb"
 [compute:vars]
 compute_virt_type="lxc"
 cinder_disk="/dev/vdb"
+mgnt_vlan_id=10
