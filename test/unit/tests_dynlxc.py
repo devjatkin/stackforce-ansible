@@ -299,7 +299,7 @@ class TestListContainersOnHost(object):
         mock_get_list.return_value = containers
         mock_get_ip.return_value = ['127.0.0.1', '10.0.0.1', ]
         result = dynlxc.list_containers_on_host('localhost', 'root', 22, 'nop')
-        assert result['all'] == containers
+        assert set(result['all']) == set(containers)
         assert 'container1' in result
         assert 'container2' in result
         hostvars = result['_meta']['hostvars']
