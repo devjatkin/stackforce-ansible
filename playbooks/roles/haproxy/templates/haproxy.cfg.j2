@@ -232,7 +232,7 @@ listen graphite 0.0.0.0:7400
         option tcpka
         maxconn 10000
 {% for host in groups['graphite'] %}
-        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:3000 check inter 2000 rise 2 fall 5
+        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:3000 check inter 2000 rise 2 fall 5
 {% endfor %}
 
 #---------------------------------------------------------------------
