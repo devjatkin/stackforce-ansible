@@ -13,9 +13,9 @@ controller01
 controller02
 controller03
 [controller]
-controller01 neutron_l3_ha="True" mgnt_phys_dev="eno1" cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e" keepalived_ext_shared_iface="eno1" neutron_physical_interface_mappings="vlan:eno2,external:eno1" ansible_ssh_host="95.164.68.1" keepalived_heartbeat_iface="mngt-br"
-controller02 neutron_l3_ha="True" mgnt_phys_dev="eno1" cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e" keepalived_ext_shared_iface="eno1" neutron_physical_interface_mappings="vlan:eno2,external:eno1" ansible_ssh_host="95.164.68.2" keepalived_heartbeat_iface="mngt-br"
-controller03 neutron_l3_ha="True" mgnt_phys_dev="eno1" cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e" keepalived_ext_shared_iface="eno1" neutron_physical_interface_mappings="vlan:eno2,external:eno1" ansible_ssh_host="95.164.68.3" keepalived_heartbeat_iface="mngt-br"
+controller01 neutron_l3_ha="True" mgnt_phys_dev="eno1" cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e" keepalived_ext_shared_iface="eno1" neutron_physical_interface_mappings="vlan:eno2,external:eno1" ansible_host="95.164.68.1" keepalived_heartbeat_iface="mngt-br"
+controller02 neutron_l3_ha="True" mgnt_phys_dev="eno1" cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e" keepalived_ext_shared_iface="eno1" neutron_physical_interface_mappings="vlan:eno2,external:eno1" ansible_host="95.164.68.2" keepalived_heartbeat_iface="mngt-br"
+controller03 neutron_l3_ha="True" mgnt_phys_dev="eno1" cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e" keepalived_ext_shared_iface="eno1" neutron_physical_interface_mappings="vlan:eno2,external:eno1" ansible_host="95.164.68.3" keepalived_heartbeat_iface="mngt-br"
 [compute]
 compute01 mgnt_phys_dev="enp3s0f0" neutron_physical_interface_mappings="vlan:enp3s0f1,external:enp3s0f0" cinder_disk="ceph" client_ceph_key="AQDg3uJWIkRVFxAAdkWIIxPtiZsO5uAkj4uMMA==" cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e"
 compute02 mgnt_phys_dev="enp3s0f0" neutron_physical_interface_mappings="vlan:enp3s0f1,external:enp3s0f0" cinder_disk="ceph" client_ceph_key="AQDg3uJWIkRVFxAAdkWIIxPtiZsO5uAkj4uMMA==" cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e"

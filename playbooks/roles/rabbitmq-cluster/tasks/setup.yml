@@ -1,6 +1,6 @@
 ---
   - name: Add primary rabbit host to /etc/hostname
-    lineinfile: dest=/etc/hosts line="{{ hostvars[groups.rabbitmq.0]['ansible_ssh_host'] }} {{ groups['rabbitmq'][0] }}"
+    lineinfile: dest=/etc/hosts line="{{ hostvars[groups.rabbitmq.0]['ansible_host'] }} {{ groups['rabbitmq'][0] }}"
   - name: Replace rabbitmq cookie with a common value
     template:
         dest=/var/lib/rabbitmq/.erlang.cookie

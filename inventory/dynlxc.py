@@ -113,7 +113,7 @@ def list_containers_on_host(hostname, ansible_vars):
         cmd_run_container_ip = run_command(cmd_get_container_ip).split()
         if len(cmd_run_container_ip):
             res["_meta"]['hostvars'][container_name] = \
-                {"ansible_ssh_host": cmd_run_container_ip[-1]}
+                {"ansible_host": cmd_run_container_ip[-1]}
     res["all"] = list(res['_meta']['hostvars'].keys())
     return res
 
@@ -188,7 +188,7 @@ def list_containers():
             ips = container.get_ips()
             if len(ips):
                 hostvars[container_name] = \
-                    dict(ansible_ssh_host=ips[ANSIBLE_SSH_HOST_INDEX])
+                    dict(ansible_host=ips[ANSIBLE_SSH_HOST_INDEX])
     res["_meta"] = {"hostvars": hostvars}
     res['all'] = list(containers)
     return res

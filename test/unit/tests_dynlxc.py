@@ -223,7 +223,7 @@ class TestMergeResults(object):
                            "hostvars": {"localhost": {"os_debug": True}}}}
         res_b = {"all": ["server"],
                  "remote": {"hosts": ["server"],
-                            "vars": {"ansible_ssh_host": "192.168.254.1"}},
+                            "vars": {"ansible_host": "192.168.254.1"}},
                  "_meta": {"groupvars": {"remote": []},
                            "hostvars": {"server": {"os_debug": False}}}}
         res = dynlxc.merge_results(res_a, res_b)

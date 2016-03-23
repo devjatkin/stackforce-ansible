@@ -31,12 +31,12 @@ cron.*                                                  /var/log/cron
 uucp,news.crit                                          /var/log/spooler
 local7.*                                                /var/log/boot.log
 
-*.*   @{{ hostvars[groups.syslog.0]['ansible_ssh_host'] }}:514
+*.*   @{{ hostvars[groups.syslog.0]['ansible_host'] }}:514
 {%  for host in groups['syslog']  if host != groups['syslog'][0] %}
 {% if loop.first %}
 $ActionExecOnlyWhenPreviousIsSuspended on
 {% endif %}
-& @{{ hostvars[host]['ansible_ssh_host'] }}
+& @{{ hostvars[host]['ansible_host'] }}
 {% endfor %}
 
 
