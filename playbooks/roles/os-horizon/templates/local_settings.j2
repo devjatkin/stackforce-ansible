@@ -110,7 +110,7 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
             'LOCATION': [
                 {% for server in groups.memcached %}
-                    ( '{{ hostvars[server]['ansible_ssh_host'] }}:11211', {{ loop.index }}),
+                    ( '{{ hostvars[server]['ansible_host'] }}:11211', {{ loop.index }}),
                 {% endfor %}
             ]
     }

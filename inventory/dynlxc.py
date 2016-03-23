@@ -75,15 +75,14 @@ def list_containers_on_host(hostname, ansible_vars):
                        "-l {user} -p {port} -i {key_filename} " \
                        "{command}"
     is_local = ansible_vars.get("ansible_connection") == "local"
-    ssh_host = ansible_vars.get("ansible_ssh_host",
-                                ansible_vars.get("ansible_host", hostname))
+    ssh_host = ansible_vars.get("ansible_host", hostname)
     if is_local:
         ssh_host = "localhost"
 
     ssh_user = ansible_vars.get("ansible_ssh_user",
-                                ansible_vars.get("ansible_user", getlogin()))
-    ssh_port = ansible_vars.get("ansible_ssh_port",
-                                ansible_vars.get("ansible_port", 22))
+                                ansible_vars.get("ansible_user",
+                                                 os.getlogin()))
+    ssh_port = ansible_vars.get("ansible_port", 22)
     ssh_key_filename = ansible_vars.get("ansible_ssh_private_key_file",
                                         os.path.expanduser("~/.ssh/id_rsa"))
     cmd_list_containers = tmpl_ssh_command.format(
@@ -113,7 +112,7 @@ def list_containers_on_host(hostname, ansible_vars):
         cmd_run_container_ip = run_command(cmd_get_container_ip).split()
         if len(cmd_run_container_ip):
             res["_meta"]['hostvars'][container_name] = \
-                {"ansible_ssh_host": cmd_run_container_ip[-1]}
+                {"ansible_host": cmd_run_container_ip[-1]}
     res["all"] = list(res['_meta']['hostvars'].keys())
     return res
 
@@ -188,7 +187,7 @@ def list_containers():
             ips = container.get_ips()
             if len(ips):
                 hostvars[container_name] = \
-                    dict(ansible_ssh_host=ips[ANSIBLE_SSH_HOST_INDEX])
+                    dict(ansible_host=ips[ANSIBLE_SSH_HOST_INDEX])
     res["_meta"] = {"hostvars": hostvars}
     res['all'] = list(containers)
     return res

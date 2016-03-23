@@ -1,2 +1,2 @@
 [controller]
-controller01 ansible_ssh_host=192.168.10.8 ansible_ssh_user=root cinder_disk="/dev/sdc" inventory=test/inventory/allinone container=playbooks/files/allinone_containers.yml
+controller01 ansible_host=192.168.10.8 ansible_ssh_user=root cinder_disk="/dev/sdc" inventory=test/inventory/allinone container=playbooks/files/allinone_containers.yml

@@ -67,8 +67,8 @@ percona_innodb_log_file_size: 100M
 percona_innodb_log_buffer_size: 128M
 
 ## wsrep configuration
-percona_wsrep_address: "{{ ansible_ssh_host }}"
-percona_wsrep_cluster_address: "{% for host in groups['mariadb'] %}{{ hostvars[host]['ansible_ssh_host'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+percona_wsrep_address: "{{ ansible_host }}"
+percona_wsrep_cluster_address: "{% for host in groups['mariadb'] %}{{ hostvars[host]['ansible_host'] }}{% if not loop.last %},{% endif %}{% endfor %}"
 percona_wsrep_node_incoming_address: "{{ percona_wsrep_address }}"
 percona_wsrep_slave_threads: "{{ ansible_processor_vcpus | default(2) }}"
 percona_wsrep_retry_autocommit: 3
