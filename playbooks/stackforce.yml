@@ -46,6 +46,8 @@
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
     glance_service_publicurl: "http://{{ public_address }}:9292"
     glance_service_adminurl: "http://{{ public_address }}:9292"
+  tags:
+    install_glance
 
 - include: os-nova-api.yml
   vars:
@@ -56,6 +58,8 @@
     nova_neutron_url: "http://{{ public_address }}:9696"
     nova_cpu_allocation_ratio: "7.0"
     nova_ram_allocation_ratio: "1.1"
+  tags:
+    - install_nova-api
 - include: os-cinder-api.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
@@ -86,6 +90,7 @@
     neutron_nova_metadata_ip: "{{ public_address }}"
   tags:
     - last
+    - install_neutronService
 - include: os-neutronAgent.yml
   vars:
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"

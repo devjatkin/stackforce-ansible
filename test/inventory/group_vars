@@ -1,0 +1,9 @@
+compute01 ansible_connection=local
+
+[compute]
+compute01
+
+[compute:vars]
+compute_virt_type="kvm"
+os_rabbit_port=5672
+cinder_disk="/dev/sdb"
