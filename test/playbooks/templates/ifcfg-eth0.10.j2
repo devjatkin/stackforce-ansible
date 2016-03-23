@@ -3,7 +3,7 @@
 NM_CONTROLLED=no
 BOOTPROTO=none
 ONBOOT=yes
-DEVICE={{ mgnt_phys_dev }}.10
+DEVICE={{ mgnt_phys_dev }}.{{ mgnt_vlan_id }}
 PEERDNS=no
 USERCTL=no
 BRIDGE=mngt-br
