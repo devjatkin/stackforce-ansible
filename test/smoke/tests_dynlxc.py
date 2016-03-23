@@ -38,7 +38,7 @@ class TestAllInventory(object):
                               ssh_extra_args=None, sftp_extra_args=None,
                               scp_extra_args=None, become=True,
                               become_method=None, become_user='root',
-                              verbosity=None, check=False)
+                              verbosity=None, check=True)
 
     @classmethod
     def teardown_class(cls):
@@ -47,6 +47,7 @@ class TestAllInventory(object):
     def test_base(self):
         test_inv_dir = 'test/inventory'
         for inv in os.listdir(test_inv_dir):
+            print "Processing ", inv
             res = dynlxc.main(os.path.join(test_inv_dir, inv), '')
 
             variable_manager = VariableManager()
@@ -87,7 +88,8 @@ class TestAllInventory(object):
                     stdout_callback='default',
                 )
                 result = tqm.run(play)
-                assert result == 0, result
+                assert result == 0, ("Ansible playbook exitcode "
+                                     "different from 0")
             finally:
                 if tqm is not None:
                     tqm.cleanup()
