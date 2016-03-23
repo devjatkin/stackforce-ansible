@@ -3,4 +3,5 @@ haproxy_stats_user: admin
 haproxy_stats_password: fahHood9ja7eiPhi
 openstack_deshboard_url: ""
 self_signed_cert: "false"
+remove_old_cert: "false"
 horizon_ssl_self_signed_subject: ""
