@@ -333,6 +333,32 @@ class TestGetRemoteControllers(object):
         assert 'host3' in remote
 
 
+class TestBasicMergeRun(object):
+
+    @attach_file_from_docstring
+    def test_simple_inventory(self, inventory_file):
+        """ Some empty inventory file
+        >>> [controller]
+        >>> compute1 ansible_host=10.0.0.1
+        """
+        self._uniq_containers(inventory_file)
+
+    @attach_file_from_docstring
+    def _uniq_containers(self, inventory_file, unique_containers):
+        """ Some empty containers conf
+            >>> ---
+            >>> hosts:
+            >>>     compute1:
+            >>>         rabbitmq: 1
+        """
+        result = dynlxc.main(inventory_file, unique_containers)
+        assert result['all'] == ['compute1', ]
+        compute_hostvars = result['_meta']['hostvars']['compute1']
+        assert compute_hostvars['lxc_containers'][0].startswith('rabbit')
+        assert compute_hostvars['ansible_host'] == '10.0.0.1'
+        assert 'compute1' in result['controller']['hosts']
+
+
 def test_parse_args():
     assert dynlxc.parse_args(["--list", ])
     assert dynlxc.parse_args(["--list", '-c', 'test_conf.ini'])
