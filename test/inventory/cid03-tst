@@ -1,2 +1,2 @@
 [controller]
-controller01 ansible_host=192.168.10.7 ansible_ssh_user=root
+controller01 ansible_host=192.168.10.7 ansible_ssh_user=root mgnt_vlan_id=10
