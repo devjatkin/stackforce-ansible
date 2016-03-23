@@ -12,11 +12,18 @@ Default box: "bento/centos7.2", you can set different box name with VAGRANT_BOX_
 ```
 
 Openstack dev-environment over Openstack installation procedure:
-
 ```
 ./run_tripleo.sh USERNAME
 ```
 IMPORTANT: s/USERNAME/your_username/
+
+example ~/.ansible.cfg:
+```
+[ssh_connection]
+ssh_args = -o ForwardAgent=yes -o ControlMaster=no -o StrictHostKeyChecking=no
+```
+
+
 example /etc/openstack/clouds.yaml:
 
 ```
