@@ -95,7 +95,7 @@ listen keystone_admin 0.0.0.0:35357
         option httpchk
         maxconn 10000
 {% for host in groups['keystone'] %}
-        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:35357 check inter 2000 rise 2 fall 5
+        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:35357 check inter 2000 rise 2 fall 5
 {% endfor %}
 
 listen keystone_api 0.0.0.0:5000
@@ -104,7 +104,7 @@ listen keystone_api 0.0.0.0:5000
         option httpchk
         maxconn 10000
 {% for host in groups['keystone'] %}
-        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:5000 check inter 2000 rise 2 fall 5
+        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:5000 check inter 2000 rise 2 fall 5
 {% endfor %}
 
 #---------------------------------------------------------------------
@@ -116,7 +116,7 @@ listen glance_api 0.0.0.0:9292
         option httpchk
         maxconn 10000
 {% for host in groups['glance'] %}
-        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:9292 check inter 2000 rise 2 fall 5
+        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:9292 check inter 2000 rise 2 fall 5
 {% endfor %}
 
 #---------------------------------------------------------------------
@@ -128,7 +128,7 @@ listen nova_api 0.0.0.0:8774
         option httpchk
         maxconn 10000
 {% for host in groups['nova'] %}
-        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:8774 check inter 2000 rise 2 fall 5
+        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:8774 check inter 2000 rise 2 fall 5
 {% endfor %}
 
 #---------------------------------------------------------------------
@@ -140,7 +140,7 @@ listen nova_metadata 0.0.0.0:8775
         option httpchk
         maxconn 10000
 {% for host in groups['nova'] %}
-        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:8775 check inter 2000 rise 2 fall 5
+        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:8775 check inter 2000 rise 2 fall 5
 {% endfor %}
 
 
@@ -152,7 +152,7 @@ listen nova_novncproxy 0.0.0.0:6080
         option tcpka
         maxconn 10000
 {% for host in groups['nova'] %}
-        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:6080 check inter 2000 rise 2 fall 5
+        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:6080 check inter 2000 rise 2 fall 5
 {% endfor %}
 
 #---------------------------------------------------------------------
@@ -164,7 +164,7 @@ listen cinder_api 0.0.0.0:8776
         option httpchk
         maxconn 10000
 {% for host in groups['cinder'] %}
-        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:8776 check inter 2000 rise 2 fall 5
+        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:8776 check inter 2000 rise 2 fall 5
 {% endfor %}
 
 #---------------------------------------------------------------------
@@ -184,7 +184,7 @@ backend horizon
         option tcpka
         option httpchk
 {% for host in groups['horizon'] %}
-        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:80 check inter 2000 rise 2 fall 5
+        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:80 check inter 2000 rise 2 fall 5
 {% endfor %}
 
 #---------------------------------------------------------------------
@@ -196,7 +196,7 @@ listen rabbitmq 0.0.0.0:5672
         option tcpka
         maxconn 10000
 {% for host in groups['rabbitmq'] %}
-        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:5672 check inter 2000 rise 2 fall 5
+        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:5672 check inter 2000 rise 2 fall 5
 {% endfor %}
 
 #---------------------------------------------------------------------
@@ -208,7 +208,7 @@ listen rabbitmq 0.0.0.0:7600
         option tcpka
         maxconn 10000
 {% for host in groups['rabbitmq'] %}
-        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:15672 check inter 2000 rise 2 fall 5
+        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:15672 check inter 2000 rise 2 fall 5
 {% endfor %}
 
 #---------------------------------------------------------------------
@@ -220,7 +220,7 @@ listen graphite 0.0.0.0:7500
         option tcpka
         maxconn 10000
 {% for host in groups['graphite'] %}
-        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:80 check inter 2000 rise 2 fall 5
+        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:80 check inter 2000 rise 2 fall 5
 {% endfor %}
 
 #---------------------------------------------------------------------
@@ -232,7 +232,7 @@ listen graphite 0.0.0.0:7400
         option tcpka
         maxconn 10000
 {% for host in groups['graphite'] %}
-        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:3000 check inter 2000 rise 2 fall 5
+        server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:3000 check inter 2000 rise 2 fall 5
 {% endfor %}
 
 #---------------------------------------------------------------------
@@ -243,7 +243,7 @@ listen mysql-cluster 0.0.0.0:3306
     option tcpka
     option httpchk
 {% for host in groups['mariadb'] %}
-    server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_ssh_host']) }}:3306 port 9200 inter 12000 rise 3 fall 3 check
+    server {{ host }} {{ hostvars[host].get('ansible_host', hostvars[host]['ansible_host']) }}:3306 port 9200 inter 12000 rise 3 fall 3 check
 {% endfor %}
 #---------------------------------------------------------------------
 # consul
