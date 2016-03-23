@@ -18,10 +18,10 @@ $OmitLocalLogging on
 $IMJournalStateFile imjournal.state
 
 #### RULES ####
-$template TmplAuth, "/var/log/%HOSTNAME%/%PROGRAMNAME%.log" 
+#$template TmplAuth, "/var/log/%HOSTNAME%/%PROGRAMNAME%.log"
 
-authpriv.*   ?TmplAuth
-*.info,mail.none,authpriv.none,cron.none                ?TmplMsg
+#authpriv.*   ?TmplAuth
+#*.info,mail.none,authpriv.none,cron.none                ?TmplMsg
 
 *.info;mail.none;authpriv.none;cron.none                /var/log/messages
 authpriv.*                                              /var/log/secure
@@ -31,4 +31,12 @@ cron.*                                                  /var/log/cron
 uucp,news.crit                                          /var/log/spooler
 local7.*                                                /var/log/boot.log
 
-*.*   @{{ hostvars[groups.syslog.0]['ansible_eth0']['ipv4']['address'] }}:514
+*.*   @{{ hostvars[groups.syslog.0]['ansible_ssh_host'] }}:514
+{%  for host in groups['syslog']  if host != groups['syslog'][0] %}
+{% if loop.first %}
+$ActionExecOnlyWhenPreviousIsSuspended on
+{% endif %}
+& @{{ hostvars[host]['ansible_ssh_host'] }}
+{% endfor %}
+
+

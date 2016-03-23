@@ -1,0 +1,14 @@
+---
+- name: Get Grafana package
+  get_url: url="{{ grafana_package_url }}" dest=/opt/grafana.rpm
+
+- name: Install Grafana dependencies
+  yum: name="{{ item }}" state=present
+  with_items:
+    - fontconfig
+    - initscripts
+
+- name: Install Grafana package
+  yum: name=/opt/grafana.rpm
+  notify:
+  - restart grafana

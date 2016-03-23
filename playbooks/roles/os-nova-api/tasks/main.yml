@@ -17,3 +17,5 @@
     - openstack-nova-scheduler
     - openstack-nova-conductor
     - openstack-nova-novncproxy
+
+- include: consul.yml

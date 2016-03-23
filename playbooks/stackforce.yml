@@ -5,7 +5,15 @@
   vars:
     keepalived_ext_vip: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
     num_controllers: "{{ groups['controller'] | length }}"
+  tags:
+    - keepalived
 - include: haproxy.yml
+  vars:
+    openstack_deshboard_url: "{{ lookup('ini', 'openstack_deshboard_url section=public file=/etc/stackforce/parameters.ini') }}"
+    horizon_ssl_self_signed_subject: "{{ lookup('ini', 'horizon_ssl_self_signed_subject section=public file=/etc/stackforce/parameters.ini') }}"
+    self_signed_cert: "{{ lookup('ini', 'self_signed_cert section=public file=/etc/stackforce/parameters.ini') }}"
+  tags:
+    - haproxy
 - hosts: all:!controller*
   roles:
     - role: consul-agent
@@ -27,15 +35,19 @@
     keystone_service_adminurl: "http://{{ public_address }}:35357/v3"
 
 - include: rsyslog.yml
+  tags: syslog
 - include: os-horizon.yml
   vars:
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
+  tags: horizon
 - include: os-glance.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
     glance_service_publicurl: "http://{{ public_address }}:9292"
     glance_service_adminurl: "http://{{ public_address }}:9292"
+  tags:
+    install_glance
 
 - include: os-nova-api.yml
   vars:
@@ -44,6 +56,10 @@
     nova_service_publicurl: "http://{{ public_address }}:8774/v2/%(tenant_id)s"
     nova_service_adminurl: "http://{{ public_address }}:8774/v2/%(tenant_id)s"
     nova_neutron_url: "http://{{ public_address }}:9696"
+    nova_cpu_allocation_ratio: "7.0"
+    nova_ram_allocation_ratio: "1.1"
+  tags:
+    - install_nova-api
 - include: os-cinder-api.yml
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
@@ -52,12 +68,15 @@
     cinder_service_adminurl: "http://{{ public_address }}:8776/v1/%(tenant_id)s"
     cinder_service_v2_publicurl: "http://{{ public_address }}:8776/v2/%(tenant_id)s"
     cinder_service_v2_adminurl: "http://{{ public_address }}:8776/v2/%(tenant_id)s"
+    cinder_volume_clear: "none"
   tags:
     - install_cinder
 - include: os-compute.yml
   vars:
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
     neutron_service_publicurl: "http://{{ public_address }}:9696"
+    nova_cpu_allocation_ratio: "7.0"
+    nova_ram_allocation_ratio: "1.1"
 
 - include: os-neutronService.yml
   vars:
@@ -71,6 +90,7 @@
     neutron_nova_metadata_ip: "{{ public_address }}"
   tags:
     - last
+    - install_neutronService
 - include: os-neutronAgent.yml
   vars:
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
@@ -80,6 +100,7 @@
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
+    cinder_volume_clear: "none"
   tags:
     - install_cinder
     - last

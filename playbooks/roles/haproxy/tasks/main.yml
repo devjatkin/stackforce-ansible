@@ -5,6 +5,15 @@
 - name: Enable haproxy service
   service: name=haproxy enabled=yes
 
+- name: Create empty directory
+  file:
+    path: "/etc/haproxy/haproxy_cert"
+    state: directory
+    owner: "root"
+
+- include: self_signet_cert.yml
+  when: self_signed_cert == "true"
+
 - name: Configure haproxy
   template: src=haproxy.cfg.j2 dest=/etc/haproxy/haproxy.cfg
   tags:

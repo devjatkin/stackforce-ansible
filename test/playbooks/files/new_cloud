@@ -1,0 +1,32 @@
+controller01 ansible_connection=local
+controller02 ansible_host=95.164.68.2 ansible_user=root
+controller03 ansible_host=95.164.68.3 ansible_user=root
+compute01 ansible_host=95.164.68.4 ansible_user=root
+compute02 ansible_host=95.164.68.5 ansible_user=root
+compute03 ansible_host=95.164.68.6 ansible_user=root
+
+[baremetal]
+compute01
+compute02
+compute03
+controller01
+controller02
+controller03
+[controller]
+controller01 neutron_l3_ha="True" mgnt_phys_dev="eno1" cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e" keepalived_ext_shared_iface="eno1" neutron_physical_interface_mappings="vlan:eno2,external:eno1" ansible_ssh_host="95.164.68.1" keepalived_heartbeat_iface="mngt-br"
+controller02 neutron_l3_ha="True" mgnt_phys_dev="eno1" cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e" keepalived_ext_shared_iface="eno1" neutron_physical_interface_mappings="vlan:eno2,external:eno1" ansible_ssh_host="95.164.68.2" keepalived_heartbeat_iface="mngt-br"
+controller03 neutron_l3_ha="True" mgnt_phys_dev="eno1" cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e" keepalived_ext_shared_iface="eno1" neutron_physical_interface_mappings="vlan:eno2,external:eno1" ansible_ssh_host="95.164.68.3" keepalived_heartbeat_iface="mngt-br"
+[compute]
+compute01 mgnt_phys_dev="enp3s0f0" neutron_physical_interface_mappings="vlan:enp3s0f1,external:enp3s0f0" cinder_disk="ceph" client_ceph_key="AQDg3uJWIkRVFxAAdkWIIxPtiZsO5uAkj4uMMA==" cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e"
+compute02 mgnt_phys_dev="enp3s0f0" neutron_physical_interface_mappings="vlan:enp3s0f1,external:enp3s0f0" cinder_disk="ceph" client_ceph_key="AQDg3uJWIkRVFxAAdkWIIxPtiZsO5uAkj4uMMA==" cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e"
+compute03 mgnt_phys_dev="enp3s0f0" neutron_physical_interface_mappings="vlan:enp3s0f1,external:enp3s0f0" cinder_disk="ceph" client_ceph_key="AQDg3uJWIkRVFxAAdkWIIxPtiZsO5uAkj4uMMA==" cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e"
+[compute:vars]
+cinder_disk="ceph"
+client_ceph_key="AQDg3uJWIkRVFxAAdkWIIxPtiZsO5uAkj4uMMA=="
+compute_virt_type="kvm"
+os_rabbit_port=5672
+[all:vars]
+cinder_ceph_rbd_secret_uuid="1e79549e-b958-4358-987f-796e76139b1e"
+[controller:vars]
+keepalived_ext_shared_iface="eno1"
+keepalived_heartbeat_iface="mngt-br"

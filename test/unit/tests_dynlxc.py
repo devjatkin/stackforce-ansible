@@ -1,8 +1,9 @@
+import functools
+import tempfile
+
 import pytest
-from mock import MagicMock, patch, call
-
 from inventory import dynlxc
-
+from mock import MagicMock, call, patch
 
 inventories = [
     {
@@ -13,15 +14,45 @@ inventories = [
             u'compute': {'hosts': [u'localhost'], 'vars': {}},
             u'controller': {'hosts': [u'localhost'], 'vars': {}},
             '_meta': {
-                'groupvars': {'ungrouped': {},
-                              'all': {},
-                              u'compute': {},
-                              u'controller': {}},
                 'hostvars': {u'localhost': {
                     u'cinder_disk': u'/dev/sdc',
                     u'neutron_physical_interface_mappings':
                         u'vlan:enp0s8,external:enp0s3',
                     u'ansible_connection': u'local'}}}}
+    },
+    {
+        "file_name": "test/unit/files/tst_two",
+        "expect_result": {
+            'all': [u'cid01-tst', u'cid02-tst', u'cid03-tst'],
+            'ungrouped': {
+                'hosts': [u'cid01-tst', u'cid02-tst', u'cid03-tst'],
+                'vars': {}},
+            u'baremetal': {
+                'hosts': [u'cid01-tst', u'cid02-tst', u'cid03-tst'],
+                'vars': {}},
+            u'compute': {
+                'hosts': [u'cid01-tst', u'cid02-tst'],
+                'vars': {
+                    u'compute_virt_type': u"kvm",
+                    u'os_rabbit_port': 5672,
+                    u'cinder_disk': u"/dev/sdb"}},
+            u'controller': {
+                'hosts': [u'cid03-tst'], 'vars': {}},
+            '_meta': {
+                'hostvars': {
+                    u'cid01-tst': {
+                        u'cinder_disk': u'/dev/sdb,/dev/sdc',
+                        u'ansible_host': u'192.168.10.5',
+                        u'ansible_user': u'root'},
+                    u'cid02-tst': {
+                        u'cinder_disk': u'/dev/sdb,/dev/sdc',
+                        u'ansible_host': u'192.168.10.6',
+                        u'ansible_user': u'root'},
+                    u'cid03-tst': {
+                        u'ansible_connection': u'local'}
+                }
+            }
+        }
     }
 ]
 
@@ -36,7 +67,7 @@ class TestGetConfig(object):
 
     @patch('ConfigParser.ConfigParser')
     def test_config(self, mock_class):
-        cnf = dynlxc.get_config()
+        cnf = dynlxc.get_config(dynlxc.DEFAULT_CONF)
         cnf.add_section.assert_called_once_with("os")
         calls = [
             call('os', 'inventory_file', None),
@@ -45,11 +76,48 @@ class TestGetConfig(object):
         cnf.read.assert_called_with("/etc/stackforce/parameters.ini")
 
 
+def attach_file_from_docstring(clbl):
+    """ Adds filename which consits of lines from docstring
+    which starts with '>>>' to arguments.
+    """
+
+    @functools.wraps(clbl)
+    def wrapper(*args, **kwargs):
+
+        with tempfile.NamedTemporaryFile() as fh:
+            for l in clbl.__doc__.split('\n'):
+                line = l.lstrip()
+                if line.startswith('>>>'):
+                    fh.write(line[4:] + '\n')
+            fh.flush()
+            result = clbl(*(args + (fh.name, )), **kwargs)
+
+        return result
+
+    return wrapper
+
+
 class TestReadInventoryFile(object):
 
     def test_first(self, inventory_file):
         res = dynlxc.read_inventory_file(inventory_file['file_name'])
         assert res == inventory_file['expect_result']
+
+    @attach_file_from_docstring
+    def test_group_vars(self, inventory_file):
+        ''' Ansible does not read groupvars from _meta. They should be in
+        vars into group. via @dtyzhnenko
+        For this:
+
+        >>> cid01-tst ansible_host=192.168.10.5 ansible_user=root
+        >>> [compute]
+        >>> cid01-tst cinder_disk="/dev/sdb,/dev/sdc"
+        >>> [compute:vars]
+        >>> compute_virt_type="kvm"
+
+        '''
+        res = dynlxc.read_inventory_file(inventory_file)
+        assert res['compute']['vars']['compute_virt_type'] == 'kvm'
 
     @pytest.mark.skip(reason="non working mockups")
     def test_base(self):
