@@ -173,10 +173,10 @@
     lxc_container:
       name: "{{ lxc_base_container }}"
       backing_store: lvm
-      clone_name: "{{ item }}"
+      clone_name: "{{ item.value.name }}"
       clone_snapshot: true
-      fs_size: "3G"
-    with_items: "{{ lxc_containers }}"
+      fs_size: "{{ item.value.size }}G"
+    with_dict: "{{ lxc_containers }}"
     tags:
       - lxc
       - lxc-clone-containers
@@ -186,14 +186,14 @@
 
   - name: Waiting for ping
     lxc_container:
-      name: "{{ item }}"
+      name: "{{ item.value.name }}"
       container_command: |
         ping -c 1 8.8.8.8
     register: lvm_container_info
     until: lvm_container_info.lxc_container.ips.0 is defined
     retries: 10
     delay: 30
-    with_items: "{{ lxc_containers }}"
+    with_dict: "{{ lxc_containers }}"
     tags:
       - ping
 
