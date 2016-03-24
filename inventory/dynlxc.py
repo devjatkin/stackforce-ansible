@@ -47,12 +47,17 @@ def add_var_lxc_containers_to_controllers(inventory, containers_config):
     match = {"groups": "groupvars", "hosts": "hostvars"}
     for m in match:
         for group_name in containers_config.get(m, []):
-            container_names = []
+            container_names = {}
             group = containers_config[m][group_name]
-            for container_name, count in group.items():
-                container_names.extend(
-                    [get_unique_container_name(
-                        container_name, group_name, i) for i in range(count)])
+            for container_name, vars in group.items():
+                count = vars.pop('count')
+                vars['name'] = container_name
+                for n in range(count):
+                    name = get_unique_container_name(container_name,
+                                                     group_name, n)
+                    container_names[name] = vars
+                # container_names.extend(
+                    # [ for i in range(count)])
             inv_group = inventory['_meta'].get(match[m], {}).get(group_name,
                                                                  {})
             inv_group["lxc_containers"] = container_names
