@@ -172,10 +172,12 @@ listen cinder_api 0.0.0.0:8776
 #---------------------------------------------------------------------
 frontend horizon_public
   bind :80
+  {% if self_signed_cert == "true" %}
   bind :443 ssl crt server.pem
     redirect scheme https if !{ ssl_fc }
     mode http
     default_backend nodes
+  {% endif %}
   default_backend horizon
 
 
