@@ -174,8 +174,8 @@
       name: "{{ lxc_base_container }}"
       backing_store: lvm
       clone_name: "{{ item.key }}"
-      clone_snapshot: true
-      fs_size: "4G"
+      clone_snapshot: false
+      fs_size: "{{ item.value.size }}G"
     with_dict: "{{ lxc_containers }}"
     tags:
       - lxc
