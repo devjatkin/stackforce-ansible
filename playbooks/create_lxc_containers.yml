@@ -173,9 +173,9 @@
     lxc_container:
       name: "{{ lxc_base_container }}"
       backing_store: lvm
-      clone_name: "{{ item.value.name }}"
+      clone_name: "{{ item.key }}"
       clone_snapshot: true
-      fs_size: "{{ item.value.size }}G"
+      fs_size: "4G"
     with_dict: "{{ lxc_containers }}"
     tags:
       - lxc
@@ -186,7 +186,7 @@
 
   - name: Waiting for ping
     lxc_container:
-      name: "{{ item.value.name }}"
+      name: "{{ item.key }}"
       container_command: |
         ping -c 1 8.8.8.8
     register: lvm_container_info
