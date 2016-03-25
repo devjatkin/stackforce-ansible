@@ -10,7 +10,7 @@
     unique_containers_file: "/etc/stackforce/containers.yml"
     public_address: "{{ ansible_default_ipv4.address }}"
     openstack_deshboard_url: "openstack.cloudlinux.com"
-    self_signed_cert: "true"
+    self_signed_cert: "false"
     horizon_ssl_self_signed_subject: "/C=UA/ST=Kiev/L=Kiev/O=IT"
   tasks:
     - name: add user
