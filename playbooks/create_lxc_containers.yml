@@ -169,19 +169,13 @@
     with_items: lxc_base_container
     when: num_controllers | int > 1
 
-#  - name: Clone containers
-#    lxc_container:
-#      name: "{{ lxc_base_container }}"
-#      backing_store: lvm
-#      clone_name: "{{ item.key }}"
-#      clone_snapshot: false
-#      fs_size: "{{ item.value.size }}G"
   - name: Stop Base conainer
     lxc_container:
       name: "{{ lxc_base_container }}"
       state: stopped
+
   - name: Clone containers
-    shell: "lxc-clone -L {{ item.value.size }}GB  -o {{ lxc_base_container }} -n {{ item.key }}"
+    shell: "lxc-clone -L {{ item.value.size }}GB -o {{ lxc_base_container }} -n {{ item.key }}"
     args:
       creates: "/dev/lxc/{{ item.key }}"
     with_dict: "{{ lxc_containers }}"
@@ -204,11 +198,6 @@
     with_dict: "{{ lxc_containers }}"
     tags:
       - ping
-
-  - name: Stop Base conainer
-    lxc_container:
-      name: "{{ lxc_base_container }}"
-      state: stopped
 
   - name: Make the base container non-autostarted
     lineinfile: dest=/var/lib/lxc/{{ lxc_base_container }}/config line="lxc.start.auto = 1" state=absent
