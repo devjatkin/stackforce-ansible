@@ -169,13 +169,21 @@
     with_items: lxc_base_container
     when: num_controllers | int > 1
 
-  - name: Clone containers
+#  - name: Clone containers
+#    lxc_container:
+#      name: "{{ lxc_base_container }}"
+#      backing_store: lvm
+#      clone_name: "{{ item.key }}"
+#      clone_snapshot: false
+#      fs_size: "{{ item.value.size }}G"
+  - name: Stop Base conainer
     lxc_container:
       name: "{{ lxc_base_container }}"
-      backing_store: lvm
-      clone_name: "{{ item.key }}"
-      clone_snapshot: false
-      fs_size: "{{ item.value.size }}G"
+      state: stopped
+  - name: Clone containers
+    shell: "lxc-clone -L {{ item.value.size }}GB  -o {{ lxc_base_container }} -n {{ item.key }}"
+    args:
+      creates: "/dev/lxc/{{ item.key }}"
     with_dict: "{{ lxc_containers }}"
     tags:
       - lxc
