@@ -75,25 +75,25 @@ def run_ssh_command(host, user, port, key, command):
             "-o StrictHostKeyChecking=no {host} "
             "-l {user} -p {port} -i {key_filename} "
             "{command}")
-    return subprocess.Popen(tmpl.format(
+    ps = subprocess.Popen(tmpl.format(
         host=host,
         user=user,
         port=port,
         key_filename=key,
         command=command), shell=True,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.read()
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return ps.stdout.read()
 
 
 def get_containers_list(host, user, port, key_filename):
     cmd_run_containers = run_ssh_command(
-        "sudo lxc-ls --active", host, user, port, key_filename)
+        host, user, port, key_filename, "sudo lxc-ls --active")
     return cmd_run_containers.split()
 
 
 def get_container_ip(container, host, user, port, key_filename):
-    result = run_ssh_command(
-        "sudo lxc-info -i --name " + container, host, user, port,
-        key_filename)
+    result = run_ssh_command(host, user, port, key_filename,
+                             "sudo lxc-info -i --name " + container,)
     return result.split()
 
 
