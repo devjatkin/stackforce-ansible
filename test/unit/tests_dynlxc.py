@@ -253,18 +253,21 @@ class TestAddLxcContainersToInventory(object):
             u'controller': {'hosts': [u'localhost'], 'vars': {}},
             'ungrouped': {'hosts': [], 'vars': {}}}
         yml_cnf = {
-            'groups': {'controller': {'nova': 2}},
-            'hosts': {'controller01': {'cinder_api': 1,
-                                       'glance': 1,
-                                       'horizon': 1,
-                                       'keystone': 1,
-                                       'mariadb': 1, 'memcached': 1,
-                                       'nova_api': 1,
-                                       'rabbitmq': 1,
-                                       'syslog': 1}}}
+            'groups': {'controller': {'nova': {'count': 2}}},
+            'hosts': {'controller01': {
+                'cinder_api': {'count': 1},
+                'glance': {'count': 1},
+                'horizon': {'count': 1},
+                'keystone': {'count': 1},
+                'mariadb': {'count': 1},
+                'memcached': {'count': 1},
+                'nova_api': {'count': 1},
+                'rabbitmq': {'count': 1},
+                'syslog': {'count': 1}
+            }}}
         groupnames = [
-            dynlxc.get_unique_container_name('nova', 'controller', 0),
             dynlxc.get_unique_container_name('nova', 'controller', 1),
+            dynlxc.get_unique_container_name('nova', 'controller', 0),
         ]
         hostnames = [
             dynlxc.get_unique_container_name('cinder_api', 'controller01', 0),
@@ -278,11 +281,10 @@ class TestAddLxcContainersToInventory(object):
             dynlxc.get_unique_container_name('syslog', 'controller01', 0),
         ]
         res = dynlxc.add_var_lxc_containers_to_controllers(inv, yml_cnf)
-        assert res["_meta"]["groupvars"]["controller"]["lxc_containers"] == \
-            groupnames
-        assert sorted(
-            res["_meta"]["hostvars"]["controller01"]["lxc_containers"]) == \
-            sorted(hostnames)
+        dyngroup = res["_meta"]["groupvars"]["controller"]["lxc_containers"]
+        assert sorted(dyngroup.keys()) == sorted(groupnames)
+        dynhost = res["_meta"]["hostvars"]["controller01"]["lxc_containers"]
+        assert sorted(dynhost) == sorted(hostnames)
 
 
 class TestListContainersOnHost(object):
@@ -349,14 +351,51 @@ class TestBasicMergeRun(object):
             >>> ---
             >>> hosts:
             >>>     compute1:
-            >>>         rabbitmq: 1
+            >>>         rabbitmq:
+            >>>             count: 1
         """
         result = dynlxc.main(inventory_file, unique_containers)
         assert result['all'] == ['compute1', ]
         compute_hostvars = result['_meta']['hostvars']['compute1']
-        assert compute_hostvars['lxc_containers'][0].startswith('rabbit')
+        (key, value), = compute_hostvars['lxc_containers'].items()
+        assert key.startswith('rabbit')
         assert compute_hostvars['ansible_host'] == '10.0.0.1'
         assert 'compute1' in result['controller']['hosts']
+
+    @attach_file_from_docstring
+    def test_new_containers(self, inventory_file):
+        """ Some empty inventory file
+        >>> [controller]
+        >>> controller01 ansible_host=10.0.0.1
+        """
+        self._new_uniq_containers(inventory_file)
+
+    @attach_file_from_docstring
+    def _new_uniq_containers(self, inventory_file, unique_containers):
+        """ Some empty containers conf
+            >>> ---
+            >>> hosts:
+            >>>    controller01:
+            >>>        rabbitmq:
+            >>>            count: 2
+            >>>            size: 3
+            >>>            someothervar: 100500
+            >>>        mariadb:
+            >>>            count: 1
+            >>>            size: 10
+            >>>            someothervar: 9999
+        """
+        result = dynlxc.main(inventory_file, unique_containers)
+        assert result['all'] == ['controller01', ]
+        assert 'controller01' in result['controller']['hosts']
+        compute_hostvars = result['_meta']['hostvars']['controller01']
+        assert compute_hostvars['ansible_host'] == '10.0.0.1'
+        cont1, cont2, cont3, = sorted(compute_hostvars['lxc_containers'])
+
+        container = compute_hostvars['lxc_containers'][cont1]
+        assert cont1.startswith('mariadb_container-')
+        assert container['name'] == 'mariadb'
+        assert container['size'] == 10
 
 
 def test_parse_args():

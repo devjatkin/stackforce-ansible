@@ -1,13 +1,33 @@
 ---
 hosts:
   localhost:
-    rabbitmq: 1
-    mariadb: 1
-    syslog: 1
-    keystone: 1
-    horizon: 1
-    glance: 1
-    nova_api: 1
-    memcached: 1
-    cinder_api: 1
-    graphite: 1
+    rabbitmq:
+      count: 1
+      size: 3
+    mariadb:
+      count: 1
+      size: 3
+    syslog:
+      count: 1
+      size: 5
+    keystone:
+      count: 1
+      size: 3
+    horizon:
+      count: 1
+      size: 3
+    glance:
+      count: 1
+      size: 3
+    nova_api:
+      count: 1
+      size: 3
+    memcached:
+      count: 1
+      size: 3
+    cinder_api:
+      count: 1
+      size: 3
+    graphite:
+      count: 1
+      size: 5
