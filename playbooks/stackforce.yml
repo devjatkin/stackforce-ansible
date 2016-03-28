@@ -77,7 +77,7 @@
     neutron_service_publicurl: "http://{{ public_address }}:9696"
     nova_cpu_allocation_ratio: "7.0"
     nova_ram_allocation_ratio: "1.1"
-  tags: 
+  tags:
     - os-compute
 
 - include: os-neutronService.yml
