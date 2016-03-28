@@ -5,7 +5,7 @@
     token: "{{ keystone_auth_admin_token }}"
     endpoint: "{{ keystone_service_adminurl }}"
     user_name: "{{ glance_service_user_name }}"
-    tenant_name: "{{ glance_service_project_name }}"
+    tenant_name: "{{ glance_service_tenant_name }}"
     password: "{{ glance_service_password }}"
     insecure: "{{ keystone_service_adminuri_insecure }}"
   tags:
@@ -16,7 +16,7 @@
     token: "{{ keystone_auth_admin_token }}"
     endpoint: "{{ keystone_service_adminurl }}"
     user_name: "{{ glance_service_user_name }}"
-    tenant_name: "{{ glance_service_project_name }}"
+    tenant_name: "{{ glance_service_tenant_name }}"
     role_name: "admin"
     insecure: "{{ keystone_service_adminuri_insecure }}"
   tags:
