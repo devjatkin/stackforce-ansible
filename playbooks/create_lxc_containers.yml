@@ -72,7 +72,7 @@
       backing_store: lvm
       vg_name: "lxc"
       clone_snapshot: true
-      fs_size: "3G"
+      fs_size: "5G"
       container_config:
         - lxc.kmsg=0
         - lxc.start.auto=1
