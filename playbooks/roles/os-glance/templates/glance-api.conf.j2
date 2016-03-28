@@ -995,7 +995,7 @@ filesystem_store_datadir = {{ glance_filesystem_store_datadir }}
 # Complete public Identity API endpoint. (string value)
 #auth_uri=<None>
 auth_uri={{ keystone_service_publicurl }}
-auth_uri={{ keystone_service_adminurl }}
+auth_url={{ keystone_service_adminurl }}
 auth_plugin = password
 project_domain_id = default
 user_domain_id = default
@@ -1500,6 +1500,7 @@ memcached_servers={% for node in groups.memcached %}{{ hostvars[node].ansible_ho
 # [pipeline:glance-api-keystone] use the value "keystone" (string
 # value)
 #flavor=<None>
+flavor=keystone
 
 # Name of the paste configuration file. (string value)
 #config_file=/usr/share/glance/glance-api-dist-paste.ini
