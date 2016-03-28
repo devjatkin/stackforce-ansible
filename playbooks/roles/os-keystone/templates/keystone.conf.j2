@@ -1422,7 +1422,7 @@ servers = {% for node in groups.memcached %}{{ hostvars[node].ansible_host }}:11
 # value)
 # This option is deprecated for removal.
 # Its value may be silently ignored in the future.
-#enabled = true
+enabled = true
 
 
 [oslo_messaging_amqp]
