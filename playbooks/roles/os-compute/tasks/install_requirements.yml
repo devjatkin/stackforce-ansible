@@ -52,7 +52,9 @@
 - name: Define secret from file
   shell: "sudo virsh secret-define --file /tmp/secret.xml"
   when: cinder_disk == "ceph"
+  ignore_errors: true
 
 - name: Set  secret for ceph
   shell: "sudo virsh secret-set-value --secret {{ cinder_ceph_rbd_secret_uuid }} --base64 {{ client_ceph_key }} "
   when: cinder_disk == "ceph"
+  ignore_errors: true
