@@ -1,3 +1,5 @@
 ---
 - include: setup.yml
   when: num_rabbits | int > 1
+
+- include: consul.yml
