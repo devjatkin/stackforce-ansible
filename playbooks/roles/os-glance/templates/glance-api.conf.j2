@@ -638,7 +638,7 @@ connection={{ glance_database_connection}}
 # From glance.store
 #
 {% if cinder_disk == "ceph" %}
-stores = rbd
+stores = rbd,http
 rbd_store_pool = {{ glance_rbd_pool }}
 rbd_store_user = {{ glance_ceph_user }}
 rbd_store_ceph_conf = /etc/ceph/ceph.conf
@@ -646,6 +646,7 @@ rbd_store_chunk_size = 8
 default_store=rbd
 show_image_direct_url = True
 {% else %}
+stores=file,http
 default_store = {{ glance_default_store }}
 filesystem_store_datadir = {{ glance_filesystem_store_datadir }}
 {% endif %}
