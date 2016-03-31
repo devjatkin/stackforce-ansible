@@ -9,8 +9,7 @@ debug = {{ os_debug }}
 
 # The DHCP agent requires an interface driver be set. Choose the one that best
 # matches your plugin.
-# interface_driver =
-interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
+interface_driver = {{ neutron_dhcp_interface_driver }}
 
 # Example of interface_driver option for OVS based plugins(OVS, Ryu, NEC, NVP,
 # BigSwitch/Floodlight)
@@ -29,8 +28,7 @@ interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
 
 # The agent can use other DHCP drivers.  Dnsmasq is the simplest and requires
 # no additional setup of the DHCP server.
-# dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
-dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
+dhcp_driver = {{ neutron_dhcp_driver }}
 
 # Allow overlapping IP (Must have kernel build with CONFIG_NET_NS=y and
 # iproute2 package that supports namespaces). This option is deprecated and
@@ -73,12 +71,11 @@ use_namespaces = True
 # dhcp_domain = openstacklocal
 
 # Override the default dnsmasq settings with this file
-# dnsmasq_config_file =
-dnsmasq_config_file = /etc/neutron/dnsmasq-neutron.conf
+dnsmasq_config_file = {{ neutron_dnsmasq_config_file }}
 
 # Comma-separated list of DNS servers which will be used by dnsmasq
 # as forwarders.
-# dnsmasq_dns_servers =
+dnsmasq_dns_servers = {{ neutron_dnsmasq_dns_servers }}
 
 # Base log dir for dnsmasq logging. The log contains DHCP and DNS log
 # information and is useful for debugging issues with either DHCP or DNS.

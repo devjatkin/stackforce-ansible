@@ -43,3 +43,8 @@ neutron_prevent_arp_spoofing: "True"
 neutron_nova_metadata_ip: "{{ public_address }}"
 neutron_l3_ha: "False"
 neutron_network_vlan_ranges: "external,vlan:100:200"
+# dhcp_agent.ini
+neutron_dhcp_interface_driver: "neutron.agent.linux.interface.BridgeInterfaceDriver"
+neutron_dhcp_driver: "neutron.agent.linux.dhcp.Dnsmasq"
+neutron_dnsmasq_config_file: "/etc/neutron/dnsmasq-neutron.conf"
+neutron_dnsmasq_dns_servers: "8.8.8.8, 8.8.4.4"
