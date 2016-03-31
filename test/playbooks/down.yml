@@ -21,29 +21,29 @@
     register: secgroup
 
   # controllers
-  - os_volume:
-      cloud: "{{ test_cloud }}"
-      display_name: "{{ item }}-lxc"
-      state: absent
-    with_items:
-      - "{{ controllers }}"
   - os_server:
       cloud: "{{ test_cloud }}"
       name: "{{ item }}"
+      state: absent
+    with_items:
+      - "{{ controllers }}"
+  - os_volume:
+      cloud: "{{ test_cloud }}"
+      display_name: "{{ item }}-lxc"
       state: absent
     with_items:
       - "{{ controllers }}"
 
   # computes
-  - os_volume:
-      cloud: "{{ test_cloud }}"
-      display_name: "{{ item }}-lxc"
-      state: absent
-    with_items:
-      - "{{ computes }}"
   - os_server:
       cloud: "{{ test_cloud }}"
       name: "{{ item }}"
+      state: absent
+    with_items:
+      - "{{ computes }}"
+  - os_volume:
+      cloud: "{{ test_cloud }}"
+      display_name: "{{ item }}-lxc"
       state: absent
     with_items:
       - "{{ computes }}"
@@ -64,16 +64,15 @@
       cloud: "{{ test_cloud }}"
       state: absent
       name: "{{ username }}_router"
-  - os_network:
-      cloud: "{{ test_cloud }}"
-      state: absent
-      name: "{{ username }}_mngt"
   - os_subnet:
       cloud: "{{ test_cloud }}"
       state: absent
       name: "{{ username }}_mngt_subnet"
       network_name: "{{ username }}_mngt"
-
+  - os_network:
+      cloud: "{{ test_cloud }}"
+      state: absent
+      name: "{{ username }}_mngt"
 
   - name: Delete keypair
     os_keypair:
