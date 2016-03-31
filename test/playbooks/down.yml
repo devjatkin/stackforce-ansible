@@ -1,0 +1,100 @@
+---
+- hosts: localhost
+  vars:
+    password: "guj3OhV8ub5hauCh"
+    cloud: "stackforce"
+    test_cloud: "tripleo"
+    local_tmp_dir: "/tmp"
+    controllers:
+      - controller01
+      - controller02
+      - controller03
+    computes:
+      - compute01
+  tasks:
+  - name: Check username
+    debug: msg="Please use extra-vars for username"
+    when: not username is defined
+
+  - name: Delete project
+    os_project:
+      cloud: "{{ cloud }}"
+      state: absent
+      name: "{{ username }}"
+      domain: default
+  - name: Delete user
+    os_user:
+      cloud: "{{ cloud }}"
+      state: absent
+      name: "{{ username }}"
+      default_project: "{{ username }}"
+      domain: default
+
+  - name: Delete keypair
+    os_keypair:
+      cloud: "{{ test_cloud }}"
+      state: absent
+      name: "{{ username }}_key"
+
+  - name: Get id of default security group
+    shell: openstack --os-cloud tripleo security group list | grep default | awk '{print $2}'
+    register: secgroup
+
+  - name: Delete security group TCP
+    os_security_group_rule:
+      cloud: "{{ test_cloud }}"
+      security_group: "{{ secgroup.stdout }}"
+      state: absent
+
+  - name: Delete security group ICMP
+    os_security_group_rule:
+      cloud: "{{ test_cloud }}"
+      security_group: "{{ secgroup.stdout }}"
+      state: absent
+
+  - os_router:
+      cloud: "{{ test_cloud }}"
+      state: absent
+      name: "{{ username }}_router"
+  - os_network:
+      cloud: "{{ test_cloud }}"
+      state: absent
+      name: "{{ username }}_mngt"
+  - os_subnet:
+      cloud: "{{ test_cloud }}"
+      state: absent
+      name: "{{ username }}_mngt_subnet"
+      network_name: "{{ username }}_mngt"
+
+  # controllers
+  - os_volume:
+      cloud: "{{ test_cloud }}"
+      display_name: "{{ item }}-lxc"
+      state: absent
+    with_items:
+      - "{{ controllers }}"
+  - os_server:
+      cloud: "{{ test_cloud }}"
+      name: "{{ item }}"
+      state: absent
+    with_items:
+      - "{{ controllers }}"
+
+  # computes
+  - os_volume:
+      cloud: "{{ test_cloud }}"
+      display_name: "{{ item }}-lxc"
+      state: absent
+    with_items:
+      - "{{ computes }}"
+  - os_server:
+      cloud: "{{ test_cloud }}"
+      name: "{{ item }}"
+      state: absent
+    with_items:
+      - "{{ computes }}"
+
+  - name: Delete containers.yml
+    file: path="{{ local_tmp_dir }}/containers.yml" state=absent
+  - name: Delete inventory
+    file: path="{{ local_tmp_dir }}/inventory" state=absent
