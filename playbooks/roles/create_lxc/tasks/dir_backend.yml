@@ -1,0 +1,28 @@
+---
+
+- name: Create a base container
+  lxc_container:
+    name: "{{ lxc_base_container }}"
+    container_log: true
+    template: centos
+    state: started
+    backing_store: dir
+    container_config:
+      - lxc.kmsg=0
+      - lxc.start.auto=1
+  tags:
+    - lxc
+    - lxc-base-container
+
+- include: setup_container.yml
+
+- name: Clone containers
+  lxc_container:
+    name: "{{ lxc_base_container }}"
+    backing_store: dir
+    clone_name: "{{ item }}"
+  with_items: "{{ lxc_containers }}"
+  tags:
+    - lxc
+    - lxc-clone-containers
+
