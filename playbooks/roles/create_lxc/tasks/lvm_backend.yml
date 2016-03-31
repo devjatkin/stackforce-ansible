@@ -1,0 +1,33 @@
+---
+
+- lvg: vg=lxc pvs="{{ lxc_disk }}"
+  tags:
+    - lvm
+
+- name: Create a base container
+  lxc_container:
+    name: "{{ lxc_base_container }}"
+    container_log: true
+    template: centos
+    state: started
+    backing_store: lvm
+    vg_name: "lxc"
+    clone_snapshot: true
+    fs_size: "5G"
+    container_config:
+      - lxc.kmsg=0
+      - lxc.start.auto=1
+  tags:
+    - lxc
+    - lxc-base-container
+
+- include: setup_container.yml
+
+- name: Clone containers
+  shell: "lxc-clone -L {{ item.value.size }}GB -o {{ lxc_base_container }} -n {{ item.key }}"
+  args:
+    creates: "/dev/lxc/{{ item.key }}"
+  with_dict: "{{ lxc_containers }}"
+  tags:
+    - lxc
+    - lxc-clone-containers

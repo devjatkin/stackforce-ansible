@@ -1,0 +1,26 @@
+---
+
+- include: install_requirements.yml
+- include: lvm_backend.yml
+  when: backing_store == "lvm"
+- include: dir_backend.yml
+  when: backing_store == "dir"
+
+- name: Enable routing in sysctl.conf
+  sysctl: name="net.ipv4.ip_forward" value=1 sysctl_set=yes state=present reload=yes
+
+- name: Waiting for ping
+  lxc_container:
+    name: "{{ item.key }}"
+    container_command: |
+      ping -c 1 8.8.8.8
+  register: lvm_container_info
+  until: lvm_container_info.lxc_container.ips.0 is defined
+  retries: 10
+  delay: 30
+  with_dict: "{{ lxc_containers }}"
+  tags:
+    - ping
+
+- name: Make the base container non-autostarted
+  lineinfile: dest=/var/lib/lxc/{{ lxc_base_container }}/config line="lxc.start.auto = 1" state=absent
