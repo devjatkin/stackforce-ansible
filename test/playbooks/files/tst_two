@@ -1,16 +1,19 @@
 compute01 ansible_host=192.168.10.5 ansible_user=root
 compute02 ansible_host=192.168.10.6 ansible_user=root
 controller01 ansible_connection=local
+compute03 ansible_host=192.168.10.8 ansible_user=root
 
 [baremetal]
 compute01
 compute02
+compute03
 controller01
 [controller]
 controller01
 [compute]
 compute01 cinder_disk="/dev/sdb,/dev/sdc"
 compute02 cinder_disk="/dev/sdb,/dev/sdc"
+compute03 cinder_disk="/dev/sdb,/dev/sdc"
 [compute:vars]
 compute_virt_type="kvm"
 os_rabbit_port=5672
