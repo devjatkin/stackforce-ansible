@@ -1,11 +1,13 @@
 #!/bin/bash
 
 set -e
-STACKFORCE_USERNAME=$1
+[ -f /etc/openstack/clouds.yaml ] && STACKFORCE_USERNAME=$(cat /etc/openstack/clouds.yaml | grep username | grep -v admin | cut -d'"' -f 2)
+[ -f ~/.config/openstack/clouds.yaml ] && STACKFORCE_USERNAME=$(cat ~/.config/openstack/clouds.yaml | grep username | grep -v admin | cut -d'"' -f 2)
 if [ -z "$STACKFORCE_USERNAME" ]; then
-  echo "Error: Cloud username must be provided as first parameter"
+  echo "Please check your /etc/openstack/clouds.yaml or ~/.config/openstack/clouds.yaml file"
   exit 1
 fi
+virtualenv .venv || /bin/true
 source .venv/bin/activate
 pip install -r requirements.txt
 export LOCAL_TMP_DIR=${LOCAL_TMP_DIR:=/tmp}
