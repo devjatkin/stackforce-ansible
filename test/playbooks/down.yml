@@ -27,12 +27,14 @@
       state: absent
     with_items:
       - "{{ controllers }}"
+    ignore_errors: yes
   - os_volume:
       cloud: "{{ test_cloud }}"
       display_name: "{{ item }}-lxc"
       state: absent
     with_items:
       - "{{ controllers }}"
+    ignore_errors: yes
 
   # computes
   - os_server:
@@ -41,44 +43,52 @@
       state: absent
     with_items:
       - "{{ computes }}"
+    ignore_errors: yes
   - os_volume:
       cloud: "{{ test_cloud }}"
       display_name: "{{ item }}-lxc"
       state: absent
     with_items:
       - "{{ computes }}"
+    ignore_errors: yes
 
   - name: Delete security group TCP
     os_security_group_rule:
       cloud: "{{ test_cloud }}"
       security_group: "{{ secgroup.stdout }}"
       state: absent
+    ignore_errors: yes
 
   - name: Delete security group ICMP
     os_security_group_rule:
       cloud: "{{ test_cloud }}"
       security_group: "{{ secgroup.stdout }}"
       state: absent
+    ignore_errors: yes
 
   - os_router:
       cloud: "{{ test_cloud }}"
       state: absent
       name: "{{ username }}_router"
+    ignore_errors: yes
   - os_subnet:
       cloud: "{{ test_cloud }}"
       state: absent
       name: "{{ username }}_mngt_subnet"
       network_name: "{{ username }}_mngt"
+    ignore_errors: yes
   - os_network:
       cloud: "{{ test_cloud }}"
       state: absent
       name: "{{ username }}_mngt"
+    ignore_errors: yes
 
   - name: Delete keypair
     os_keypair:
       cloud: "{{ test_cloud }}"
       state: absent
       name: "{{ username }}_key"
+    ignore_errors: yes
 
   - name: Delete user
     os_user:
