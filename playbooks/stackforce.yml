@@ -68,7 +68,6 @@
     cinder_service_adminurl: "http://{{ public_address }}:8776/v1/%(tenant_id)s"
     cinder_service_v2_publicurl: "http://{{ public_address }}:8776/v2/%(tenant_id)s"
     cinder_service_v2_adminurl: "http://{{ public_address }}:8776/v2/%(tenant_id)s"
-    cinder_volume_clear: "none"
   tags:
     - install_cinder
 - include: os-compute.yml
@@ -102,7 +101,6 @@
   vars:
     mysql_root_password: 'Jovoh4aceloduush'
     public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
-    cinder_volume_clear: "none"
   tags:
     - install_cinder
     - last
