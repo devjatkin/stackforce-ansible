@@ -103,6 +103,7 @@
   vars:
     num_controllers:  "{{ groups['controller'] | length }}"
     mgnt_phys_dev: "eth0"
+    ntp_server: "ntp.lucky.net"
   tasks:
     - name: Install ntpd
       yum: name="{{ item }}" state=present
