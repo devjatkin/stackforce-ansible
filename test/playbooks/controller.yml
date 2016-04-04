@@ -103,7 +103,24 @@
   vars:
     num_controllers:  "{{ groups['controller'] | length }}"
     mgnt_phys_dev: "eth0"
+    ntp_server: "ntp.lucky.net"
   tasks:
+    - name: Install ntpd
+      yum: name="{{ item }}" state=present
+      with_items:
+        - ntp
+
+    - name: Check ntp socket
+      shell: ss -aln sport = :123 |grep 123 | wc -l
+      register: ntpd_status
+
+    - name: Force sync time
+      command: "ntpdate {{ ntp_server }}"
+      when: ntpd_status.stdout == "0"
+
+    - name: Start ntpd
+      service: name=ntpd state=started enabled=yes
+
     - name: Install requirements
       yum: name="{{ item }}" state=present
       with_items:
