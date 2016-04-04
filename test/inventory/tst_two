@@ -18,3 +18,5 @@ cid04-tst cinder_disk="/dev/sdb,/dev/sdc" mgnt_vlan_id=10
 compute_virt_type="kvm"
 os_rabbit_port=5672
 cinder_disk="/dev/sdb"
+nova_ram_allocation_ratio="2"
+nova_cpu_allocation_ratio="16"
