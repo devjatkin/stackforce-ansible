@@ -36,4 +36,3 @@
     with_items:
       - python2-lxc
       - ansible
-
