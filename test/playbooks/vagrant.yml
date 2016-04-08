@@ -1,0 +1,62 @@
+---
+- hosts: controller*
+  become: yes
+  become_method: sudo
+  vars:
+    public_address: "{{ ansible_default_ipv4.address }}"
+    inventory: "../test/inventory/vagrant"
+    containers: "files/allinone_containers.yml"
+    inventory_filepath: "/etc/stackforce/inventory"
+    unique_containers_file: "/etc/stackforce/containers.yml"
+    openstack_deshboard_url: "localhost"
+    self_signed_cert: "false"
+    horizon_ssl_self_signed_subject: "/C=UA/ST=Kiev/L=Kiev/O=IT"
+    mgnt_phys_dev: "enp0s8"
+    mgnt_vlan_id: "10"
+  tasks:
+  - name: Create config dir
+    file: path=/etc/stackforce state=directory
+  - name: Create config file
+    file: path=/etc/stackforce/parameters.ini state=touch
+  - name: Set containers.yml
+    copy: src={{ containers }} dest=/etc/stackforce/containers.yml
+    tags:
+      - config
+  - name: Copy base inventory
+    copy: src={{ inventory }} dest=/etc/stackforce/inventory
+    tags:
+      - config
+  - name: Set parameters.ini
+    template: src=parameters.ini.j2 dest=/etc/stackforce/parameters.ini
+    tags:
+      - config
+
+  - name: Install necessary packages
+    yum:
+      name: "{{ item }}"
+      state: installed
+      enablerepo: "stackforce-testing"
+    with_items:
+      - python2-lxc
+      - ansible
+      - bridge-utils
+      - dnsmasq
+
+  - name: copy interface Vlan10 config
+    template: src=ifcfg-mngt-vlan.j2 dest=/etc/sysconfig/network-scripts/ifcfg-mngt-vlan
+
+  - name: copy interface mngt-br config
+    template: src=ifcfg-mngt-br.j2 dest=/etc/sysconfig/network-scripts/ifcfg-mngt-br
+
+  - name: Copy DNSmasq config
+    copy:
+      src: "files/dnsmasq.conf"
+      dest: "/etc/dnsmasq.conf"
+    when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" )
+
+  - name: Restart networking
+    service: name=network state=restarted
+    when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" )
+  - name: Start dnsmasq
+    service: name=dnsmasq state=restarted
+    when: ( inventory_hostname ==  "{{ groups['controller'][0] }}" )

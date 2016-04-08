@@ -65,7 +65,7 @@ Vagrant.configure(2) do |config|
     end
     vb.customize ['storageattach', :id, '--storagectl', 'SATA Controller', '--port', 2, '--device', 0, '--type', 'hdd', '--medium', file_to_disk_cinder]
     # Customize the amount of memory on the VM:
-    vb.memory = "3072"
+    vb.memory = "4096"
   end
   #
   # View the documentation for the provider you are using for more
@@ -83,10 +83,9 @@ Vagrant.configure(2) do |config|
   config.vm.provision "shell", inline: <<-SHELL
     sudo yum install -y epel-release
     sudo yum install -y http://repo.cloudlinux.com/stackforce/x86_64/stackforce-release-1-1.el7.noarch.rpm
-    sudo yum install -y ansible --enablerepo='stackforce-testing'
-    ansible-playbook -i "controller01 ansible_connection=local," -c local --extra-vars 'inventory=/vagrant/test/inventory/vagrant containers=/vagrant/playbooks/files/allinone_containers.yml' /vagrant/playbooks/controller.yml
+    sudo yum install -y ansible python2-lxc --enablerepo='stackforce-testing'
+    ansible-playbook -i /vagrant/test/inventory/vagrant -c local --extra-vars 'username=vagrant inventory=/vagrant/test/inventory/vagrant containers=/vagrant/playbooks/files/allinone_containers.yml' /vagrant/test/playbooks/vagrant.yml
     ansible-playbook -i "/vagrant/inventory/dynlxc.py" -c local --extra-vars 'lxc_container_user_name=vagrant lxc_disk=/dev/sdb' /vagrant/playbooks/create_lxc_containers.yml
-    sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/haproxy.yml
     sudo -u vagrant ansible-playbook -i /vagrant/inventory/dynlxc.py --sudo /vagrant/playbooks/stackforce.yml
     ansible-playbook -i "localhost," -c local /vagrant/test/playbooks/install_bats.yml
     bats /vagrant/test/integration/default/bats/*.bats
