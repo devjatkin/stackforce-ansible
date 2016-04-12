@@ -1,7 +1,12 @@
 # Stackforce Cloudlinux #
-## Quickstart ##
-Install vagrant using https://docs.vagrantup.com/v2/installation/
-Default box: "bento/centos7.2", you can set different box name with VAGRANT_BOX_NAME enviroment variable
+
+Main goal of project is deploying OpenStack using Ansible and rpm packages from RDOproject.
+
+## Quickstart with Vagrant ##
+
+For install vagrant follow this guide: https://docs.vagrantup.com/v2/installation/
+
+Default box: "bento/centos7.2", you can set different box name with VAGRANT_BOX_NAME environment variable
 
 ```
 #!shell
@@ -10,7 +15,7 @@ Default box: "bento/centos7.2", you can set different box name with VAGRANT_BOX_
 # cd stackforce-ansible
 # vagrant up
 ```
-
+## Quickstart with Triple-O ##
 Openstack dev-environment over Openstack installation procedure:
 ```
 ./run_tripleo.sh USERNAME
@@ -32,22 +37,22 @@ example /etc/openstack/clouds.yaml:
 clouds:
   stackforce:
     auth:
-      auth_url: "http://192.168.10.7:35357/v3"
+      auth_url: "http://admin_endpoint_ip:35357/v3"
       project_name: "admin"
       project_domain_name: default
       user_domain_name: default
-      username: "admin"
-      password: "PPPGee4soopohsusaki"
+      username: "cloud_admin_username"
+      password: "cloud_admin_password"
     identity_api_version: "3"
     region_name: "RegionOne"
   tripleo:
     auth:
-      auth_url: "http://192.168.10.7:35357/v3"
+      auth_url: "http://admin_endpoint_ip:35357/v3"
       project_name: "USERNAME"
       project_domain_name: default
       user_domain_name: default
-      username: "USERNAME"
-      password: "guj3OhV8ub5hauCh"
+      username: "your_username"
+      password: "your_password"
     identity_api_version: "3"
     region_name: "RegionOne"
 
