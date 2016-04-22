@@ -1,10 +1,18 @@
 ---
+- name: Create .repo files
+  template: src=yumrepos.j2 dest="/etc/yum.repos.d/{{ item.name }}.repo"
+  with_items: yum_repo_files
+
+- name: GPG keys
+  rpm_key: key="{{ item }}" state=present
+  with_items: rpm_gpg_key_urls
+
 - name: Install necessary packages
   vars:
       yum_retries: 3
   yum: name="{{ item  }}" state=present
   with_items:
-    - http://stackforce.cloudlinux.com/repos/consul-0.6.3-1.el7.centos.x86_64.rpm
+    - consul
   register: yum_result
   until: yum_result.msg == "All items completed"
   retries: "{{ yum_retries }}"

@@ -4,11 +4,6 @@
   notify: Restart rsyslog
   when: groups.syslog is defined and remote_rsyslog and inventory_hostname not in groups['syslog']
 
-- name: create .repo files
-  template: src=yumrepos.j2 dest="/etc/yum.repos.d/{{ item.name }}.repo"
-  with_items: yum_repo_files
+- name: Install RDO release package
+  yum: name=https://www.rdoproject.org/repos/rdo-release.rpm state=present
 
-- name: GPG key cloudlinux
-  rpm_key: key="{{ rpm_gpg_key_url }}" state=present
-  tags:
-    - rpm-gpg-key

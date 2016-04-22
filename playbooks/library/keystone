@@ -860,11 +860,10 @@ class ManageKeystone(object):
         else:
             return None
 
-    def _get_group_roles(self, name, group, project, domain):
+    def _get_group_roles(self, name, group, project):
         group_list = self.keystone.roles.list(
             group=group,
-            project=project,
-            domain=domain
+            project=project
         )
         for entry in group_list:
             if entry.name == name:
@@ -881,8 +880,8 @@ class ManageKeystone(object):
         # NOTE(sigmavirus24): Try to get the project_name, but
         # don't error out on it. This will change when the playbooks are
         # updated to use project_name instead of tenant_name
-        project_name = (variables_dict.pop('project_name', None)
-                        or variables_dict.pop('tenant_name'))
+        project_name = (variables_dict.pop('project_name', None) or
+                        variables_dict.pop('tenant_name'))
         role_name = variables_dict.pop('role_name')
 
         user, project, role, group = self._get_role_data(
@@ -919,7 +918,7 @@ class ManageKeystone(object):
         )
 
         group_role = self._get_group_roles(
-            name=role_name, group=group, project=project, domain=domain
+            name=role_name, group=group, project=project
         )
 
         if group_role is None:
@@ -929,8 +928,7 @@ class ManageKeystone(object):
             group_role = self._get_group_roles(
                 name=role_name,
                 group=group,
-                project=project,
-                domain=domain
+                project=project
             )
 
         return self._facts(facts={'id': group_role.id})
@@ -1172,6 +1170,9 @@ def main():
                 required=False
             ),
             login_tenant_name=dict(
+                required=False
+            ),
+            login_project_name=dict(
                 required=False
             ),
             token=dict(

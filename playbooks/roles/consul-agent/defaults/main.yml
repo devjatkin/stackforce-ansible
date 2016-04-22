@@ -1,2 +1,10 @@
 ---
 public_address: "{{ lookup('ini', 'address section=public file=/etc/stackforce/parameters.ini') }}"
+yum_repo_files:
+  - name: "duritong-consul"
+    descr: "Copr repo for consul owned by duritong"
+    baseurl: "https://copr-be.cloud.fedoraproject.org/results/duritong/consul/epel-7-$basearch/"
+    gpgcheck: 1
+    enabled: 1
+rpm_gpg_key_urls:
+  - https://copr-be.cloud.fedoraproject.org/results/duritong/consul/pubkey.gpg
