@@ -6,3 +6,4 @@
     - python-cinderclient
     - python-oslo-policy
     - python-memcached
+    - python-keystonemiddleware

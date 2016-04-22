@@ -9,6 +9,8 @@ keystone_auth_admin_token: "Gee4soopohsusaki"
 keystone_os_username: "admin"
 keystone_os_admin_password: "PPPGee4soopohsusaki"
 keystone_os_tenant_name: "admin"
+keystone_role_name: admin
+keystone_service_name: "admin"
 keystone_service_region: "RegionOne"
 keystone_service_publicurl: "http://{{ public_address }}:5000/v3"
 keystone_service_internalurl: "http://{{ public_address }}:5000/v3"

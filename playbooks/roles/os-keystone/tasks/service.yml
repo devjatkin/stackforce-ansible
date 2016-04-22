@@ -1,27 +1,34 @@
 ---
+- name: Bootstrap keystone admin and endpoint
+  command: |
+     keystone-manage bootstrap \
+     --bootstrap-username {{ keystone_os_username }} \
+     --bootstrap-password {{ keystone_os_admin_password }} \
+     --bootstrap-project-name {{ keystone_admin_tenant_name }} \
+     --bootstrap-role-name {{ keystone_role_name }} \
+     --bootstrap-service-name {{ keystone_service_name }} \
+     --bootstrap-region-id {{ keystone_service_region }} \
+     --bootstrap-admin-url {{ keystone_service_adminurl }} \
+     --bootstrap-public-url {{ keystone_service_publicurl }} \
+     --bootstrap-internal-url {{ keystone_service_internalurl }}
+  tags:
+    - keystone-setup
+
 - name: Ensure service tenant
   keystone:
-    command: "ensure_tenant"
-    token: "{{ keystone_auth_admin_token }}"
+    command: "ensure_project"
+    login_user: "{{ keystone_os_username }}"
+    login_password: "{{ keystone_os_admin_password }}"
+    login_project_name: "{{ keystone_service_name }}"
     endpoint: "{{ keystone_service_adminurl }}"
     tenant_name: "{{ keystone_service_tenant_name }}"
+    domain_name: "default"
     description: "{{ keystone_service_description }}"
     insecure: "{{ keystone_service_adminuri_insecure }}"
   register: add_service_tenant
   until: add_service_tenant|success
   retries: 3
   delay: 10
-  tags:
-    - keystone-setup
-
-- name: Ensure admin tenant
-  keystone:
-    command: "ensure_tenant"
-    token: "{{ keystone_auth_admin_token }}"
-    endpoint: "{{ keystone_service_adminurl }}"
-    tenant_name: "{{ keystone_admin_tenant_name }}"
-    description: "{{ keystone_admin_description }}"
-    insecure: "{{ keystone_service_adminuri_insecure }}"
   tags:
     - keystone-setup
 
