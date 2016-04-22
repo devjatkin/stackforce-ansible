@@ -16,7 +16,6 @@
     - haproxy
 - hosts: all:!controller*
   roles:
-    - role: common
     - role: consul-agent
   serial: 3
 
