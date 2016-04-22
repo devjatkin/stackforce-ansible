@@ -5,5 +5,5 @@
   when: groups.syslog is defined and remote_rsyslog and inventory_hostname not in groups['syslog']
 
 - name: Install RDO release package
-  yum: name=https://www.rdoproject.org/repos/rdo-release.rpm state=present
+  yum: name="{{ rdo_release_rpm }}" state=present
 

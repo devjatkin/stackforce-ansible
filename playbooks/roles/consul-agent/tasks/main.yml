@@ -1,11 +1,11 @@
 ---
 - name: Create .repo files
   template: src=yumrepos.j2 dest="/etc/yum.repos.d/{{ item.name }}.repo"
-  with_items: yum_repo_files
+  with_items: "{{ yum_repo_files }}"
 
 - name: GPG keys
   rpm_key: key="{{ item }}" state=present
-  with_items: rpm_gpg_key_urls
+  with_items: "{{ rpm_gpg_key_urls }}"
 
 - name: Install necessary packages
   vars:

@@ -1,2 +1,3 @@
 ---
 remote_rsyslog: true
+rdo_release_rpm: "https://www.rdoproject.org/repos/rdo-release.rpm"
