@@ -8,9 +8,6 @@
 - include: db_sync.yml
   when: inventory_hostname ==  "{{ groups['controller'][0] }}"
 
-- name: Patch ip_lib.py
-  copy: src=ip_lib.py  dest=/usr/lib/python2.7/site-packages/neutron/agent/linux/ip_lib.py
-
 - name: Start Neutron services
   service: name="{{ item }}" state=started enabled=yes
   with_items:
