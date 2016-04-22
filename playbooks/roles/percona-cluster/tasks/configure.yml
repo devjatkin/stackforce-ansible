@@ -13,7 +13,7 @@
 
 - name: Remove default configs
   file: name=/etc/my.cnf.d/{{ item }} state=absent
-  with_items: configs_list.stdout_lines
+  with_items: "{{ configs_list.stdout_lines }}"
 
 - name: Copy cluster.conf
   template:

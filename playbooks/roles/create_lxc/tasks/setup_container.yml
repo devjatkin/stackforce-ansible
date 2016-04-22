@@ -9,7 +9,7 @@
   until: lvm_container_info.lxc_container.ips.0 is defined
   retries: 10
   delay: 30
-  with_items: lxc_base_container
+  with_items: "{{ lxc_base_container }}"
   tags:
     - ping
 
@@ -29,7 +29,7 @@
       TYPE=Ethernet
       DHCP_HOSTNAME=\`hostname\`
       EOT
-  with_items: lxc_base_container
+  with_items: "{{ lxc_base_container }}"
   tags:
     - yum
 
@@ -38,7 +38,7 @@
     name: "{{ item }}"
     container_command: |
       useradd --create-home -G wheel -s /bin/bash {{ lxc_container_user_name }}
-  with_items: lxc_base_container
+  with_items: "{{ lxc_base_container }}"
   tags:
     - user
 
@@ -74,7 +74,7 @@
       chown -R "{{ lxc_container_user_name }}":"{{ lxc_container_user_name }}" "/home/{{ lxc_container_user_name }}/.ssh"
   no_log: True
   when: pub_key.stat.exists
-  with_items: lxc_base_container
+  with_items: "{{ lxc_base_container }}"
   tags:
     - ssh_key
 
@@ -86,7 +86,7 @@
       nameserver 192.168.53.254
       nameserver 192.168.122.1
       EOT
-  with_items: lxc_base_container
+  with_items: "{{ lxc_base_container }}"
   when: num_controllers | int > 1
 
 - name: Stop Base conainer
